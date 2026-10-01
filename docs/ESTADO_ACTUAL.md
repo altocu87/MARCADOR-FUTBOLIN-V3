@@ -8,9 +8,9 @@
 - Remoto: origin = https://github.com/altocu87/MARCADOR-FUTBOLIN-V3.git
 - Rama principal: main.
 - Último commit de código funcional en main comprobado: **b10b1df — Initial functional match simulator**; main contiene además el contexto documental 900e470.
-- Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**. Consultar su historial Git para el commit/push comprobados; no equivale a promoverla a main ni completar la fase B.
+- Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**, commit funcional **eeb23b8**, push comprobado con la referencia remota y divergencia 0/0. No equivale a promoverla a main ni completar la fase B; las actualizaciones documentales posteriores tienen sus propios commits.
 - Entorno de esta implementación: **PC local Windows**, no Codex Cloud. Las instrucciones de nube del apartado 79 se aplican cuando se trabaje realmente allí.
-- Esta ficha describe el código de persistencia y fiabilidad preparado para publicación en la rama de desarrollo. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
+- Esta ficha describe el código de persistencia y fiabilidad publicado en la rama de desarrollo. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
 
 ## Fases
 
@@ -129,3 +129,5 @@ Guardados los 84 apartados del propietario en CONTEXTO_MAESTRO.md, instrucciones
 ### 2026-10-01 — Fiabilidad del motor y recuperación offline
 
 Corregido el bloqueo central, ampliadas las regresiones y fijado timeout de guardado. Verificado en navegador integrado un partido 2–0 con petición colgada → pendiente → recarga → reintento → historial/detalle, mediante repositorios en memoria sin Supabase. Lienzo real 800×480 sin overflow; comprobados centrado 1280×720 y escalado 390×844. Modo prueba restaurado ON, cola de fixture vacía y consola sin errores/avisos en ese recorrido. Sin cambios de base de datos, Auth real ni despliegues solicitados. La rama de desarrollo conserva también la implementación local de persistencia previa para poder retomarla en la nube; la fase B y promoción a main permanecen pendientes de la prueba autenticada.
+
+Publicación comprobada: eeb23b8 en origin/codex/reliability-offline-v1; main continúa en 900e470. Árbol de trabajo limpio después del commit funcional. No se creó PR ni se solicitó despliegue. Las comprobaciones de pruebas/build pasaron inmediatamente antes del commit.

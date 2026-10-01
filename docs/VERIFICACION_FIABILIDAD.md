@@ -58,4 +58,6 @@ Captura local de evidencia: `tmp/verificacion-fiabilidad-800x480.png`, ignorada 
 
 Rama de revisión: `codex/reliability-offline-v1`. Incluye la persistencia V1 local previa para retomar el trabajo desde otro agente/entorno, sin promover el bloque a main. Consultar el historial/referencias Git para el commit y push final; no reejecutar migraciones ya aplicadas.
 
+Commit funcional `eeb23b8`, push correcto y referencia remota comprobada (divergencia 0/0). Main permanece en `900e470`. Tests y build finales correctos; revisión de archivos preparados sin secretos/env reales, dependencias, builds ni capturas temporales. Corrección de una línea vacía sobrante en los tipos generados para que `git diff --check` también pase. Esta evidencia se añade en un commit documental posterior.
+
 Falta el recorrido real navegador → Supabase → historial con cuenta del operador. Mantener esta limitación visible; no avanzar a XP/ELO/logros ni considerar la fase B cerrada hasta comprobarla.
