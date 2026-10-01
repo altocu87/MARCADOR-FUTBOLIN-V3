@@ -1,7 +1,8 @@
-import type { MatchState } from '../../match-engine/types'
+import type { MatchDocument, MatchSummary } from './models'
 
-/** Punto de extensión para un repositorio Supabase futuro; no hay conexión todavía. */
+/** Contrato de agregado: también puede implementarse mediante sincronización de hardware. */
 export interface MatchRepository {
-  save(state: Readonly<MatchState>): Promise<void>
-  loadActive(): Promise<MatchState | null>
+  saveMatch(document: MatchDocument): Promise<void>
+  getMatches(offset?: number): Promise<MatchSummary[]>
+  getMatchById(id: string): Promise<MatchDocument>
 }

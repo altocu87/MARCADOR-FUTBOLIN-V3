@@ -7,16 +7,17 @@
 - Repositorio: https://github.com/altocu87/MARCADOR-FUTBOLIN-V3
 - Remoto: origin = https://github.com/altocu87/MARCADOR-FUTBOLIN-V3.git
 - Rama principal: main.
-- Último commit de código funcional publicado comprobado: **b10b1df — Initial functional match simulator**.
+- Último commit de código funcional en main comprobado: **b10b1df — Initial functional match simulator**; main contiene además el contexto documental 900e470.
+- Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**. Consultar su historial Git para el commit/push comprobados; no equivale a promoverla a main ni completar la fase B.
 - Entorno de esta implementación: **PC local Windows**, no Codex Cloud. Las instrucciones de nube del apartado 79 se aplican cuando se trabaje realmente allí.
-- Esta ficha describe también trabajo local de Supabase que **todavía no está publicado**. Un commit exclusivamente documental no equivale a publicar ese código. Consultar `git log` para el hash de cada actualización documental, sin confundirlo con un commit funcional.
+- Esta ficha describe el código de persistencia y fiabilidad preparado para publicación en la rama de desarrollo. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
 
 ## Fases
 
 | Fase | Estado real |
 | --- | --- |
 | A. Simulador funcional | Publicado en b10b1df |
-| B. Persistencia Supabase V1 | Implementada y probada en el checkout local; falta prueba autenticada de navegador y commit/push del código |
+| B. Persistencia Supabase V1 | Implementada y probada localmente; rama de desarrollo para revisión; falta prueba autenticada de navegador y promoción a main |
 | C–J. Estadísticas, XP/ELO, logros, torneos, audiovisual avanzado, ESP32, OTA | Futuras; no autorizadas para implementación inmediata |
 
 ## Código local implementado en la fase B
@@ -32,6 +33,8 @@
 - Caché de jugadores y cola de resultados finalizados en localStorage, aisladas por proyecto/cuenta. Reintento manual en Ajustes. Los goles no dependen de Internet.
 - Lienzo fijo 800×480, escalado proporcional en ventanas pequeñas y centrado en grandes. Corregido el recorte por dimensionamiento implícito de la cuadrícula.
 - Panel de simulación solo en desarrollo. No hay comunicaciones físicas ni firmware.
+- Corregido el desbloqueo prematuro al deshacer/cambiar de parte o prórroga: el motor conserva los tres segundos del último gol aceptado. Ocho regresiones verifican pantalla/adaptador directo, límite exacto, simulación de transiciones y rechazo sin eventos adicionales. Al deshacer desde un final, el reloj no incorpora el tiempo de descanso.
+- Guardado con límite de diez segundos: una petición colgada deja el resultado pendiente y libera el resumen. Pruebas de recarga, varios resultados, confirmaciones desordenadas/tardías y fallo de limpieza local.
 
 ### Módulos principales
 
@@ -43,7 +46,8 @@
 - `src/main.tsx`, `src/styles/global.css`, package.json/lockfile y variables de ejemplo: integración y presentación.
 - `tests/persistence.test.ts`, `tests/ui-fixture.html`, `tests/uiFixture.tsx`: pruebas de persistencia y fixture visual sin Supabase.
 - `supabase/migrations/`, `supabase/tests/persistence_v1.sql`: migraciones y pruebas de integridad.
-- `docs/VERIFICACION_PERSISTENCIA_V1.md`: evidencia y recorrido autenticado pendiente. Este archivo también es parte del trabajo local todavía no publicado.
+- `docs/VERIFICACION_PERSISTENCIA_V1.md`: evidencia de la fase B y recorrido autenticado pendiente.
+- `docs/VERIFICACION_FIABILIDAD.md`: reproducción del fallo, correcciones, pruebas y recorrido visual de recuperación sin servicios externos.
 
 ## Supabase ya aplicado — no repetir a ciegas
 
@@ -60,7 +64,7 @@ RLS y permisos por cuenta del operador (owner_id, auth.uid). Los jugadores no so
 
 RPC `save_match_v1`: SECURITY INVOKER, RLS vigente, valida cuenta de inicio y guarda partido/participantes/eventos en una transacción. Triggers diferidos impiden agregados incompletos incluso mediante inserciones directas.
 
-Migraciones **aplicadas remotamente, con archivos aún locales**:
+Migraciones **ya aplicadas remotamente**, cuyos archivos forman parte de la rama de desarrollo:
 
 1. `20261001053217_match_persistence_v1.sql`.
 2. `20261001055134_tighten_match_integrity.sql`.
@@ -99,11 +103,11 @@ Después, el agente debe verificar con la capa Supabase real:
 4. Repetir en modo prueba ON y comprobar que no aumentan partidos ni eventos.
 5. Reejecutar pruebas/build, revisar secretos y publicar el bloque funcional cuando esté estable.
 
-**No dar la fase B por cerrada ni avanzar a XP/ELO/logros mientras falte esta comprobación.** Si el agente está en la nube y solo ve b10b1df más documentación, el código local de Supabase aún falta en ese checkout: coordinar la sincronización con el usuario, no recrearlo ni tocar el esquema ya existente.
+**No dar la fase B por cerrada ni avanzar a XP/ELO/logros mientras falte esta comprobación.** Para continuar en la nube, usar la rama `codex/reliability-offline-v1` una vez confirmado su push. Si el checkout solo contiene main, sincronizar la rama de desarrollo, no recrear la integración ni tocar el esquema ya existente. La publicación de una rama de revisión no requiere dar por pasada la validación autenticada; la promoción a main sí queda pendiente de esa validación.
 
 ## Límites conocidos y decisiones a preservar
 
-- Discrepancia detectada al contrastar el contexto: `MatchEngine.undo()` libera el bloqueo de gol y `endPeriod()`/`preparePeriod()` reinician su plazo. Deshacer o pasar de periodo saltando la cuenta atrás puede permitir otro gol antes de los tres segundos del apartado 14. No hay una excepción aprobada en el contexto. Pendiente reproducir con tests de regresión y corregir en el siguiente bloque de código; no se modifica el motor en esta actualización documental ni se considera resuelta por los tests anteriores.
+- Discrepancia del bloqueo de gol corregida el 2026-10-01 en la rama de desarrollo: reproducida con una prueba fallida antes del arreglo y ocho casos correctos después. El motor conserva el plazo al deshacer/corregir/cambiar parte o prórroga. Main aún no contiene esta corrección mientras no se integre la rama.
 - GOALS cuenta los goles totales del periodo; el marcador visible es acumulativo. TIME termina por reloj; BOTH por la primera condición. Cambiar a objetivo por equipo requeriría una decisión explícita.
 - Prórroga: 60 segundos y gol de oro; después penaltis alternos, cinco intentos y muerte súbita. No se atribuyen goles a jugadores.
 - Deshacer no retrocede el reloj; el journal conserva goles y anulaciones.
@@ -121,3 +125,7 @@ Implementados cliente/Auth, datos seguros, jugadores, agregado transaccional, hi
 ### 2026-10-01 — Contexto maestro compartido
 
 Guardados los 84 apartados del propietario en CONTEXTO_MAESTRO.md, instrucciones de lectura/mantenimiento en AGENTS.md y esta ficha contrastada con el estado real. Registrada la discrepancia del bloqueo de gol al deshacer/cambiar periodo para su verificación posterior. La publicación exclusivamente documental se comprueba con el historial Git; no cambia el estado pendiente del bloque funcional ni ejecuta las futuras fases.
+
+### 2026-10-01 — Fiabilidad del motor y recuperación offline
+
+Corregido el bloqueo central, ampliadas las regresiones y fijado timeout de guardado. Verificado en navegador integrado un partido 2–0 con petición colgada → pendiente → recarga → reintento → historial/detalle, mediante repositorios en memoria sin Supabase. Lienzo real 800×480 sin overflow; comprobados centrado 1280×720 y escalado 390×844. Modo prueba restaurado ON, cola de fixture vacía y consola sin errores/avisos en ese recorrido. Sin cambios de base de datos, Auth real ni despliegues solicitados. La rama de desarrollo conserva también la implementación local de persistencia previa para poder retomarla en la nube; la fase B y promoción a main permanecen pendientes de la prueba autenticada.

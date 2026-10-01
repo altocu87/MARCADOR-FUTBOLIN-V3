@@ -5,6 +5,21 @@ export type MatchPeriod = 'FIRST_HALF' | 'SECOND_HALF' | 'EXTRA_TIME' | 'PENALTI
 export type MatchStatus = 'IDLE' | 'COUNTDOWN' | 'PLAYING' | 'PAUSED' | 'PERIOD_END' | 'MATCH_END' | 'PENALTIES'
 export type GoalEffect = 'flash' | 'explosion' | 'waves' | 'particles' | 'speed-lines'
 
+export type TimelineEventType = 'goal' | 'score_correction' | 'undo' | 'period_start' | 'period_end' | 'extra_time_start' | 'penalty' | 'match_end' | 'pause' | 'resume'
+export interface TimelineEvent {
+  sequence: number
+  eventType: TimelineEventType
+  team: Team | null
+  period: MatchPeriod
+  matchTimeSeconds: number
+  periodTimeSeconds: number
+  whiteScore: number
+  blueScore: number
+  penaltyScored: boolean | null
+  occurredAt: string
+  metadata: Record<string, string | number | boolean | null>
+}
+
 export interface MatchConfiguration {
   mode: MatchMode
   victoryCondition: VictoryCondition
@@ -32,6 +47,10 @@ export interface PenaltyState {
 }
 
 export interface MatchState {
+  startedAt: string | null
+  finishedAt: string | null
+  events: TimelineEvent[]
+  elapsedSeconds: number
   status: MatchStatus
   period: MatchPeriod
   config: MatchConfiguration | null

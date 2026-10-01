@@ -1,4 +1,4 @@
-import type { GoalEffect, GoalEvent, MatchConfiguration, MatchEvent, MatchPeriod, MatchState, MatchStateListener, PenaltyState, Team } from './types'
+import type { GoalEffect, GoalEvent, MatchConfiguration, MatchEvent, MatchPeriod, MatchState, MatchStateListener, PenaltyState, Team, TimelineEventType } from './types'
 
 const GOAL_LOCK_MS = 3_000
 const COUNTDOWN_MS = 3_000
@@ -13,8 +13,8 @@ export class MatchEngine {
   private goalLockUntil = 0
   private countdownUntil = 0
   private clockStartedAt = 0
-  private undoStack: MatchState[] = []
   private sequence = 0
+  private completedTimeSeconds = 0
 
   constructor(
     private readonly now: Now = () => Date.now(),
@@ -24,9 +24,11 @@ export class MatchEngine {
   getState = (): Readonly<MatchState> => this.state
 
   createMatch(config: MatchConfiguration): void {
-    this.undoStack = []
+    this.completedTimeSeconds = 0
+    this.sequence = 0
     this.goalLockUntil = 0
-    this.state = { status: 'COUNTDOWN', period: 'FIRST_HALF', config, whiteGoals: 0, blueGoals: 0,
+    this.state = { startedAt: new Date(this.now()).toISOString(), finishedAt: null, events: [], elapsedSeconds: 0,
+      status: 'COUNTDOWN', period: 'FIRST_HALF', config, whiteGoals: 0, blueGoals: 0,
       remainingSeconds: config.halfDurationMinutes * 60, periodInitialSeconds: config.halfDurationMinutes * 60,
       countdownValue: 3, goalInputLocked: false, goalLockRemainingMs: 0, goals: [], lastGoal: null, penalty: null, periodResult: null }
     this.countdownUntil = this.now() + COUNTDOWN_MS
@@ -64,12 +66,13 @@ export class MatchEngine {
     if (this.state.status !== 'PLAYING') return
     const goalLockRemainingMs = Math.max(0, this.goalLockUntil - now)
     const goalInputLocked = goalLockRemainingMs > 0
-    const remainingSeconds = Math.max(0, this.state.periodInitialSeconds - Math.floor((now - this.clockStartedAt) / 1_000))
-    if (remainingSeconds !== this.state.remainingSeconds || goalInputLocked !== this.state.goalInputLocked || Math.ceil(goalLockRemainingMs / 100) !== Math.ceil(this.state.goalLockRemainingMs / 100)) {
-      this.state = { ...this.state, remainingSeconds, goalInputLocked, goalLockRemainingMs }
+    const elapsedSeconds = Math.max(0, Math.floor((now - this.clockStartedAt) / 1_000))
+    const remainingSeconds = Math.max(0, this.state.periodInitialSeconds - elapsedSeconds)
+    if (elapsedSeconds !== this.state.elapsedSeconds || remainingSeconds !== this.state.remainingSeconds || goalInputLocked !== this.state.goalInputLocked || Math.ceil(goalLockRemainingMs / 100) !== Math.ceil(this.state.goalLockRemainingMs / 100)) {
+      this.state = { ...this.state, elapsedSeconds, remainingSeconds, goalInputLocked, goalLockRemainingMs }
       this.emit()
     }
-    if (remainingSeconds === 0) this.endPeriod()
+    if (remainingSeconds === 0 && (this.state.period === 'EXTRA_TIME' || this.state.config?.victoryCondition !== 'GOALS')) this.endPeriod()
   }
 
   skipCountdown(): void { if (this.state.status === 'COUNTDOWN') this.beginPeriod(this.now()) }
@@ -78,22 +81,24 @@ export class MatchEngine {
     if (this.state.status !== 'PERIOD_END') return
     if (this.state.period === 'FIRST_HALF') this.preparePeriod('SECOND_HALF')
     else if (this.state.period === 'SECOND_HALF' && this.state.whiteGoals === this.state.blueGoals) this.startExtraTime()
+    else if (this.state.period === 'EXTRA_TIME') this.startPenalties()
     else this.finishMatch()
   }
 
   subscribe(listener: MatchStateListener): () => void { this.listeners.add(listener); return () => this.listeners.delete(listener) }
 
   private registerGoal(team: Team): void {
+    this.tick()
     if (this.state.status !== 'PLAYING' || this.state.goalInputLocked || this.now() < this.goalLockUntil) return
-    this.undoStack.push(this.snapshot())
     const now = this.now()
     const whiteGoals = this.state.whiteGoals + (team === 'WHITE' ? 1 : 0)
     const blueGoals = this.state.blueGoals + (team === 'BLUE' ? 1 : 0)
-    const elapsedSeconds = this.state.periodInitialSeconds - this.state.remainingSeconds
+    const elapsedSeconds = this.state.elapsedSeconds
     const goal: GoalEvent = { id: `goal-${++this.sequence}`, team, period: this.state.period, elapsedSeconds,
       timestamp: this.formatTime(elapsedSeconds), scoreWhite: whiteGoals, scoreBlue: blueGoals, effect: this.pickEffect() }
     this.goalLockUntil = now + GOAL_LOCK_MS
     this.state = { ...this.state, whiteGoals, blueGoals, goals: [...this.state.goals, goal], lastGoal: goal, goalInputLocked: true, goalLockRemainingMs: GOAL_LOCK_MS }
+    this.record('goal', team, { goalId: goal.id, effect: goal.effect })
     this.emit()
     if (this.state.period === 'EXTRA_TIME') this.finishMatch()
     else if (this.hasReachedGoalLimit()) this.endPeriod()
@@ -108,30 +113,33 @@ export class MatchEngine {
   private pause(): void {
     if (this.state.status !== 'PLAYING') return
     this.tick()
-    this.state = { ...this.state, status: 'PAUSED', goalInputLocked: true, goalLockRemainingMs: 0 }
+    if (this.state.status !== 'PLAYING') return
+    this.state = { ...this.state, status: 'PAUSED', ...this.goalLockState(true) }
+    this.record('pause')
     this.emit()
   }
 
   private continue(): void {
     if (this.state.status !== 'PAUSED') return
-    this.clockStartedAt = this.now() - (this.state.periodInitialSeconds - this.state.remainingSeconds) * 1_000
-    this.state = { ...this.state, status: 'PLAYING', goalInputLocked: false }
+    this.clockStartedAt = this.now() - this.state.elapsedSeconds * 1_000
+    this.state = { ...this.state, status: 'PLAYING', ...this.goalLockState() }
+    this.record('resume')
     this.emit()
   }
 
   private endPeriod(): void {
     if (this.state.status !== 'PLAYING' && this.state.status !== 'PAUSED') return
-    this.goalLockUntil = 0
-    this.state = { ...this.state, status: 'PERIOD_END', goalInputLocked: true, goalLockRemainingMs: 0,
+    this.state = { ...this.state, status: 'PERIOD_END', ...this.goalLockState(true),
       periodResult: { whiteGoals: this.state.whiteGoals, blueGoals: this.state.blueGoals } }
+    this.record('period_end')
     this.emit()
   }
 
   private preparePeriod(period: MatchPeriod): void {
+    this.completedTimeSeconds += this.state.elapsedSeconds
     const seconds = period === 'EXTRA_TIME' ? EXTRA_TIME_SECONDS : (this.state.config?.halfDurationMinutes ?? 5) * 60
-    this.goalLockUntil = 0
-    this.state = { ...this.state, period, status: 'COUNTDOWN', remainingSeconds: seconds, periodInitialSeconds: seconds, countdownValue: 3,
-      goalInputLocked: false, goalLockRemainingMs: 0, periodResult: null }
+    this.state = { ...this.state, period, status: 'COUNTDOWN', elapsedSeconds: 0, remainingSeconds: seconds, periodInitialSeconds: seconds, countdownValue: 3,
+      ...this.goalLockState(), periodResult: null }
     this.countdownUntil = this.now() + COUNTDOWN_MS
     this.emit()
   }
@@ -140,9 +148,10 @@ export class MatchEngine {
 
   private startPenalties(): void {
     if (!this.state.config) return
-    this.goalLockUntil = 0
-    this.state = { ...this.state, period: 'PENALTIES', status: 'PENALTIES', goalInputLocked: false, goalLockRemainingMs: 0,
+    this.completedTimeSeconds += this.state.elapsedSeconds
+    this.state = { ...this.state, elapsedSeconds: 0, period: 'PENALTIES', status: 'PENALTIES', ...this.goalLockState(),
       penalty: { whiteGoals: 0, blueGoals: 0, whiteAttempts: 0, blueAttempts: 0, suddenDeath: false } }
+    this.record('period_start')
     this.emit()
   }
 
@@ -153,10 +162,13 @@ export class MatchEngine {
     if (!white && !blue) return
     const isGoal = event.endsWith('_GOL')
     const penalty: PenaltyState = { ...this.state.penalty }
+    if (white && penalty.whiteAttempts !== penalty.blueAttempts) return
+    if (blue && penalty.blueAttempts >= penalty.whiteAttempts) return
     if (white) { penalty.whiteAttempts += 1; if (isGoal) penalty.whiteGoals += 1 }
     if (blue) { penalty.blueAttempts += 1; if (isGoal) penalty.blueGoals += 1 }
     if (penalty.whiteAttempts >= 5 && penalty.blueAttempts >= 5 && penalty.whiteGoals === penalty.blueGoals) penalty.suddenDeath = true
     this.state = { ...this.state, penalty }
+    this.record('penalty', white ? 'WHITE' : 'BLUE', { whiteAttempts: penalty.whiteAttempts, blueAttempts: penalty.blueAttempts, whiteGoals: penalty.whiteGoals, blueGoals: penalty.blueGoals }, isGoal)
     this.emit()
     if (this.penaltyIsDecided(penalty)) this.finishMatch()
   }
@@ -165,22 +177,57 @@ export class MatchEngine {
     if (penalty.whiteAttempts < 5 || penalty.blueAttempts < 5) {
       return penalty.whiteGoals > penalty.blueGoals + 5 - penalty.blueAttempts || penalty.blueGoals > penalty.whiteGoals + 5 - penalty.whiteAttempts
     }
-    return penalty.suddenDeath && penalty.whiteAttempts === penalty.blueAttempts && penalty.whiteGoals !== penalty.blueGoals
+    return penalty.whiteAttempts === penalty.blueAttempts && penalty.whiteGoals !== penalty.blueGoals
   }
 
   private removeLatestTeamGoal(team: Team): void {
+    if (this.state.status !== 'PLAYING' && this.state.status !== 'PAUSED') return
     const index = this.state.goals.map((goal) => goal.team).lastIndexOf(team)
-    if (index < 0 || this.state.status === 'PENALTIES') return
+    if (index < 0) return
+    const removedId = this.state.goals[index].id
     const goals = this.state.goals.filter((_, goalIndex) => goalIndex !== index)
-    this.state = { ...this.state, whiteGoals: this.state.whiteGoals - (team === 'WHITE' ? 1 : 0), blueGoals: this.state.blueGoals - (team === 'BLUE' ? 1 : 0), goals, lastGoal: goals.at(-1) ?? null }
+    this.state = { ...this.state, whiteGoals: this.state.whiteGoals - (team === 'WHITE' ? 1 : 0), blueGoals: this.state.blueGoals - (team === 'BLUE' ? 1 : 0), goals, lastGoal: goals.at(-1) ?? null, ...this.goalLockState(this.state.status === 'PAUSED') }
+    this.record('score_correction', team, { goalId: removedId, delta: -1 })
     this.emit()
   }
 
-  private undo(): void { const previous = this.undoStack.pop(); if (!previous) return; this.goalLockUntil = 0; this.state = previous; this.emit() }
-  private beginPeriod(now: number): void { this.clockStartedAt = now; this.state = { ...this.state, status: 'PLAYING', countdownValue: null, goalInputLocked: false }; this.emit() }
-  private finishMatch(): void { this.goalLockUntil = 0; this.state = { ...this.state, status: 'MATCH_END', goalInputLocked: true, goalLockRemainingMs: 0 }; this.emit() }
-  private snapshot(): MatchState { return { ...this.state, goals: [...this.state.goals], penalty: this.state.penalty ? { ...this.state.penalty } : null } }
-  private createIdleState(): MatchState { return { status: 'IDLE', period: 'FIRST_HALF', config: null, whiteGoals: 0, blueGoals: 0, remainingSeconds: 0, periodInitialSeconds: 0, countdownValue: null, goalInputLocked: false, goalLockRemainingMs: 0, goals: [], lastGoal: null, penalty: null, periodResult: null } }
+  private undo(): void {
+    if (!['PLAYING', 'PAUSED', 'PERIOD_END', 'MATCH_END'].includes(this.state.status) || this.state.period === 'PENALTIES') return
+    const goal = this.state.goals.at(-1)
+    if (!goal || goal.period !== this.state.period) return
+    const current = this.state
+    if (current.status === 'PERIOD_END' || current.status === 'MATCH_END') {
+      this.clockStartedAt = this.now() - current.elapsedSeconds * 1_000
+    }
+    const goals = current.goals.slice(0, -1)
+    this.state = { ...current, goals, lastGoal: goals.at(-1) ?? null,
+      whiteGoals: current.whiteGoals - (goal.team === 'WHITE' ? 1 : 0), blueGoals: current.blueGoals - (goal.team === 'BLUE' ? 1 : 0),
+      status: current.status === 'PAUSED' ? 'PAUSED' : 'PLAYING', ...this.goalLockState(current.status === 'PAUSED'), finishedAt: null }
+    this.record('undo', goal.team, { goalId: goal.id })
+    this.emit()
+  }
+  private beginPeriod(now: number): void {
+    this.clockStartedAt = now
+    this.state = { ...this.state, status: 'PLAYING', countdownValue: null, ...this.goalLockState(false, now) }
+    this.record(this.state.period === 'EXTRA_TIME' ? 'extra_time_start' : 'period_start')
+    this.emit()
+  }
+  private finishMatch(): void {
+    this.state = { ...this.state, status: 'MATCH_END', finishedAt: new Date(this.now()).toISOString(), ...this.goalLockState(true) }
+    this.record('match_end')
+    this.emit()
+  }
+  /** Corrections and period transitions preserve the accepted goal's deadline. */
+  private goalLockState(blocked = false, now = this.now()): Pick<MatchState, 'goalInputLocked' | 'goalLockRemainingMs'> {
+    const goalLockRemainingMs = Math.max(0, this.goalLockUntil - now)
+    return { goalInputLocked: blocked || goalLockRemainingMs > 0, goalLockRemainingMs }
+  }
+  private record(eventType: TimelineEventType, team: Team | null = null, metadata: Record<string, string | number | boolean | null> = {}, penaltyScored: boolean | null = null): void {
+    this.state = { ...this.state, events: [...this.state.events, { sequence: this.state.events.length + 1, eventType, team,
+      period: this.state.period, matchTimeSeconds: this.completedTimeSeconds + this.state.elapsedSeconds, periodTimeSeconds: this.state.elapsedSeconds,
+      whiteScore: this.state.whiteGoals, blueScore: this.state.blueGoals, penaltyScored, occurredAt: new Date(this.now()).toISOString(), metadata }] }
+  }
+  private createIdleState(): MatchState { return { startedAt: null, finishedAt: null, events: [], elapsedSeconds: 0, status: 'IDLE', period: 'FIRST_HALF', config: null, whiteGoals: 0, blueGoals: 0, remainingSeconds: 0, periodInitialSeconds: 0, countdownValue: null, goalInputLocked: false, goalLockRemainingMs: 0, goals: [], lastGoal: null, penalty: null, periodResult: null } }
   private formatTime(seconds: number): string { return `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}` }
   private emit(): void { this.listeners.forEach((listener) => listener(this.state)) }
 }

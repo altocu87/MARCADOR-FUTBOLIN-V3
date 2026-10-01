@@ -21,6 +21,10 @@ secrets.json
 # Vercel
 .vercel/
 
+# Caché local de la CLI de Supabase (las migraciones sí se versionan)
+supabase/.temp/
+supabase/.branches/
+
 # Registros, cachés y archivos temporales
 *.log
 npm-debug.log*

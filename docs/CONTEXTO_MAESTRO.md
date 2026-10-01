@@ -253,6 +253,8 @@ Esta regla pertenece al MATCH ENGINE. NO debe depender únicamente de deshabilit
 
 Todas las fuentes de gol deben acabar pasando por la misma validación central.
 
+Implementación revisada el 2026-10-01: el plazo del gol aceptado se conserva al deshacer, corregir, pausar/continuar y cambiar de parte/prórroga, aunque se salte la cuenta atrás. No hay excepción de desbloqueo por esas acciones. Una nueva partida reinicia su propio estado. Ver la evidencia y el estado de publicación en ESTADO_ACTUAL.md.
+
 ## 15. EFECTOS DE GOL
 
 Actualmente se definieron/implementaron al menos:
@@ -1201,6 +1203,8 @@ Durante partido: seguir local. Al finalizar: intentar guardar.
 Si falla: mostrar aviso, mantener copia pendiente si es viable, permitir reintentar.
 
 No perder el resultado silenciosamente.
+
+Refuerzo del coordinador web, 2026-10-01: cada intento de guardado tiene un límite de diez segundos. Si la petición no responde, conserva el agregado local y permite continuar/reintentar. Las respuestas tardías se recuperan con el mismo ID mediante guardado idempotente, sin retirar otros partidos pendientes. No sustituye un backup ni la futura recuperación de partidas en curso.
 
 ## 75. TYPESCRIPT
 
