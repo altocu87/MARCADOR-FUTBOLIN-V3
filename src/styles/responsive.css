@@ -1,0 +1,302 @@
+/* Physical mode keeps global.css's original measurements. Web styles are scoped. */
+.app-header { min-height: 0; }
+.app-header > .top-menu { height: 100%; }
+.app-brand, .menu-icon { display: none; }
+.display-settings { padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid #334f70; }
+.display-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.display-picker button[aria-pressed="true"] { border-color: #77e6ff; background: #164c71; color: #fff; }
+.display-settings p { margin-bottom: 0; }
+
+.canvas-viewport.adaptive-viewport {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: #070d18;
+}
+.fixed-canvas.adaptive-canvas {
+  width: min(100%, 1600px);
+  height: min(100%, 1000px);
+  transform: none;
+  container: application / size;
+  box-shadow: 0 0 100px #0008;
+}
+.adaptive-canvas .application-shell {
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: radial-gradient(ellipse at 100% 0, #15375455, transparent 55%), #0a1220;
+}
+.adaptive-canvas .app-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 36px;
+  padding: 16px clamp(16px, 3cqw, 48px);
+  border-bottom: 1px solid #26384a;
+  background: #0d1827;
+}
+.adaptive-canvas .app-brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.adaptive-canvas .app-brand > span:last-of-type { display: grid; gap: 3px; }
+.adaptive-canvas .app-brand b { color: #829bb4; font-size: 10px; letter-spacing: 3px; }
+.adaptive-canvas .app-brand strong { font-size: 18px; letter-spacing: .6px; white-space: nowrap; }
+.adaptive-canvas .app-brand small { display: none; color: #7591ad; font-size: 9px; letter-spacing: 1px; }
+.adaptive-canvas .brand-mark { width: 38px; height: 38px; border: 1px solid #39728d; border-radius: 11px; display: flex; align-items: center; justify-content: center; gap: 4px; background: #103349; box-shadow: 0 0 20px #40dfff15; }
+.adaptive-canvas .brand-mark i { width: 8px; height: 19px; border: 2px solid #effaff; border-radius: 3px; }
+.adaptive-canvas .brand-mark i:last-child { border-color: #60d6ff; }
+.adaptive-canvas .top-menu { padding: 0; gap: 8px; border: 0; align-items: stretch; }
+.adaptive-canvas .menu-button { min-width: 0; min-height: 52px; border: 1px solid transparent; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 9px; font-size: 12px; padding: 8px; }
+.adaptive-canvas .menu-button.is-active { border-color: #33799b; color: #98eeff; background: #12364c; box-shadow: inset 0 -2px #68ddf7; }
+.adaptive-canvas .menu-button:focus-visible { outline: 2px solid #8beaff; outline-offset: -3px; }
+.adaptive-canvas .menu-icon { display: block; width: 20px; height: 20px; flex-shrink: 0; }
+.adaptive-canvas .app-content { padding: clamp(12px, 2.5cqh, 28px) clamp(16px, 3cqw, 48px); }
+.adaptive-canvas .system-status { padding: 8px 16px; min-height: 38px; flex-wrap: wrap; font-size: 10px; background: #0c1727; letter-spacing: .4px; }
+.adaptive-canvas .system-status button { min-height: 44px; font-size: 11px; }
+.adaptive-canvas .system-status .status-warning { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.adaptive-canvas .screen-stack { min-height: 0; gap: clamp(12px, 2.5cqh, 28px); overflow-y: auto; overscroll-behavior: contain; }
+.adaptive-canvas .screen-heading, .adaptive-canvas .screen-actions { flex-shrink: 0; }
+.adaptive-canvas .screen-heading h1, .adaptive-canvas .result-screen h1 { font-size: clamp(23px, 3.5cqw, 44px); line-height: 1.12; letter-spacing: -.5px; }
+.adaptive-canvas .screen-heading p { font-size: 14px; line-height: 1.45; }
+.adaptive-canvas .eyebrow { font-size: 11px !important; margin-bottom: 8px !important; letter-spacing: 2px; }
+
+/* Mode cards: three identities, same accessible action. No downloaded assets. */
+.adaptive-canvas .mode-grid { flex: 1; min-height: 0; gap: clamp(12px, 2cqw, 24px); }
+.adaptive-canvas .mode-card {
+  --mode-accent: #5ee2ef;
+  position: relative;
+  overflow: hidden;
+  min-height: 210px;
+  padding: clamp(18px, 2.5cqw, 36px);
+  border-color: color-mix(in srgb, var(--mode-accent) 25%, #26354a);
+  border-radius: 18px;
+  background: radial-gradient(ellipse at top right, color-mix(in srgb, var(--mode-accent) 13%, transparent), transparent 70%), #101e30;
+  gap: 16px;
+}
+.adaptive-canvas .mode-chaos { --mode-accent: #c89aff; }
+.adaptive-canvas .mode-ranked { --mode-accent: #ffd27c; }
+.adaptive-canvas .mode-card::after { content: ''; position: absolute; bottom: -42px; right: -34px; width: 160px; height: 160px; border: 1px solid var(--mode-accent); border-radius: 50%; box-shadow: 0 0 0 25px #ffffff03, 0 0 0 50px #ffffff02; opacity: .18; pointer-events: none; }
+.adaptive-canvas .mode-card > * { position: relative; z-index: 1; }
+.adaptive-canvas .mode-card:hover { border-color: var(--mode-accent); box-shadow: 0 10px 35px #0005; }
+.adaptive-canvas .mode-card:focus-visible { outline: 2px solid var(--mode-accent); outline-offset: -4px; }
+.adaptive-canvas .mode-visual { margin: 0 0 auto; width: 60px; height: 60px; border-radius: 16px; color: var(--mode-accent); background: color-mix(in srgb, var(--mode-accent) 12%, #142134); border: 1px solid color-mix(in srgb, var(--mode-accent) 25%, transparent); box-shadow: none; }
+.adaptive-canvas .mode-card strong { font-size: clamp(19px, 2.2cqw, 30px); max-width: 15ch; line-height: 1.12; letter-spacing: -.4px; }
+.adaptive-canvas .mode-card small { font-size: 14px; line-height: 1.5; margin: 0; max-width: 26ch; }
+.adaptive-canvas .mode-action { color: var(--mode-accent); margin-top: auto; padding-top: 12px; font-size: 11px; }
+
+/* Configuration and player selection. Overflow stays inside the application. */
+.adaptive-canvas .choice-button { min-height: 88px; font-size: 16px; border-radius: 12px; }
+.adaptive-canvas .choice-button small { font-size: 12px; line-height: 1.4; }
+.adaptive-canvas .setting-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.adaptive-canvas .setting-row > :only-child { grid-column: 1 / -1; }
+.adaptive-canvas .stepper { min-width: 0; padding: 16px 8px; background: #112033; border: 1px solid #283e57; border-radius: 12px; }
+.adaptive-canvas .stepper > span { display: block; min-height: 28px; font-size: 12px; letter-spacing: .1px; }
+.adaptive-canvas .stepper > div { gap: clamp(6px, 1.5cqw, 20px); }
+.adaptive-canvas .stepper button { flex-shrink: 0; width: 48px; height: 48px; }
+.adaptive-canvas .stepper strong { min-width: 0; font-size: clamp(30px, 5cqw, 60px); }
+.adaptive-canvas .stepper strong small { display: block; margin: 4px 0 0; font-size: 10px; }
+.adaptive-canvas .primary-action, .adaptive-canvas .secondary-action { min-height: 48px; font-size: 13px; padding: 10px 18px; }
+.adaptive-canvas .screen-actions { gap: 12px; }
+.adaptive-canvas .player-selection { overflow: hidden; }
+.adaptive-canvas .team-slots { flex-shrink: 0; }
+.adaptive-canvas .team-slots > span { font-size: 11px; padding: 10px; }
+.adaptive-canvas .team-slots b { font-size: 14px; margin-top: 4px; }
+.adaptive-canvas .selection-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.adaptive-canvas .selection-grid .player-card { min-height: 156px; padding: 12px; }
+.adaptive-canvas .selection-grid .player-avatar { margin-top: 18px; width: 44px; height: 44px; }
+.adaptive-canvas .player-card strong { font-size: 15px; text-align: center; }
+.adaptive-canvas .player-card small { font-size: 11px; }
+
+/* Live match: white stays left, blue stays right, scores are the goal buttons. */
+.adaptive-canvas .match-board { min-height: 0; gap: 14px; overflow-y: auto; overscroll-behavior: contain; }
+.adaptive-canvas .match-meta { font-size: 12px; flex-shrink: 0; }
+.adaptive-canvas .score-layout { min-height: 130px; grid-template-columns: minmax(0, 1fr) clamp(120px, 16cqw, 220px) minmax(0, 1fr); gap: clamp(12px, 2cqw, 28px); align-items: stretch; }
+.adaptive-canvas .giant-score { min-height: 130px; height: 100%; min-width: 0; border-radius: 18px; gap: 14px; overflow: hidden; }
+.adaptive-canvas .giant-score span { font-size: clamp(13px, 1.5cqw, 20px); }
+.adaptive-canvas .giant-score strong { font-size: calc(clamp(64px, min(24cqw, 36cqh), 360px) / var(--score-fit, 1)); letter-spacing: -.08em; line-height: 1; font-variant-numeric: tabular-nums; }
+.adaptive-canvas .giant-score small { margin: 0; font-size: 10px; letter-spacing: .7px; }
+.adaptive-canvas .clock-panel { align-self: center; min-height: 104px; }
+.adaptive-canvas .clock-panel span { font-size: 11px; }
+.adaptive-canvas .clock-panel strong { font-size: clamp(28px, 4cqw, 46px); }
+.adaptive-canvas .clock-panel small { font-size: 9px; }
+.adaptive-canvas .match-bottom { min-height: 60px; flex-shrink: 0; gap: 12px; align-items: center; }
+.adaptive-canvas .team-line { min-width: 0; flex-wrap: wrap; gap: 8px; }
+.adaptive-canvas .player-mini { min-width: 0; max-width: 100%; font-size: 11px; }
+.adaptive-canvas .player-mini span { max-width: 14cqw; }
+.adaptive-canvas .player-mini.empty { display: none; }
+.adaptive-canvas .minus-score { min-width: 44px; min-height: 44px; border-color: #b96365; color: #ffb5b8; background: #3f222b; }
+.adaptive-canvas .board-controls { gap: 8px; }
+.adaptive-canvas .board-controls button { min-height: 48px; font-size: 12px; padding: 8px 14px; }
+.adaptive-canvas .countdown-overlay strong { font-size: min(50cqw, 50cqh); }
+.adaptive-canvas .pause-overlay { font-size: clamp(32px, 8cqw, 80px); }
+.adaptive-canvas .pause-overlay button { min-height: 48px; font-size: 16px; }
+.adaptive-canvas .goal-effect b { font-size: clamp(48px, 12cqw, 130px); }
+.adaptive-canvas .developer-controls summary { min-height: 28px; padding: 6px; }
+.adaptive-canvas .developer-controls > div { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.adaptive-canvas .developer-controls button { min-height: 44px; font-size: 10px; }
+
+/* Account, players, history, pending queue and recovery use the same visual scale. */
+.adaptive-canvas .data-screen { gap: 12px; }
+.adaptive-canvas .data-heading h1 { font-size: clamp(23px, 3cqw, 34px); line-height: 1.15; overflow-wrap: anywhere; }
+.adaptive-canvas .data-heading > button, .adaptive-canvas .data-heading > div { flex-shrink: 0; }
+.adaptive-canvas .data-screen button { min-height: 44px; font-size: 12px; }
+.adaptive-canvas .data-screen input { min-height: 48px; font-size: 16px; }
+.adaptive-canvas .settings-grid { overflow-y: auto; align-content: start; align-items: start; grid-auto-rows: max-content; }
+.adaptive-canvas .data-panel { padding: clamp(16px, 2cqw, 28px); border-radius: 14px; }
+.adaptive-canvas .data-panel h2, .adaptive-canvas .player-editor h2 { font-size: 16px; }
+.adaptive-canvas .data-panel p { font-size: 14px; }
+.adaptive-canvas .system-panel { overflow: visible; }
+.adaptive-canvas .offline-summary small { font-size: 12px; line-height: 1.5; }
+.adaptive-canvas .player-list-row { padding: 14px; gap: 12px; }
+.adaptive-canvas .player-list-row > span { font-size: 16px; }
+.adaptive-canvas .player-list-row small { font-size: 12px; }
+.adaptive-canvas .player-editor { width: 100%; max-height: 100%; overflow-y: auto; margin: 0; flex-shrink: 1; padding: 20px; }
+.adaptive-canvas .player-editor label { font-size: 14px; }
+.adaptive-canvas .notice { font-size: 12px; line-height: 1.45; max-height: 30%; overflow-y: auto; padding: 10px 12px; }
+.adaptive-canvas .empty-state { font-size: 16px; text-align: center; line-height: 1.5; }
+.adaptive-canvas .history-list button { padding: 16px; border-radius: 12px; gap: 8px; }
+.adaptive-canvas .history-list span, .adaptive-canvas .history-list small { font-size: 13px; overflow-wrap: anywhere; }
+.adaptive-canvas .history-list b { font-size: 18px; }
+.adaptive-canvas .history-summary { flex-shrink: 0; max-height: 35%; overflow-y: auto; padding: 16px; gap: 8px; }
+.adaptive-canvas .history-summary b { font-size: 22px; }
+.adaptive-canvas .history-summary span { font-size: 13px; overflow-wrap: anywhere; }
+.adaptive-canvas .event-list > div { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) 52px; font-size: 13px; padding: 14px 8px; align-items: center; overflow-wrap: anywhere; }
+.adaptive-canvas .result-screen, .adaptive-canvas .penalty-screen { min-height: 0; gap: 16px; overflow-y: auto; overscroll-behavior: contain; }
+.adaptive-canvas .result-screen { justify-content: safe center; }
+.adaptive-canvas .penalty-screen { justify-content: safe center; }
+.adaptive-canvas .result-screen > * { flex-shrink: 0; }
+.adaptive-canvas .result-score { gap: 12px; margin: 20px 0; font-size: 14px; }
+.adaptive-canvas .result-score b { font-size: clamp(44px, 9cqw, 110px); margin: 0 6px; }
+.adaptive-canvas .result-score span { display: flex; align-items: center; gap: 8px; }
+.adaptive-canvas .result-summary, .adaptive-canvas .penalty-summary { font-size: 14px; line-height: 1.5; margin: 0; }
+.adaptive-canvas .result-actions { gap: 12px; }
+.adaptive-canvas .recovery-players { max-height: 80px; }
+.adaptive-canvas .recovery-screen small { font-size: 12px; line-height: 1.5; }
+.adaptive-canvas .penalty-score { grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); gap: 12px; }
+.adaptive-canvas .penalty-column { min-width: 0; gap: 12px; padding: 20px 12px; }
+.adaptive-canvas .penalty-column strong { font-size: clamp(64px, 12cqw, 150px); }
+.adaptive-canvas .penalty-column small { font-size: 11px; }
+.adaptive-canvas .penalty-column button { min-width: 0; min-height: 48px; font-size: 13px; padding: 8px 14px; }
+.adaptive-canvas .placeholder-screen p { font-size: 16px; line-height: 1.5; }
+
+@container application (max-width: 1000px) {
+  .adaptive-canvas .app-header { grid-template-columns: 1fr; gap: 12px; padding: 12px 20px; }
+  .adaptive-canvas .app-brand small { display: block; margin-left: auto; }
+  .adaptive-canvas .menu-button { min-height: 50px; }
+  .adaptive-canvas .mode-card { padding: 20px; }
+}
+@container application (orientation: portrait) and (max-width: 1000px) {
+  .adaptive-canvas .mode-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, minmax(150px, 1fr)); }
+  .adaptive-canvas .mode-card { padding: 24px 24px 24px 120px; justify-content: center; }
+  .adaptive-canvas .mode-visual { position: absolute; left: 28px; top: 28px; margin: 0; }
+  .adaptive-canvas .mode-card strong { max-width: none; font-size: 28px; }
+  .adaptive-canvas .mode-card small { max-width: none; font-size: 15px; }
+  .adaptive-canvas .mode-action { margin: 0; }
+}
+@container application (max-width: 620px) {
+  .adaptive-canvas .app-header { gap: 10px; padding: 12px 12px 8px; }
+  .adaptive-canvas .menu-button { flex-direction: column; gap: 5px; min-height: 62px; font-size: 10px; line-height: 1.2; padding: 6px 2px; }
+  .adaptive-canvas .app-content { padding: 20px 16px; }
+  .adaptive-canvas .screen-heading p { font-size: 13px; }
+  .adaptive-canvas .mode-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, minmax(136px, 1fr)); gap: 12px; }
+  .adaptive-canvas .mode-card { min-height: 136px; padding: 18px 18px 18px 86px; justify-content: center; gap: 8px; }
+  .adaptive-canvas .mode-visual { position: absolute; left: 18px; top: 20px; width: 48px; height: 48px; border-radius: 12px; }
+  .adaptive-canvas .mode-card strong { font-size: 20px; max-width: none; }
+  .adaptive-canvas .mode-card small { font-size: 13px; max-width: none; }
+  .adaptive-canvas .mode-action { font-size: 10px; padding-top: 0; margin: 0; }
+  .adaptive-canvas .condition-options { grid-template-columns: 1fr; gap: 8px; }
+  .adaptive-canvas .choice-button { min-height: 66px; padding: 10px 14px; text-align: left; font-size: 14px; }
+  .adaptive-canvas .choice-button small { font-size: 12px; margin-top: 4px; }
+  .adaptive-canvas .setting-row { gap: 8px; }
+  .adaptive-canvas .stepper { padding: 12px 6px; }
+  .adaptive-canvas .stepper > span { font-size: 10px; }
+  .adaptive-canvas .stepper > div { gap: 6px; }
+  .adaptive-canvas .stepper button { width: 44px; height: 44px; }
+  .adaptive-canvas .screen-actions { gap: 8px; }
+  .adaptive-canvas .screen-actions .primary-action { flex: 1; padding: 10px 8px; font-size: 12px; }
+  .adaptive-canvas .screen-actions .secondary-action { padding: 10px 12px; font-size: 12px; }
+  .adaptive-canvas .team-slots { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .adaptive-canvas .selection-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .adaptive-canvas .selection-grid .player-card { min-height: 138px; }
+  .adaptive-canvas .score-layout { min-height: 232px; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto minmax(0, 1fr); gap: 14px; }
+  .adaptive-canvas .clock-panel { grid-column: 1 / -1; grid-row: 1; justify-self: center; width: 150px; min-height: 88px; }
+  .adaptive-canvas .clock-panel strong { font-size: 34px; }
+  .adaptive-canvas .giant-score { gap: 12px; }
+  .adaptive-canvas .giant-score strong { font-size: calc(min(34cqw, 34cqh) / var(--score-fit, 1)); }
+  .adaptive-canvas .match-meta { font-size: 10px; letter-spacing: .4px; }
+  .adaptive-canvas .match-bottom { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto; gap: 16px 12px; }
+  .adaptive-canvas .white-line { grid-column: 1; grid-row: 1; }
+  .adaptive-canvas .blue-line { grid-column: 2; grid-row: 1; }
+  .adaptive-canvas .board-controls { grid-column: 1 / -1; grid-row: 2; }
+  .adaptive-canvas .board-controls button { flex: 1; min-height: 52px; }
+  .adaptive-canvas .player-mini span { max-width: 22cqw; }
+  .adaptive-canvas .system-status { padding: 10px 12px; font-size: 9px; }
+  .adaptive-canvas .settings-grid { grid-template-columns: 1fr; gap: 14px; }
+  .adaptive-canvas .data-heading { gap: 8px; flex-wrap: wrap; }
+  .adaptive-canvas .data-heading h1 { font-size: 23px; flex: 1; }
+  .adaptive-canvas .data-heading > div { width: 100%; }
+  .adaptive-canvas .data-heading > div button { flex: 1; }
+  .adaptive-canvas .player-list-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .adaptive-canvas .player-list-row > span { grid-column: 1 / -1; }
+  .adaptive-canvas .player-list-row button { padding: 6px; font-size: 10px; }
+  .adaptive-canvas .player-editor { grid-template-columns: 1fr; padding: 16px; }
+  .adaptive-canvas .confirm-panel { flex-wrap: wrap; font-size: 13px; }
+  .adaptive-canvas .result-score { gap: 6px; }
+  .adaptive-canvas .result-score span { flex-direction: column; font-size: 12px; }
+  .adaptive-canvas .result-score span b { order: 1; }
+  .adaptive-canvas .result-actions { flex-direction: column; width: 100%; }
+  .adaptive-canvas .penalty-score { grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); gap: 8px; }
+  .adaptive-canvas .penalty-column { padding: 16px 8px; }
+  .adaptive-canvas .penalty-column div { flex-direction: column; width: 100%; }
+  .adaptive-canvas .penalty-column button { width: 100%; }
+}
+
+/* Landscape phones, physical-sized browsers and on-screen keyboards. */
+@container application (max-height: 580px) {
+  .adaptive-canvas .app-brand { display: none; }
+  .adaptive-canvas .app-header { grid-template-columns: 1fr; padding: 6px 12px; }
+  .adaptive-canvas .menu-button { min-height: 44px; flex-direction: row; font-size: 11px; }
+  .adaptive-canvas .app-content { padding: 12px 20px; }
+  .adaptive-canvas .screen-stack { gap: 12px; }
+  .adaptive-canvas .screen-heading h1, .adaptive-canvas .result-screen h1 { font-size: 25px; }
+  .adaptive-canvas .screen-heading p { margin-top: 4px; }
+  .adaptive-canvas .mode-card { min-height: 180px; gap: 10px; padding: 18px; }
+  .adaptive-canvas .mode-visual { width: 44px; height: 44px; margin: 0; }
+  .adaptive-canvas .mode-card strong { font-size: 19px; }
+  .adaptive-canvas .mode-card small { font-size: 12px; }
+  .adaptive-canvas .choice-button { min-height: 70px; padding: 10px; font-size: 14px; }
+  .adaptive-canvas .stepper { padding: 8px; }
+  .adaptive-canvas .stepper > span { min-height: 0; }
+  .adaptive-canvas .stepper strong { font-size: 32px; }
+  .adaptive-canvas .stepper strong small { display: inline; margin-left: 5px; }
+  .adaptive-canvas .match-board { gap: 8px; }
+  .adaptive-canvas .giant-score { gap: 4px; }
+  .adaptive-canvas .giant-score strong { font-size: calc(min(24cqw, 30cqh) / var(--score-fit, 1)); }
+  .adaptive-canvas .giant-score small { font-size: 9px; }
+  .adaptive-canvas .match-bottom { min-height: 48px; }
+  .adaptive-canvas .result-screen, .adaptive-canvas .penalty-screen { gap: 8px; }
+  .adaptive-canvas .result-score { margin: 4px 0; }
+  .adaptive-canvas .result-score b { font-size: 50px; }
+  .adaptive-canvas .penalty-column { gap: 5px; padding: 10px; }
+  .adaptive-canvas .penalty-column strong { font-size: 64px; }
+  .adaptive-canvas .data-panel { padding: 16px; }
+}
+@container application (max-width: 620px) and (max-height: 580px) {
+  .adaptive-canvas .menu-icon { width: 16px; height: 16px; }
+  .adaptive-canvas .menu-button { font-size: 9px; gap: 4px; }
+  .adaptive-canvas .mode-card { padding: 12px 12px 12px 74px; min-height: 120px; }
+  .adaptive-canvas .mode-visual { left: 14px; top: 16px; }
+  .adaptive-canvas .score-layout { min-height: 198px; gap: 8px; }
+  .adaptive-canvas .clock-panel { min-height: 60px; width: 126px; }
+  .adaptive-canvas .clock-panel strong { font-size: 26px; }
+  .adaptive-canvas .match-bottom { gap: 6px; }
+  .adaptive-canvas .board-controls button { min-height: 44px; }
+}
+@container application (max-width: 380px) {
+  .adaptive-canvas .stepper > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .adaptive-canvas .stepper strong { grid-column: 1 / -1; grid-row: 1; }
+  .adaptive-canvas .stepper button { grid-row: 2; justify-self: center; }
+  .adaptive-canvas .stepper strong small { display: inline; margin-left: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mode-card, .giant-score { transition: none; }
+  .goal-effect, .goal-effect * { animation-duration: .01ms !important; }
+  .goal-effect::before, .goal-effect::after { animation-duration: .01ms !important; }
+}
+.countdown-overlay { border: 0; padding: 0; cursor: pointer; }
+.physical-canvas .giant-score strong { font-size: calc(130px / var(--score-fit, 1)); }

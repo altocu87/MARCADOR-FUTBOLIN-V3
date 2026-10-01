@@ -15,7 +15,7 @@ No ejecutar toda la hoja de ruta por el mero hecho de leerla. La tarea autorizad
 - Identificar entorno real (local o nube), rama, commit, estado del árbol y remoto. No asumir rutas Windows ni acceso a hardware en la nube.
 - Consultar/sincronizar `origin/main` de forma segura. Con cambios locales, inspeccionar divergencias antes de integrar; no resetear, sobrescribir, descartar ni hacer stash automático de trabajo ajeno.
 - Revisar código e historial reales. Si los documentos contradicen el código, buscar decisiones posteriores antes de cambiarlo. No rehacer una integración que existe en otro checkout pendiente de publicación.
-- Preservar React/Vite/TypeScript/CSS, el lienzo lógico 800×480 y la separación UI/motor/entradas/persistencia.
+- Preservar React/Vite/TypeScript/CSS y la separación UI/motor/entradas/persistencia. Desde la decisión del 2026-10-01, la web es adaptable por defecto; conservar también la referencia física exacta 800×480 seleccionable en Ajustes. No volver a reducir toda la web a una imagen escalada.
 
 ## Reglas esenciales
 

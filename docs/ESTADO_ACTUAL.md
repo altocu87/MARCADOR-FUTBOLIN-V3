@@ -10,7 +10,7 @@
 - Último commit de código funcional en main comprobado: **b10b1df — Initial functional match simulator**; main contiene además el contexto documental 900e470.
 - Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**, persistencia/fiabilidad **eeb23b8**, recuperación activa **176d470** y PWA **917de97**, con push comprobado. Las actualizaciones documentales posteriores tienen sus propios commits; contrastar `git log`/referencias al retomar. No equivale a promoverla a main ni completar la fase B.
 - Entorno de esta implementación: **PC local Windows**, no Codex Cloud. Las instrucciones de nube del apartado 79 se aplican cuando se trabaje realmente allí.
-- Esta ficha describe persistencia/fiabilidad/recuperación de la rama de desarrollo y la ampliación PWA. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
+- Esta ficha describe persistencia/fiabilidad/recuperación, PWA y adaptación responsive de la rama de desarrollo. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
 
 ## Fases
 
@@ -31,7 +31,7 @@
 - Modo prueba ON por defecto, preferencia local; no guarda partidos/participantes/eventos ni los introduce en la cola local. Sin jugadores reales ofrece dos plazas de práctica solo en este modo. La gestión autenticada de jugadores sí es real.
 - Historial V1 dentro de RANKING: lista paginada de 20 y detalle de configuración, participantes, resultado y cronología. No hay cálculo de ranking.
 - Caché de jugadores y cola de resultados finalizados en localStorage, aisladas por proyecto/cuenta. Reintento manual y automático al reconectar con sesión verificada, fuera del partido activo/guardado. Ajustes incluye lista/detalle local de pendientes. Los goles no dependen de Internet.
-- Lienzo fijo 800×480, escalado proporcional en ventanas pequeñas y centrado en grandes. Corregido el recorte por dimensionamiento implícito de la cuadrícula.
+- Web adaptable por defecto: móvil vertical/horizontal, tablet y escritorio; controles táctiles, formularios/listas con scroll interno y área útil centrada de máximo 1600×1000. Referencia física 800×480 conservada y seleccionable en AJUSTES → GENERAL; escalada solo si no cabe. Cambio de vista/tamaño sin reiniciar el motor ni el partido.
 - Panel de simulación solo en desarrollo. No hay comunicaciones físicas ni firmware.
 - Corregido el desbloqueo prematuro al deshacer/cambiar de parte o prórroga: el motor conserva los tres segundos del último gol aceptado. Ocho regresiones verifican pantalla/adaptador directo, límite exacto, simulación de transiciones y rechazo sin eventos adicionales. Al deshacer desde un final, el reloj no incorpora el tiempo de descanso.
 - Guardado con límite de diez segundos: una petición colgada deja el resultado pendiente y libera el resumen. Pruebas de recarga, varios resultados, confirmaciones desordenadas/tardías y fallo de limpieza local.
@@ -59,6 +59,9 @@
 - `tooling/pwa.ts`, `tooling/service-worker.js`, `public/connection.json`: generación PWA y sonda excluida de caché.
 - `src/system/`, `src/app/usePendingQueue.ts`, `src/services/persistence/OfflineIdentityStore.ts`: conexión, instalación/estado offline, cola observable e identidad local mínima.
 - `src/ui/screens/PendingMatchesScreen.tsx`, `tests/offline.test.ts`, `docs/VERIFICACION_PWA.md`: panel local de resultados y verificación del worker/arranque offline.
+- `src/ui/layout/displayMode.ts`, `FixedCanvas.tsx`, `src/ui/components/DisplaySettings.tsx`: preferencia versionada, viewport visible, ambas vistas y selector.
+- `src/styles/responsive.css`, `TopMenu.tsx`, `MatchFlow.tsx`: presentación web, navegación accesible, cuenta atrás nativa y cifras ajustables. Las medidas originales de global.css siguen sirviendo a la vista física.
+- `tests/layout.test.tsx`, `docs/VERIFICACION_RESPONSIVE.md`: regresiones de presentación y evidencia visual. Vite separa React en un paquete estático que la PWA también precachea.
 
 ## Supabase ya aplicado — no repetir a ciegas
 
@@ -90,7 +93,8 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 - npm run test:engine: correcto.
 - npm run test:persistence y npm test: correctos.
 - npm run test:recovery: reloj, bloqueo, IDs anulados, estados, penaltis, corrupción, aislamiento, modo prueba y entrega del resultado sin duplicados.
-- npm run test:offline: plantilla real de worker, allowlist/privacidad, navegación offline, actualizaciones/cache incompleta, iconos, alcance de identidad, respuestas de conexión desordenadas y observadores de cola. npm test ejecuta los cuatro grupos.
+- npm run test:offline: plantilla real de worker, allowlist/privacidad, navegación offline, actualizaciones/cache incompleta, iconos, alcance de identidad, respuestas de conexión desordenadas y observadores de cola.
+- npm run test:layout: preferencia, escala física y navegación/selector/modalidades accesibles. npm test ejecuta cinco grupos; todos correctos tras el bloque responsive.
 - npm run build: TypeScript y Vite correctos.
 - npm audit: cero vulnerabilidades en la última ejecución.
 - Pruebas SQL en el proyecto real: RLS, cuentas, permisos, equipos/agregado, idempotencia, snapshot, restricciones de borrado, secuencia, modo prueba y rollback correctos. Fixtures íntegramente revertidos con ROLLBACK.
@@ -165,3 +169,11 @@ Cuatro grupos de tests, TypeScript/build y build aislado correctos. Verificado n
 Sin migraciones, costes, cuentas Auth, Vercel, firmware o competición nueva. Fase B sigue pendiente del recorrido autenticado real y promoción a main. Build normal dist excluye fixture; offline-test separado bajo tmp ignorado. Instalación física en móvil pendiente.
 
 Publicación comprobada: **917de97 — Add offline PWA shell and pending result synchronization** en origin/codex/reliability-offline-v1, rama sincronizada y árbol limpio tras el commit funcional. Referencia remota main permanece en 900e470. Pruebas/build/auditoría/secretos/diff revisados inmediatamente antes de publicar. No se abrió PR ni se desplegó. Esta anotación de publicación es documental y se versiona después del commit funcional.
+
+### 2026-10-01 — Aplicación web adaptable, referencia física conservada
+
+Petición explícita del propietario: adaptar menú y aplicación a cualquier tamaño. WEB ADAPTABLE pasa a ser la vista predeterminada; PANTALLA 800×480 sigue disponible en Ajustes, con preferencia local. Navegación con iconos/marca y cuatro acciones conservadas; tarjetas con tres identidades visuales; configuración, selección, partido, finales, penaltis, ajustes, jugadores, recuperación e historial/pendientes reorganizados por tamaño. Desplazamiento interno en espacios reducidos, sin scroll general ni aspect-ratio. Corregido solapamiento de paneles en Ajustes y jerarquía del resultado móvil.
+
+Cinco grupos de pruebas y builds normal/aislado correctos. TypeScript sin errores; separado paquete React para eliminar advertencia de tamaño, sin cambiar carga funcional ni caché privada. Verificación en navegador integrado entre 320×568 y 2560×1440, tablet 768×1024 y móvil horizontal 844×390; altura reducida de formulario 320×400 y fallback de partido 320×240. Partido 2v2 pausado conservó 1–0/reloj/participantes al redimensionar y cambiar ambas vistas; final 4–0 en prueba sin guardado. Fixture OFF: recuperación 1–0 tras recarga, penaltis 3–0, historial/detalle, partido 2–0 pendiente tras fallo simulado y sincronización posterior sin duplicar. Modo prueba restaurado ON y cola vacía.
+
+Build real sin sesión: formularios medidos, navegación y reapertura desde caché tras apagar el servidor. Estos recorridos no validan Auth ni escritura real en Supabase. No se modificaron MatchEngine, servicios de datos, migraciones, Vercel ni hardware. Fase B/prueba autenticada y promoción a main siguen pendientes. Evidencia y límites en VERIFICACION_RESPONSIVE.md. Publicación de este bloque se registra tras comprobar el push; consultar git log para la referencia exacta.

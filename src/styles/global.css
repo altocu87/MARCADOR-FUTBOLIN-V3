@@ -1,3 +1,4 @@
+@import './responsive.css';
 :root { font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #f3f7ff; background: #070b12; font-synthesis: none; }
 /* All measurements below live inside the original 800×480 logical canvas. */
 .player-mini span { max-width: 62px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

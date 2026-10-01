@@ -95,21 +95,30 @@ Mantener una arquitectura modular. No convertir el proyecto en un archivo gigant
 
 ## 4. RESOLUCIÓN Y CANVAS
 
-La resolución lógica MAESTRA es **800 × 480 píxeles**. Es la resolución de la pantalla física final.
+La referencia física MAESTRA sigue siendo **800 × 480 píxeles**, la resolución de la pantalla final.
 
-Todo el diseño principal debe caber realmente en 800×480.
+**Decisión posterior aprobada el 2026-10-01:** adaptar el menú y toda la aplicación web a móvil, tablet y escritorio. Reemplaza la restricción anterior de usar siempre un único lienzo fijo en la web, pero NO cambia la referencia de hardware ni las reglas del partido.
+
+Dos vistas, un mismo motor y datos:
+
+- WEB ADAPTABLE: predeterminada, layout fluido según ancho, altura y orientación. En móvil reorganiza tarjetas, reloj, controles y formularios; no reduce toda la interfaz mediante transform. En monitores grandes, área útil centrada con límites de 1600×1000 para conservar legibilidad.
+- PANTALLA 800×480: referencia física exacta, centrada a tamaño real en ventanas mayores, escalada proporcionalmente si no cabe. Sigue siendo necesario verificar todos los flujos a 800×480.
+- Selector en AJUSTES → GENERAL → VISTA DE PANTALLA. Preferencia local versionada, sin credenciales ni sincronización remota.
+- Cambiar vista, tamaño u orientación no reinicia el partido ni reemplaza el MatchEngine.
 
 REGLAS:
 
 - no scroll general de página;
 - no depender de CSS aspect-ratio para solucionar el layout;
-- diseñar realmente dentro de 800×480;
-- en pantallas mayores, centrar el canvas;
-- en pantallas menores, permitir escalado proporcional;
+- mantener una vista física realmente diseñada dentro de 800×480;
+- en la vista web, reorganizar el contenido para mantener controles legibles/táctiles;
+- en la vista física, centrar el canvas y escalarlo proporcionalmente solo si no cabe;
 - no cortar controles;
 - mantener áreas táctiles grandes.
 
 Los paneles internos pueden tener desplazamiento si es estrictamente necesario, pero nunca convertir la interfaz completa en una web vertical convencional.
+
+En alturas extremadamente pequeñas, los controles del partido pueden requerir scroll interno: es preferible a recortarlos o hacerlos diminutos. Considerar áreas seguras y viewport visible; no contrarrestar el zoom del usuario. Las pruebas emuladas no sustituyen la comprobación en dispositivos reales.
 
 ## 5. ESTILO VISUAL
 
@@ -149,6 +158,8 @@ Menú principal previsto:
 Indicador pequeño: ● SISTEMA ONLINE, con punto verde cuando corresponda.
 
 Torneo puede permanecer provisional hasta su fase específica.
+
+La vista web incorpora marca, iconos decorativos y navegación compacta para móvil/poca altura; conserva las cuatro opciones y sus acciones. La vista física conserva el menú original.
 
 ## 7. MODOS DE PARTIDO
 
@@ -1243,6 +1254,8 @@ Antes de dar una fase por terminada:
 Como mínimo npm run test:engine y npm run build, si esos scripts siguen existiendo.
 
 La rama de desarrollo incorpora npm run test:offline junto a motor, persistencia y recuperación en npm test. Verificar el service worker del build y reapertura con el servidor realmente apagado; una fixture con guardado simulado no sustituye esa prueba ni el recorrido Auth/Supabase real.
+
+Desde el bloque responsive, npm run test:layout verifica preferencia/escala física y marcado accesible del menú, selector y modalidades. npm test ejecuta cinco grupos. Verificar ambas vistas, móvil vertical/horizontal, tablet y escritorio, continuidad del estado al redimensionar, navegación real y ausencia de solapamientos. Evidencia en VERIFICACION_RESPONSIVE.md.
 
 ## 77. VERIFICACIÓN VISUAL
 

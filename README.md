@@ -28,6 +28,7 @@ npm run test:engine
 npm run test:persistence
 npm run test:recovery
 npm run test:offline
+npm run test:layout
 npm test
 npm run build
 npm run preview
@@ -50,9 +51,13 @@ Para reproducir fallos de guardado en esa fixture: `?save=offline` simula un rec
 
 No es la contraseña de la cuenta del panel Supabase: es un acceso propio al marcador. Si el correo de confirmación redirige a una URL no disponible, regresar al marcador e intentar iniciar sesión después de confirmar. Para un dominio definitivo, configurar Site URL y URLs de redirección en Supabase Auth; no desactivar la confirmación ni RLS.
 
-## Lienzo 800×480
+## Pantallas adaptables y referencia 800×480
 
-El espacio lógico es siempre 800×480, sin aspect-ratio. Se centra a tamaño real en ventanas mayores y se escala completo en menores. No hay scroll general: listas y cronologías se desplazan dentro de su panel. Funciona con pantalla táctil y ratón.
+La web utiliza **WEB ADAPTABLE** por defecto: menú, tarjetas, marcador, formularios e historial se reorganizan para móvil, tablet y escritorio, en ambas orientaciones. Área útil limitada a 1600×1000 y centrada en monitores mayores. No hay scroll general ni dependencia de aspect-ratio: listas, formularios y contenido que no cabe se desplazan dentro de su panel. Controles táctiles, ratón y teclado.
+
+En **AJUSTES → GENERAL → VISTA DE PANTALLA** puedes elegir **PANTALLA 800×480**: conserva la referencia física exacta, centrada sin ampliar y escalada proporcionalmente en ventanas menores. La elección se recuerda en este navegador. Cambiar vista o tamaño no reinicia el partido. A muy poca altura se permite scroll interno para conservar controles accesibles.
+
+Usa un navegador moderno con soporte de container queries. Verificación de tamaños emulados y límites en `docs/VERIFICACION_RESPONSIVE.md`; todavía falta probar en teléfonos físicos. React no se ejecutará directamente en el ESP32.
 
 ## Arquitectura
 

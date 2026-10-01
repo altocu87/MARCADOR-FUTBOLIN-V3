@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { FixedCanvas } from '../ui/layout/FixedCanvas'
+import { DISPLAY_MODE_KEY, parseDisplayMode, type DisplayMode } from '../ui/layout/displayMode'
+import { DisplaySettings } from '../ui/components/DisplaySettings'
 import { MatchEngine } from '../match-engine/MatchEngine'
 import type { MatchConfiguration, MatchMode } from '../match-engine/types'
 import { ScreenMatchInput } from '../inputs/ScreenMatchInput'
@@ -27,6 +29,9 @@ const browserStorage: KeyValueStorage = { getItem: key => localStorage.getItem(k
 const practicePlayers: Player[] = ['PRUEBA BLANCO', 'PRUEBA AZUL'].map((name, i) => ({ id: 'practice-' + i, name, nickname: null, photoUrl: null, active: true, level: 0 }))
 
 export function App({ services }: { services: ApplicationServices | null }) {
+  const [displayMode, setDisplayMode] = useState<DisplayMode>(() => {
+    try { return parseDisplayMode(localStorage.getItem(DISPLAY_MODE_KEY)) } catch { return 'adaptive' }
+  })
   const engine = useMemo(() => new MatchEngine(), [])
   const input = useMemo(() => new ScreenMatchInput(engine), [engine])
   const subscribe = useMemo(() => engine.subscribe.bind(engine), [engine])
@@ -160,7 +165,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
   }
   const selectable = activePlayers(data.players)
   const availablePlayers = selectable.length ? selectable : testMode ? practicePlayers : []
-  return <FixedCanvas><main className="application-shell" aria-label="Marcador Futbolín V3">
+  return <FixedCanvas mode={displayMode}><main className="application-shell" data-screen={screen} aria-label="Marcador Futbolín V3">
     <TopMenu items={menuItems} activeItem={activeMenu} onSelect={selectMenu} />
     <section className="app-content">
       {screen === 'new' && <NewMatchScreen onSelect={nextMode => { setMode(nextMode); setScreen('configuration') }} />}
@@ -168,7 +173,8 @@ export function App({ services }: { services: ApplicationServices | null }) {
       {screen === 'configuration' && <MatchConfigurationScreen mode={mode} onContinue={next => { setConfiguration(next); setScreen('players') }} onBack={() => setScreen('new')} />}
       {screen === 'players' && <PlayerSelectionScreen key={userId ?? 'practice'} availablePlayers={availablePlayers} testMode={testMode} onStart={start} onBack={() => setScreen('configuration')} />}
       {screen === 'match' && <MatchFlow state={state} engine={engine} input={input} players={players} onNewMatch={newMatch} saveMessage={saveMessage} canLeave={canLeave && !saving} onRetry={() => { if (!saving && run.current && finalDocument.current) void persist(run.current, finalDocument.current) }} />}
-      {screen === 'settings' && <SettingsScreen key={userId ?? 'guest'} services={services} user={data.user} players={data.players} protectedIds={protectedIds} testMode={testMode} onTestMode={value => { setTestMode(value); try { localStorage.setItem('marcador:test-mode:v1', String(value)) } catch { setNotice('Preferencia aplicada; no se pudo recordar localmente.') } }} refresh={data.refresh} pendingCount={pendingCount} onRetry={pending.retry} dataMessage={notice || pending.message || data.message} online={online && !data.localIdentity} onSignedOut={data.signedOut} syncBusy={pending.busy} onPending={() => setScreen('pending')} offline={offline} onCheck={() => void connection.monitor.check()} />}
+      {screen === 'settings' && <SettingsScreen key={userId ?? 'guest'} services={services} user={data.user} players={data.players} protectedIds={protectedIds} testMode={testMode} onTestMode={value => { setTestMode(value); try { localStorage.setItem('marcador:test-mode:v1', String(value)) } catch { setNotice('Preferencia aplicada; no se pudo recordar localmente.') } }} refresh={data.refresh} pendingCount={pendingCount} onRetry={pending.retry} dataMessage={notice || pending.message || data.message} online={online && !data.localIdentity} onSignedOut={data.signedOut} syncBusy={pending.busy} onPending={() => setScreen('pending')} offline={offline} onCheck={() => void connection.monitor.check()}
+        displaySettings={<DisplaySettings mode={displayMode} onChange={value => { setDisplayMode(value); try { localStorage.setItem(DISPLAY_MODE_KEY, value) } catch { setNotice('Vista aplicada; no se pudo recordar localmente.') } }} />} />}
       {screen === 'pending' && <PendingMatchesScreen documents={pending.documents} online={online && !data.localIdentity} busy={pending.busy} message={pending.message} onRetry={pending.retry} onBack={() => setScreen('settings')} />}
       {screen === 'history' && <HistoryScreen key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} online={online && !data.localIdentity} />}
       {screen === 'placeholder' && <div className="placeholder-screen"><span>PRÓXIMAMENTE</span><p>Torneos se implementará en otra fase.</p></div>}

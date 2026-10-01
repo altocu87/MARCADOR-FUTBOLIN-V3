@@ -1,3 +1,4 @@
+import React from 'react'
 import type { MatchMode } from '../../match-engine/types'
 
 const modes: { id: MatchMode; title: string; description: string; visual: string }[] = [
