@@ -136,6 +136,15 @@
 .adaptive-canvas .data-heading > button, .adaptive-canvas .data-heading > div { flex-shrink: 0; }
 .adaptive-canvas .data-screen button { min-height: 44px; font-size: 12px; }
 .adaptive-canvas .data-screen input { min-height: 48px; font-size: 16px; }
+.adaptive-canvas .statistics-note { font-size: 13px; }
+.adaptive-canvas .statistics-grid dd { font-size: clamp(26px, 4cqw, 46px); }
+@container (max-width: 580px) {
+  .adaptive-canvas .statistics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .adaptive-canvas .statistics-players { grid-template-columns: minmax(0, 1fr); }
+  .adaptive-canvas .profile-screen .data-heading { flex-wrap: wrap; }
+  .adaptive-canvas .profile-screen .data-heading h1 { flex-basis: 100%; }
+  .adaptive-canvas .profile-content .panel-toolbar { flex-wrap: wrap; }
+}
 .adaptive-canvas .settings-grid { overflow-y: auto; align-content: start; align-items: start; grid-auto-rows: max-content; }
 .adaptive-canvas .data-panel { padding: clamp(16px, 2cqw, 28px); border-radius: 14px; }
 .adaptive-canvas .data-panel h2, .adaptive-canvas .player-editor h2 { font-size: 16px; }

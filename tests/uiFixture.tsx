@@ -6,6 +6,8 @@ import { createRoot } from 'react-dom/client'
 import { App } from '../src/app/App'
 import type { ApplicationServices } from '../src/app/services'
 import type { MatchDocument, Player } from '../src/services/persistence/models'
+import { MatchEngine } from '../src/match-engine/MatchEngine'
+import { mapMatch } from '../src/services/persistence/mapMatch'
 import '../src/styles/global.css'
 
 let players: Player[] = ['BLANCO UNO', 'AZUL UNO', 'BLANCO DOS', 'AZUL DOS'].map((name, index) => ({
@@ -16,6 +18,30 @@ const matches = new Map<string, MatchDocument>()
 // ?save=offline rejects; ?save=hang never acknowledges; default succeeds.
 const saveMode = new URLSearchParams(window.location.search).get('save')
 const realNetwork = new URLSearchParams(window.location.search).get('network') === 'real'
+const statisticsMode = new URLSearchParams(window.location.search).get('statistics')
+// Built, isolated profile/pagination fixtures. No database writes.
+if (statisticsMode === 'seed') {
+  for (let i = 0; i < 25; i++) {
+    let now = Date.UTC(2026, 9, 1) + i * 180_000
+    const engine = new MatchEngine(() => now)
+    engine.createMatch({ mode: 'QUICK', victoryCondition: 'GOALS', goalLimit: 1, halfDurationMinutes: 1 })
+    engine.skipCountdown(); engine.dispatch('GOL_BLANCO'); engine.continueToNextPeriod(); engine.skipCountdown()
+    now += 3_000
+    engine.dispatch(i < 23 ? 'GOL_BLANCO' : 'GOL_AZUL'); engine.continueToNextPeriod()
+    if (i >= 23) {
+      engine.skipCountdown()
+      if (i === 23) { now += 3_000; engine.dispatch('GOL_AZUL') }
+      else {
+        now += 60_000; engine.tick(); engine.continueToNextPeriod()
+        for (let kick = 0; kick < 3; kick++) { engine.dispatch('PENALTI_BLANCO_FALLO'); engine.dispatch('PENALTI_AZUL_GOL') }
+      }
+    }
+    const id = `00000000-0000-4000-8000-${String(100 + i).padStart(12, '0')}`
+    matches.set(id, mapMatch(engine.getState(), players, id, false))
+  }
+  players[3].active = false
+  players.push({ ...players[0], id: '00000000-0000-4000-8000-000000000005', name: 'SIN PARTIDOS' })
+}
 async function requireNetwork() {
   if (!realNetwork) return
   const response = await fetch('/connection.json', { cache: 'no-store', signal: AbortSignal.timeout(2_000) })
@@ -44,7 +70,15 @@ const services: ApplicationServices = {
       if (saveMode === 'hang') await new Promise<void>(() => {})
       matches.set(document.match.id, structuredClone(document))
     },
-    async getMatches(offset = 0) { return [...matches.values()].reverse().slice(offset, offset + 20).map(doc => ({ ...doc.match, participants: doc.participants })) },
+    async getMatches(offset = 0, query = {}) {
+      await requireNetwork()
+      query.signal?.throwIfAborted()
+      if (statisticsMode === 'error' && query.playerId) throw new Error('Error de consulta simulado · No se han cargado estadísticas')
+      return [...matches.values()].map(doc => ({ ...doc.match, participants: doc.participants }))
+        .filter(m => !m.test_mode && (!query.playerId || m.participants.some(p => p.player_id === query.playerId)))
+        .filter(m => !query.before || m.finished_at < query.before.finishedAt || m.finished_at === query.before.finishedAt && m.id < query.before.id)
+        .sort((a, b) => b.finished_at.localeCompare(a.finished_at) || b.id.localeCompare(a.id)).slice(offset, offset + 20)
+    },
     async getMatchById(id) { const doc = matches.get(id); if (!doc) throw new Error('No encontrado'); return structuredClone(doc) },
   },
 }

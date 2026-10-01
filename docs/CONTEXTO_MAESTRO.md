@@ -435,6 +435,8 @@ Esto permite hacer pruebas sin contaminar datos reales.
 
 ## 25. PERFILES
 
+Decisión posterior del propietario, 2026-10-01: autoriza desarrollar en su totalidad el bloque de estadísticas básicas propuesto, con datos simulados mientras queda pendiente la comprobación real de fase B. Perfil básico e historial filtrado implementados: partidos, victorias, derrotas, empates, porcentaje y goles de su equipo a favor/en contra/diferencia. No es autorización de XP/ELO/niveles calculados, logros ni estadísticas avanzadas. El resto de este apartado sigue siendo hoja de ruta futura.
+
 Perfil futuro de jugador:
 
 - foto;
@@ -1137,6 +1139,8 @@ Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
 
+Actualización posterior, 2026-10-01: el propietario autoriza avanzar a estadísticas básicas/perfiles (primer bloque C), sin cerrar artificialmente B ni promover a main. Lecturas privadas desde resultados existentes, sin nuevas tablas ni contadores. Se excluyen prueba/pendientes, se deduplican IDs y se recorre el historial completo con cursor. Los penaltis deciden el ganador sin añadirse a goles del partido. XP/ELO y el resto de fases permanecen fuera del bloque. Ver ESTADO_ACTUAL.md y VERIFICACION_ESTADISTICAS.md.
+
 La siguiente gran fase prevista es PERSISTENCIA SUPABASE V1.
 
 Actualización de traspaso del 2026-10-01: esta fase ya tiene cliente/Auth, jugadores, repositorios, guardado transaccional, historial, cola offline, recuperación y PWA implementados en la rama de desarrollo. No es una orden de rehacerlos. Sigue abierta por la verificación autenticada navegador → Supabase y la revisión/promoción pendientes. Consultar ESTADO_ACTUAL.md para las referencias y bloqueos reales.
@@ -1264,6 +1268,8 @@ La rama de desarrollo incorpora npm run test:offline junto a motor, persistencia
 Desde el bloque responsive, npm run test:layout verifica preferencia/escala física y marcado accesible del menú, selector y modalidades. Tras el bloque de registro, npm test ejecuta seis grupos: motor, persistencia, recuperación, offline, layout y Auth. El test:auth usa transporte aislado, no valida cuentas reales. Verificar ambas vistas, móvil vertical/horizontal, tablet y escritorio, continuidad del estado al redimensionar, navegación real y ausencia de solapamientos. Evidencia en VERIFICACION_RESPONSIVE.md y VERIFICACION_VERCEL_DATOS.md.
 
 Revisión cloud del 2026-10-01: `npm run test:browser` añade cinco recorridos reproducibles sobre builds y fixture aislada, incluido servidor realmente apagado. No sustituye la cuenta/RPC reales. Al vencer el reloj se publica únicamente el estado definitivo de fin de parte; un tick retrasado no suma tiempo después del límite. Se mantienen los tiempos de journals/copias V1 anteriores para no retrocederlos. No cambia la condición GOALS por periodo, los tres segundos de bloqueo ni las reglas de penaltis. Evidencia en VERIFICACION_NUBE.md y estado operativo en ESTADO_ACTUAL.md.
+
+Bloque posterior de estadísticas: `npm test` añade test:statistics (siete grupos); test:browser amplía a ocho recorridos. Probar más de 20 partidos, 1v1/2v2, reintentos, anulaciones, gol de oro/penaltis, jugadores inactivos/renombrados, errores y cancelación. Comprobar navegación, historial filtrado y controles visibles en web/800×480. No confundir pruebas SDK con transporte aislado con una consulta autenticada del proyecto real.
 
 ## 77. VERIFICACIÓN VISUAL
 

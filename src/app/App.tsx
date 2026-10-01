@@ -10,6 +10,7 @@ import { MatchConfigurationScreen, MatchFlow, PlayerSelectionScreen } from '../u
 import { TopMenu, type MenuItem } from '../ui/components/TopMenu'
 import { SettingsScreen } from '../ui/screens/SettingsScreen'
 import { HistoryScreen } from '../ui/screens/HistoryScreen'
+import { StatisticsScreen } from '../ui/screens/StatisticsScreen'
 import { RecoveryScreen } from '../ui/screens/RecoveryScreen'
 import { PendingMatchesScreen } from '../ui/screens/PendingMatchesScreen'
 import { useConnection } from '../system/useConnection'
@@ -24,7 +25,7 @@ import { activePlayers, type MatchDocument, type Player } from '../services/pers
 import { mapMatch, participantsFor } from '../services/persistence/mapMatch'
 
 const menuItems: MenuItem[] = [{ id: 'new-match', label: 'NUEVO PARTIDO' }, { id: 'tournament', label: 'TORNEO' }, { id: 'ranking', label: 'RANKING' }, { id: 'settings', label: 'AJUSTES' }]
-type Screen = 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'placeholder' | 'recovery' | 'pending'
+type Screen = 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'statistics' | 'placeholder' | 'recovery' | 'pending'
 const browserStorage: KeyValueStorage = { getItem: key => localStorage.getItem(key), setItem: (key, value) => localStorage.setItem(key, value) }
 const practicePlayers: Player[] = ['PRUEBA BLANCO', 'PRUEBA AZUL'].map((name, i) => ({ id: 'practice-' + i, name, nickname: null, photoUrl: null, active: true, level: 0 }))
 
@@ -49,7 +50,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
         if ((await services.auth.getIdentity())?.id !== userId) throw new Error('Accede con la cuenta que inició el partido para sincronizarlo.')
         await services.matches.saveMatch({ ...document, owner_id: userId })
       },
-      getMatches: offset => services.matches.getMatches(offset),
+      getMatches: (offset, query) => services.matches.getMatches(offset, query),
       getMatchById: id => services.matches.getMatchById(id),
     }, browserStorage, services.namespace + ':pending:v1:' + userId)
   }, [services, userId, connection.monitor])
@@ -57,6 +58,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
   const [recovery, setRecovery] = useState<ActiveMatchCopy | null>(null)
   const [activeMenu, setActiveMenu] = useState('new-match')
   const [screen, setScreen] = useState<Screen>('new')
+  const [profilePlayerId, setProfilePlayerId] = useState<string | null>(null)
   const [mode, setMode] = useState<MatchMode>('QUICK')
   const [configuration, setConfiguration] = useState<MatchConfiguration | null>(null)
   const [players, setPlayers] = useState<Player[]>([])
@@ -123,6 +125,9 @@ export function App({ services }: { services: ApplicationServices | null }) {
     setActiveMenu(id); setNotice('')
     setScreen(id === 'settings' ? 'settings' : id === 'ranking' ? 'history' : id === 'new-match' ? matchOpen ? 'match' : recovery ? 'recovery' : 'new' : 'placeholder')
   }
+  function openStatistics(playerId: string | null = null) {
+    setProfilePlayerId(playerId); setActiveMenu('ranking'); setScreen('statistics')
+  }
   function start(selected: Player[]) {
     if (!configuration) return
     try {
@@ -174,9 +179,10 @@ export function App({ services }: { services: ApplicationServices | null }) {
       {screen === 'players' && <PlayerSelectionScreen key={userId ?? 'practice'} availablePlayers={availablePlayers} testMode={testMode} onStart={start} onBack={() => setScreen('configuration')} />}
       {screen === 'match' && <MatchFlow state={state} engine={engine} input={input} players={players} onNewMatch={newMatch} saveMessage={saveMessage} canLeave={canLeave && !saving} onRetry={() => { if (!saving && run.current && finalDocument.current) void persist(run.current, finalDocument.current) }} />}
       {screen === 'settings' && <SettingsScreen key={userId ?? 'guest'} services={services} user={data.user} players={data.players} protectedIds={protectedIds} testMode={testMode} onTestMode={value => { setTestMode(value); try { localStorage.setItem('marcador:test-mode:v1', String(value)) } catch { setNotice('Preferencia aplicada; no se pudo recordar localmente.') } }} refresh={data.refresh} pendingCount={pendingCount} onRetry={pending.retry} dataMessage={notice || pending.message || data.message} online={online && !data.localIdentity} onSignedOut={data.signedOut} syncBusy={pending.busy} onPending={() => setScreen('pending')} offline={offline} onCheck={() => void connection.monitor.check()}
-        displaySettings={<DisplaySettings mode={displayMode} onChange={value => { setDisplayMode(value); try { localStorage.setItem(DISPLAY_MODE_KEY, value) } catch { setNotice('Vista aplicada; no se pudo recordar localmente.') } }} />} />}
+        onProfile={id => openStatistics(id)} displaySettings={<DisplaySettings mode={displayMode} onChange={value => { setDisplayMode(value); try { localStorage.setItem(DISPLAY_MODE_KEY, value) } catch { setNotice('Vista aplicada; no se pudo recordar localmente.') } }} />} />}
       {screen === 'pending' && <PendingMatchesScreen documents={pending.documents} online={online && !data.localIdentity} busy={pending.busy} message={pending.message} onRetry={pending.retry} onBack={() => setScreen('settings')} />}
-      {screen === 'history' && <HistoryScreen key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} online={online && !data.localIdentity} />}
+      {screen === 'history' && <HistoryScreen key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} online={online && !data.localIdentity} onStatistics={() => openStatistics()} />}
+      {screen === 'statistics' && <StatisticsScreen key={userId ?? 'guest'} repository={services?.matches ?? null} players={data.players} playersLoading={data.loading} dataMessage={data.message} userId={userId} online={online && !data.localIdentity} initialPlayerId={profilePlayerId} onBack={() => setScreen('history')} />}
       {screen === 'placeholder' && <div className="placeholder-screen"><span>PRÓXIMAMENTE</span><p>Torneos se implementará en otra fase.</p></div>}
     </section>
     <footer className="system-status" role="status"><span className={`status-dot ${online ? '' : 'status-offline'}`} /><span>{connection.state === 'online' ? 'SISTEMA ONLINE' : connection.state === 'offline' ? 'SIN CONEXIÓN' : 'COMPROBANDO CONEXIÓN'} · {(run.current?.testMode ?? testMode) ? 'PRUEBA ON' : 'PRUEBA OFF'} · {data.user ? data.localIdentity || !online ? 'SESIÓN LOCAL' : 'SESIÓN ACTIVA' : 'SIN SESIÓN'}{pendingCount > 0 && ` · ${pendingCount} PENDIENTES`}</span>{(recoveryWarning || notice && screen !== 'settings') && <span className="status-warning">{recoveryWarning || notice}</span>}{matchOpen && screen !== 'match' && <button type="button" onClick={() => { setActiveMenu('new-match'); setScreen('match') }}>VOLVER AL PARTIDO</button>}</footer>

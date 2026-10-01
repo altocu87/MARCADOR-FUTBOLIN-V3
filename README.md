@@ -8,13 +8,15 @@ Antes de modificar código, leer `AGENTS.md`, `docs/CONTEXTO_MAESTRO.md` y `docs
 
 Persistencia V1 está en revisión en `codex/reliability-offline-v1`: tests locales y simulaciones correctos, pero falta el recorrido autenticado navegador → Supabase con la cuenta del operador. No considerar esta fase cerrada ni promoverla a main hasta completar esa validación. Las migraciones del proyecto existente ya están aplicadas; no repetirlas.
 
+Por autorización posterior del propietario, se añade el primer bloque de fase C: estadísticas básicas y perfiles, desarrollado/verificado con datos aislados mientras sigue pendiente el recorrido real de fase B. No incluye XP, niveles calculados, ELO ni una clasificación competitiva.
+
 ## Continuar en Codex Cloud
 
 El [resumen y guía de traspaso](docs/TRASPASO_NUBE.md) reúne los avances, los módulos, las comprobaciones y un mensaje listo para la primera tarea cloud. El [estado actual](docs/ESTADO_ACTUAL.md) mantiene los datos operativos posteriores.
 
 La configuración cloud inicial utilizó `main`, que todavía no contiene persistencia, recuperación, PWA ni la adaptación responsive. Antes de modificar, sincronizar de forma segura **origin/codex/reliability-offline-v1** y leer el contexto de esa rama. No fusionar a main para resolver el traspaso.
 
-En el entorno cloud, usar Node 24 y `npm ci --cache /tmp/codex-npm-cache`, después `npm test` (seis grupos) y `npm run build`. Revisar/publicar la configuración preparada del entorno si aún está en borrador. Las variables públicas Supabase son opcionales para compilar/probar el simulador, pero necesarias para probar datos reales; las variables de Vercel no se transfieren automáticamente al entorno cloud.
+En el entorno cloud, usar Node 24 y `npm ci --cache /tmp/codex-npm-cache`, después `npm test` (siete grupos) y `npm run build`. Revisar/publicar la configuración preparada del entorno si aún está en borrador. Las variables públicas Supabase son opcionales para compilar/probar el simulador, pero necesarias para probar datos reales; las variables de Vercel no se transfieren automáticamente al entorno cloud.
 
 ## Vista previa online
 
@@ -46,6 +48,7 @@ npm run test:recovery
 npm run test:offline
 npm run test:layout
 npm run test:auth
+npm run test:statistics
 npm run test:browser
 npm test
 npm run build
@@ -54,7 +57,7 @@ npm run preview
 
 El build comprueba TypeScript y genera `dist/`. Las pruebas SQL reproducibles están en `supabase/tests/persistence_v1.sql`: ejecutar completas como administrador, con su ROLLBACK final. Usan fixtures temporales y no dejan cuentas ni partidos.
 
-`npm run test:browser` genera ambos builds y ejecuta cinco regresiones Chromium con Playwright 1.63.0: vistas, prueba sin guardado, recuperación 2v2, pendientes/historial sin duplicados y reapertura PWA con servidor apagado. Usa `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, Chromium del sistema en `/usr/bin/chromium` o el navegador de Playwright (`npx playwright install chromium`). Preview aislado en 5197, contextos temporales y tráfico Supabase bloqueado; no verifica Auth ni datos reales. `npm test` conserva los seis grupos independientes del navegador. Resultados cloud y pasos para cerrar la fase en [VERIFICACION_NUBE.md](docs/VERIFICACION_NUBE.md).
+`npm run test:browser` genera ambos builds y ejecuta ocho regresiones Chromium con Playwright 1.63.0: vistas, prueba sin guardado, recuperación 2v2, pendientes/historial sin duplicados, perfiles/estadísticas y reapertura PWA con servidor apagado. Usa `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, Chromium del sistema en `/usr/bin/chromium` o el navegador de Playwright (`npx playwright install chromium`). Preview aislado en 5197, contextos temporales y tráfico Supabase bloqueado; no verifica Auth ni datos reales. `npm test` ejecuta siete grupos independientes del navegador. Resultados del bloque inicial cloud y pasos para cerrar fase B en [VERIFICACION_NUBE.md](docs/VERIFICACION_NUBE.md); estadísticas en [VERIFICACION_ESTADISTICAS.md](docs/VERIFICACION_ESTADISTICAS.md).
 
 La página `/tests/ui-fixture.html` inyecta repositorios en memoria para verificar formularios, partido e historial sin usar credenciales ni modificar Supabase. Está disponible en desarrollo y en el build aislado `npm run build:test-offline` → `npm run preview:test-offline` (puerto 5188, salida ignorada `tmp/pwa-test`). No valida Supabase real ni forma parte de `dist/` de producción. `?network=real` exige respuesta del servidor local para simular identidad, jugadores y guardado; permite apagar ese servidor y verificar el arranque desde la caché PWA.
 
@@ -128,7 +131,15 @@ La copia del partido activo solo se retira después de conservar el resultado fi
 
 El coordinador limita cada intento a diez segundos para no bloquear indefinidamente el resumen. Una confirmación tardía no elimina la copia local: el reintento idempotente con el mismo ID recupera la operación sin duplicarla. Cada confirmación retira solo su partido, conservando los demás pendientes.
 
-El historial requiere conexión: lista paginada de 20 partidos, participantes, ganador, prórroga/penaltis y detalle cronológico. No se calcula XP, ELO, ranking ni estadísticas.
+El historial requiere conexión: lista paginada de 20 partidos, participantes, ganador, prórroga/penaltis y detalle cronológico. No se calcula XP, ELO ni clasificación competitiva.
+
+### Estadísticas básicas y perfil de jugador
+
+RANKING → ESTADÍSTICAS → elegir jugador, o AJUSTES → JUGADORES → PERFIL. Incluye búsqueda por nombre/alias y jugadores inactivos. El perfil muestra partidos, victorias, derrotas, empates, porcentaje de victorias, goles de su equipo a favor/en contra y diferencia. VER HISTORIAL DEL JUGADOR filtra antes de paginar; el detalle conserva los nombres históricos de todos los participantes.
+
+Totales calculados desde **todos** los resultados guardados, no solo los primeros 20. Lectura por cursor fecha/ID, deduplicación por UUID y ninguna actualización de contadores. 1v1 y 2v2 usan la perspectiva del equipo; los goles no se atribuyen individualmente. Prórroga incluida en el marcador; penaltis deciden victoria/derrota pero sus lanzamientos no suman goles. Porcentaje = victorias / partidos × 100, redondeado a una decimal; sin partidos es 0%. Empates guardados se conservan como empates, aunque el flujo actual normalmente los resuelva.
+
+Modo prueba, partidos no finalizados y cola pendiente quedan fuera. La baja lógica/renombrado no pierde resultados porque se relacionan por ID. Errores de página impiden mostrar totales parciales; sin conexión no se presentan ceros como estadísticas reales. Cancelación al abandonar/cambiar de perfil o cuenta. Actualizar vuelve a consultar; resultados añadidos durante la lectura requieren otra consulta para obtener una vista nueva, no se promete un snapshot transaccional entre dispositivos. No hay nueva tabla, migración, API de escritura ni modificación de Auth/RLS. El SDK/fixture aislados no sustituyen la verificación Supabase autenticada pendiente.
 
 ### Preparar e instalar la PWA
 

@@ -20,7 +20,8 @@
 | --- | --- |
 | A. Simulador funcional | Publicado en b10b1df |
 | B. Persistencia Supabase V1 | Implementada y probada localmente; rama de desarrollo para revisión; falta prueba autenticada de navegador y promoción a main |
-| C–J. Estadísticas, XP/ELO, logros, torneos, audiovisual avanzado, ESP32, OTA | Futuras; no autorizadas para implementación inmediata |
+| C. Estadísticas básicas y perfil | Implementadas por autorización explícita del propietario; pruebas aisladas correctas; pendiente comprobación con Supabase real |
+| C–J. XP/ELO, estadísticas avanzadas, logros, torneos, audiovisual avanzado, ESP32, OTA | Futuras; fuera del bloque autorizado actual |
 
 ## Código local implementado en la fase B
 
@@ -32,6 +33,7 @@
 - Guardado final del agregado mediante RPC transaccional, UUID estable y reintentos idempotentes. Se fija la cuenta y el modo prueba al iniciar la partida.
 - Modo prueba ON por defecto, preferencia local; no guarda partidos/participantes/eventos ni los introduce en la cola local. Sin jugadores reales ofrece dos plazas de práctica solo en este modo. La gestión autenticada de jugadores sí es real.
 - Historial V1 dentro de RANKING: lista paginada de 20 y detalle de configuración, participantes, resultado y cronología. No hay cálculo de ranking.
+- Estadísticas básicas: perfiles de jugadores activos/inactivos desde Ajustes o RANKING → ESTADÍSTICAS, búsqueda e historial filtrado. Partidos, victorias, derrotas, empates, porcentaje y goles de equipo a favor/en contra/diferencia. Cálculo desde todos los resultados guardados con cursor estable e identidad del jugador; sin contadores persistidos, goleadores individuales, XP ni ELO. Prácticas, partidas sin finalizar y pendientes locales quedan excluidos. Sin red o ante error se informa, no se presentan ceros como datos reales.
 - Caché de jugadores y cola de resultados finalizados en localStorage, aisladas por proyecto/cuenta. Reintento manual y automático al reconectar con sesión verificada, fuera del partido activo/guardado. Ajustes incluye lista/detalle local de pendientes. Los goles no dependen de Internet.
 - Web adaptable por defecto: móvil vertical/horizontal, tablet y escritorio; controles táctiles, formularios/listas con scroll interno y área útil centrada de máximo 1600×1000. Referencia física 800×480 conservada y seleccionable en AJUSTES → GENERAL; escalada solo si no cabe. Cambio de vista/tamaño sin reiniciar el motor ni el partido.
 - Panel de simulación solo en desarrollo. No hay comunicaciones físicas ni firmware.
@@ -65,6 +67,7 @@
 - `src/styles/responsive.css`, `TopMenu.tsx`, `MatchFlow.tsx`: presentación web, navegación accesible, cuenta atrás nativa y cifras ajustables. Las medidas originales de global.css siguen sirviendo a la vista física.
 - `tests/layout.test.tsx`, `docs/VERIFICACION_RESPONSIVE.md`: regresiones de presentación y evidencia visual. Vite separa React en un paquete estático que la PWA también precachea.
 - `src/services/supabase/auth.ts`, `authFeedback.ts`, `tests/auth.test.ts`, `docs/VERIFICACION_VERCEL_DATOS.md`: acceso privado, validación, retorno seguro, SDK aislado y evidencia de la conexión Preview.
+- `src/statistics/`, `src/ui/screens/StatisticsScreen.tsx`, `tests/statistics.test.ts`, `docs/VERIFICACION_ESTADISTICAS.md`: cálculo puro, lectura paginada cancelable, perfiles, regresiones y límites de validación.
 
 ## Supabase ya aplicado — no repetir a ciegas
 
@@ -98,7 +101,8 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 - npm run test:recovery: reloj, bloqueo, IDs anulados, estados, penaltis, corrupción, aislamiento, modo prueba y entrega del resultado sin duplicados.
 - npm run test:offline: plantilla real de worker, allowlist/privacidad, navegación offline, actualizaciones/cache incompleta, iconos, alcance de identidad, respuestas de conexión desordenadas y observadores de cola.
 - npm run test:layout: preferencia, escala física y navegación/selector/modalidades accesibles.
-- npm run test:auth: validación, normalización, retorno sin tokens, mensajes y SDK con transporte aislado. npm test ejecuta seis grupos; todos correctos en la comprobación de traspaso. No equivale a una prueba Auth real.
+- npm run test:auth: validación, normalización, retorno sin tokens, mensajes y SDK con transporte aislado. No equivale a una prueba Auth real.
+- npm test ejecuta siete grupos, todos correctos en la última comprobación; test:statistics aporta 24 casos. npm run test:browser: 8/8 recorridos Chromium, incluidos perfiles, historial filtrado, 25 resultados, jugadores inactivos y errores/offline; builds normal y aislado correctos. No equivale a comprobar Supabase real.
 - npm run build: TypeScript y Vite correctos.
 - npm audit: cero vulnerabilidades en la última ejecución.
 - Pruebas SQL en el proyecto real: RLS, cuentas, permisos, equipos/agregado, idempotencia, snapshot, restricciones de borrado, secuencia, modo prueba y rollback correctos. Fixtures íntegramente revertidos con ROLLBACK.
@@ -134,6 +138,8 @@ Después, el agente debe verificar con la capa Supabase real:
 
 **No dar la fase B por cerrada ni avanzar a XP/ELO/logros mientras falte esta comprobación.** Para continuar en la nube, usar la rama `codex/reliability-offline-v1` una vez confirmado su push. Si el checkout solo contiene main, sincronizar la rama de desarrollo, no recrear la integración ni tocar el esquema ya existente. La publicación de una rama de revisión no requiere dar por pasada la validación autenticada; la promoción a main sí queda pendiente de esa validación.
 
+Excepción de alcance autorizada posteriormente por el propietario: desarrollar íntegramente estadísticas básicas, perfil e historial filtrado mientras sigue pendiente el acceso externo. Este bloque ya está implementado y probado de forma aislada; no cierra la fase B ni autoriza XP/ELO, cambios de esquema o promoción a main. En la prueba autenticada añadir la comprobación del perfil frente a los resultados reales guardados.
+
 ## Límites conocidos y decisiones a preservar
 
 - Discrepancia del bloqueo de gol corregida el 2026-10-01 en la rama de desarrollo: reproducida con una prueba fallida antes del arreglo y ocho casos correctos después. El motor conserva el plazo al deshacer/corregir/cambiar parte o prórroga. Main aún no contiene esta corrección mientras no se integre la rama.
@@ -147,6 +153,16 @@ Después, el agente debe verificar con la capa Supabase real:
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, estadísticas avanzadas, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Estadísticas básicas, perfil e historial de jugador
+
+Implementación sobre la base cloud **201cdd3** de `codex/reliability-offline-v1`, por petición explícita del propietario. Perfiles privados de jugadores activos/inactivos, búsqueda, acceso desde Ajustes/Historial y ocho métricas calculadas desde resultados oficiales. Consulta filtrada conserva compañeros/oponentes; recorre páginas de 20 con cursor fecha/UUID, deduplica reintentos y conserva la precisión temporal de Supabase. Cambiar nombre no cambia la identidad ni el snapshot histórico. Prórroga cuenta goles de campo; penaltis deciden ganador sin inflar goles. No hay atribución individual de goles ni cambios del motor, guardado, tablas, RPC, RLS o dependencias.
+
+Errores y falta de conexión no producen falsas estadísticas vacías. Peticiones abandonadas o de otra cuenta no actualizan el perfil; el historial filtra antes de paginar. Totales no son una instantánea transaccional de varias páginas: resultados recién sincronizados pueden requerir ACTUALIZAR. En revisión visual se detectaron controles fuera de la primera vista y se separaron del scroll interno para mantenerlos accesibles.
+
+Verificación final: npm test (siete grupos), 24 pruebas de estadísticas, npm run test:browser (8/8), TypeScript/build normal y fixture correctos. Cobertura de motor real, 1v1/2v2, deshacer/corrección, penaltis, duplicados, más de 20 resultados, cancelación, errores tardíos y SDK oficial con transporte aislado. Navegador y revisión visual local móvil/física sin errores; Supabase bloqueado en fixtures. Auditoría de producción: cero vulnerabilidades. Evidencia y límites en [VERIFICACION_ESTADISTICAS.md](VERIFICACION_ESTADISTICAS.md).
+
+Sin validación autenticada real, migraciones, cuentas, correos, cambios de configuración externa o producción. La publicación se comprueba mediante Git y se informa al entregar; un push a esta rama puede generar Preview automática, no implica despliegue verificado ni promoción a main. Fase B y validación real del perfil siguen abiertas; XP/ELO permanece fuera de alcance.
 
 ### 2026-10-01 — Continuidad cloud y regresiones de recuperación
 

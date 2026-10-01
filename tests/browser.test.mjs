@@ -80,6 +80,8 @@ async function finish(page) {
   await visible(page, 'FINAL DEL PARTIDO')
 }
 async function noOverflow(page) {
+  // Resize events update React's visual viewport state on the next frame.
+  await page.waitForFunction(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight), true, 'Sin scroll general')
 }
 async function matchStorage(page) {
@@ -156,6 +158,94 @@ test('resultado pendiente: recarga, reintento automático, historial sin duplica
   await page.locator('.history-list button').click()
   await visible(page, 'DETALLE DEL PARTIDO')
   assert.equal(await page.locator('.event-list > div').count(), 7)
+}))
+
+function metric(page, label) { return page.locator('.statistics-grid > div').filter({ has: page.getByText(label, { exact: true }) }).locator('dd') }
+async function profile(page, name) {
+  await page.getByRole('button', { name: 'RANKING', exact: true }).click()
+  await page.getByRole('button', { name: 'ESTADÍSTICAS', exact: true }).click()
+  await page.locator('.statistics-players button').filter({ hasText: name }).click()
+  await page.locator('.statistics-grid').waitFor()
+}
+test('perfil tras guardado/reintento: perspectiva, edición y snapshot histórico', async () => withPage(async page => {
+  await page.goto(fixture)
+  await realMode(page); await selection(page, 4); await start(page); await finish(page)
+  await page.getByText('PARTIDO GUARDADO EN SUPABASE', { exact: true }).waitFor()
+  await page.getByRole('button', { name: 'REINTENTAR GUARDADO' }).click()
+  await profile(page, 'BLANCO DOS')
+  assert.equal(await metric(page, 'PARTIDOS').textContent(), '1')
+  assert.equal(await metric(page, 'VICTORIAS').textContent(), '1')
+  assert.equal(await metric(page, 'GOLES A FAVOR').textContent(), '2')
+  await page.getByRole('button', { name: 'JUGADORES', exact: true }).click()
+  await page.locator('.statistics-players button').filter({ hasText: 'AZUL DOS' }).click()
+  await page.locator('.statistics-grid').waitFor()
+  assert.equal(await metric(page, 'DERROTAS').textContent(), '1')
+  assert.equal(await metric(page, 'GOLES EN CONTRA').textContent(), '2')
+  await settings(page)
+  await page.getByRole('button', { name: 'JUGADORES', exact: true }).click()
+  const row = page.locator('.player-list-row').filter({ hasText: 'AZUL DOS' })
+  await row.getByRole('button', { name: 'EDITAR', exact: true }).click()
+  await page.getByRole('textbox', { name: 'Alias', exact: true }).fill('AZUL RENOMBRADO')
+  await page.getByRole('button', { name: 'GUARDAR JUGADOR' }).click()
+  await page.locator('.player-list-row').filter({ hasText: 'AZUL RENOMBRADO' }).getByRole('button', { name: 'PERFIL' }).click()
+  await page.locator('.statistics-grid').waitFor()
+  assert.equal(await metric(page, 'PARTIDOS').textContent(), '1')
+  await page.getByRole('button', { name: 'VER HISTORIAL DEL JUGADOR' }).click()
+  await page.locator('.history-list button').waitFor()
+  assert.equal(await page.locator('.history-list button').count(), 1)
+  assert.match(await page.locator('.history-list button').textContent(), /AZUL DOS/)
+  await page.locator('.history-list button').click()
+  await visible(page, 'DETALLE DEL PARTIDO')
+  assert.match(await page.locator('.history-summary').textContent(), /BLANCO UNO.*AZUL UNO.*BLANCO DOS.*AZUL DOS/)
+}))
+
+test('perfil completo: 25 resultados, inactivos, penaltis, historial paginado y ambas vistas', async () => withPage(async page => {
+  await page.goto(fixture + '?statistics=seed')
+  await profile(page, 'AZUL DOS')
+  assert.equal(await metric(page, 'PARTIDOS').textContent(), '25')
+  assert.equal(await metric(page, 'VICTORIAS').textContent(), '2')
+  assert.equal(await metric(page, 'DERROTAS').textContent(), '23')
+  assert.equal(await metric(page, 'GOLES A FAVOR').textContent(), '3')
+  assert.equal(await metric(page, 'GOLES EN CONTRA').textContent(), '48')
+  assert.equal(await metric(page, 'VICTORIAS %').textContent(), '8%')
+  for (const [width, height] of [[390, 844], [800, 480], [768, 1024], [1440, 900]]) {
+    await page.setViewportSize({ width, height }); await noOverflow(page)
+  }
+  await page.getByRole('button', { name: 'VER HISTORIAL DEL JUGADOR' }).click()
+  await page.locator('.history-list button').first().waitFor()
+  assert.equal(await page.locator('.history-list button').count(), 20)
+  await page.getByRole('button', { name: 'SIGUIENTES' }).click()
+  await page.waitForFunction(() => document.querySelectorAll('.history-list button').length === 5)
+  await page.getByRole('button', { name: 'VOLVER AL PERFIL' }).click()
+  await page.locator('.statistics-grid').waitFor()
+  await page.getByRole('button', { name: 'JUGADORES', exact: true }).click()
+  await page.getByRole('searchbox', { name: 'Buscar jugador' }).fill('SIN PARTIDOS')
+  await page.locator('.statistics-players button').click()
+  await visible(page, 'No hay partidos guardados para este jugador.')
+  assert.equal(await metric(page, 'PARTIDOS').textContent(), '0')
+  await settings(page)
+  await page.getByRole('button', { name: 'PANTALLA 800×480' }).click()
+  await profile(page, 'AZUL DOS')
+  await page.locator('.physical-canvas').waitFor(); await noOverflow(page)
+  assert.equal(await metric(page, 'PARTIDOS').textContent(), '25')
+  const historyButton = await page.getByRole('button', { name: 'VER HISTORIAL DEL JUGADOR' }).boundingBox()
+  assert.ok(historyButton.y + historyButton.height <= await page.locator('.app-content').evaluate(el => el.getBoundingClientRect().bottom), 'Historial accesible sin desplazar los controles')
+  await page.getByRole('button', { name: 'VER HISTORIAL DEL JUGADOR' }).click()
+  await page.locator('.history-list button').first().waitFor()
+  await noOverflow(page)
+}))
+
+test('perfil con error o sin red: no mostrar ceros como datos reales', async () => withPage(async (page, context) => {
+  await page.goto(fixture + '?statistics=error')
+  await page.getByRole('button', { name: 'RANKING', exact: true }).click()
+  await page.getByRole('button', { name: 'ESTADÍSTICAS', exact: true }).click()
+  await page.locator('.statistics-players button').filter({ hasText: 'BLANCO UNO' }).click()
+  await page.getByText(/Error de consulta simulado/).first().waitFor()
+  assert.equal(await page.locator('.statistics-grid').count(), 0)
+  await context.setOffline(true)
+  await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SIN CONEXIÓN'))
+  await page.getByText(/Las estadísticas necesitan consultar/).waitFor()
+  assert.equal(await page.locator('.statistics-grid').count(), 0)
 }))
 
 test('PWA real: servidor apagado, reapertura y recuperación offline', async () => withPage(async (page, context) => {

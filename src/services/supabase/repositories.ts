@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database, Json } from './database.types'
 import type { PlayerRepository } from '../persistence/PlayerRepository'
-import type { MatchRepository } from '../persistence/MatchRepository'
+import { MATCH_PAGE_SIZE, type MatchListQuery, type MatchRepository } from '../persistence/MatchRepository'
 import type { MatchDocument, MatchSummary, PlayerDraft, Player } from '../persistence/models'
 
 function playerFields(draft: PlayerDraft) {
@@ -48,9 +48,22 @@ export class SupabaseMatchRepository implements MatchRepository {
     const { error } = await this.client.rpc('save_match_v1', { document: JSON.parse(JSON.stringify(document)) as Json })
     if (error) throw error
   }
-  async getMatches(offset = 0): Promise<MatchSummary[]> {
-    const { data, error } = await this.client.from('matches').select('*, participants:match_participants(*)')
-      .order('finished_at', { ascending: false }).range(offset, offset + 19)
+  async getMatches(offset = 0, options: MatchListQuery = {}): Promise<MatchSummary[]> {
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!Number.isSafeInteger(offset) || offset < 0 || options.playerId && !uuid.test(options.playerId)) throw new Error('Consulta de historial no válida.')
+    // Separate inner embed filters parents without truncating the complete teams.
+    const select = options.playerId ? '*, participants:match_participants(*), player_filter:match_participants!inner(player_id)' : '*, participants:match_participants(*)'
+    let query = this.client.from('matches').select(select).eq('test_mode', false).eq('status', 'MATCH_END')
+      .order('finished_at', { ascending: false }).order('id', { ascending: false }).range(offset, offset + MATCH_PAGE_SIZE - 1)
+    if (options.playerId) query = query.eq('player_filter.player_id', options.playerId)
+    if (options.before) {
+      const { finishedAt, id } = options.before
+      // Preserve fractional precision, and reject PostgREST expression injection.
+      if (!uuid.test(id) || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(finishedAt) || !Number.isFinite(Date.parse(finishedAt))) throw new Error('Cursor de historial no válido.')
+      query = query.or(`finished_at.lt.${finishedAt},and(finished_at.eq.${finishedAt},id.lt.${id})`)
+    }
+    if (options.signal) query = query.abortSignal(options.signal)
+    const { data, error } = await query
     if (error) throw error
     return data as unknown as MatchSummary[]
   }

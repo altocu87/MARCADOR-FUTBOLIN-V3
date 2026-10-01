@@ -13,10 +13,11 @@
     "test:offline": "tsx tests/offline.test.ts",
     "test:layout": "tsx tests/layout.test.tsx",
     "test:auth": "tsx tests/auth.test.ts",
+    "test:statistics": "tsx --test tests/statistics.test.ts",
     "test:browser": "npm run build && npm run build:test-offline && node --test tests/browser.test.mjs",
     "build:test-offline": "vite build --mode offline-test",
     "preview:test-offline": "vite preview --outDir tmp/pwa-test --host 127.0.0.1 --port 5188 --strictPort",
-    "test": "npm run test:engine && npm run test:persistence && npm run test:recovery && npm run test:offline && npm run test:layout && npm run test:auth"
+    "test": "npm run test:engine && npm run test:persistence && npm run test:recovery && npm run test:offline && npm run test:layout && npm run test:auth && npm run test:statistics"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2",
