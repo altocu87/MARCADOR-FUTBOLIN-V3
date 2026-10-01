@@ -48,7 +48,7 @@ export class MatchEngine {
   }
 
   createMatch(config: MatchConfiguration): void {
-    config = { ...config, rulesVersion: 2 }
+    config = { ...config, rulesVersion: config.victoryCondition === 'BOTH' ? 3 : 2 }
     this.completedTimeSeconds = 0
     this.sequence = 0
     this.goalLockUntil = 0
@@ -146,6 +146,10 @@ export class MatchEngine {
     const config = this.state.config
     if (!config || (config.victoryCondition !== 'GOALS' && config.victoryCondition !== 'BOTH')) return false
     if (this.isSingleGoalMatch()) return Math.max(this.state.whiteGoals, this.state.blueGoals) >= config.goalLimit
+    if (config.victoryCondition === 'BOTH' && config.rulesVersion === 3) {
+      const goals = this.state.goals.filter(goal => goal.period === this.state.period)
+      return Math.max(goals.filter(goal => goal.team === 'WHITE').length, goals.filter(goal => goal.team === 'BLUE').length) >= config.goalLimit
+    }
     return this.state.goals.filter((goal) => goal.period === this.state.period).length >= config.goalLimit
   }
 
@@ -192,7 +196,7 @@ export class MatchEngine {
     this.completedTimeSeconds += this.state.elapsedSeconds
     this.state = { ...this.state, elapsedSeconds: 0, period: 'PENALTIES', status: 'PENALTIES', ...this.goalLockState(),
       penalty: { whiteGoals: 0, blueGoals: 0, whiteAttempts: 0, blueAttempts: 0, suddenDeath: false } }
-    this.record('period_start')
+    this.record('period_start', null, { rulesVersion: this.state.config?.rulesVersion ?? 1 })
     this.emit()
   }
 

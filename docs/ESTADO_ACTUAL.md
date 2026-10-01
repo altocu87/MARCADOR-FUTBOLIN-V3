@@ -2,7 +2,7 @@
 
 Última actualización: **2026-10-01**. Leer junto con `CONTEXTO_MAESTRO.md` y contrastar con el código real.
 
-**Último bloque:** corrección explícitamente autorizada de las dos condiciones de victoria: GOALS objetivo por equipo, única parte sin límite; TIME dos partes por reloj y resultado acumulado. Checkpoints V2 para nuevos partidos, V1 conservado para partidas anteriores. El propietario comunica login y prueba satisfactorios; es evidencia humana, no una inspección remota del agente. Detalles en el registro y [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md).
+**Último bloque:** aclaración posterior del propietario: mantener también AMBAS, dos partes que terminan por objetivo de goles de un equipo dentro de cada parte o por tiempo; ganador por el total acumulado de las dos. AMBAS nuevo usa V3 y copias anteriores conservan sus reglas. GOALS/TIME mantienen V2: única parte sin límite para GOALS y dos por reloj para TIME. El propietario comunica login y prueba satisfactorios; es evidencia humana, no una inspección remota del agente. Detalles en el registro y [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md).
 
 ## Referencias y alcance de esta ficha
 
@@ -148,7 +148,7 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 ## Límites conocidos y decisiones a preservar
 
 - Discrepancia del bloqueo de gol corregida el 2026-10-01 en la rama de desarrollo: reproducida con una prueba fallida antes del arreglo y ocho casos correctos después. El motor conserva el plazo al deshacer/corregir/cambiar parte o prórroga. Main aún no contiene esta corrección mientras no se integre la rama.
-- Decisión explícita posterior: GOALS nuevo termina cuando un equipo alcanza el objetivo, una sola parte sin límite temporal. TIME mantiene dos partes, goles acumulados y desempate existente. BOTH solo por compatibilidad; copias anteriores conservan goles sumados por periodo y resultados históricos intactos.
+- Decisiones explícitas posteriores: GOALS objetivo por equipo/única parte/sin límite; TIME dos partes por reloj; AMBAS dos partes por objetivo de un equipo dentro de cada parte o reloj. TIME/AMBAS deciden por total acumulado y conservan desempate. Copias anteriores mantienen sus reglas, resultados históricos intactos; no volver a retirar AMBAS.
 - Prórroga: 60 segundos y gol de oro; después penaltis alternos, cinco intentos y muerte súbita. No se atribuyen goles a jugadores.
 - Deshacer no retrocede el reloj; el journal conserva goles y anulaciones.
 - Historial remoto depende de conexión; panel de pendientes local disponible sin red. PWA/arranque offline en build tras primera carga completa, HTTPS o localhost y navegador compatible. No habilitado en npm run dev. Recuperación requiere mismo origen/navegador/cuenta y prueba OFF; no garantiza primera carga sin red ni almacenamiento no borrado. Vista previa Vercel publicada; instalación/PWA detrás de protección en móvil físico pendientes.
@@ -158,6 +158,18 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, predicción/forma competitiva, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Aclaración de AMBAS: dos partes y ganador por acumulado
+
+Base **a19dfc5**, rama `codex/reliability-offline-v1`, árbol limpio al iniciar y main **900e470**. El propietario aclara que AMBAS debe mantenerse: objetivo por equipo o reloj de cada parte, con resultado conjunto de ambas. Reemplaza la retirada de AMBAS del bloque inmediatamente anterior; conserva GOALS/TIME y no modifica desempates.
+
+Motor: AMBAS nuevo cuenta goles activos de cada equipo en la parte actual. Al alcanzar el objetivo cierra esa parte, no el partido; el reloj también la cierra. Al empezar la segunda parte se reinician tiempo/objetivo y se mantiene el acumulado. Ejemplo probado 5–4 y 0–5 → Azul 9–5, aunque Blanco ganó la primera. El gol al vencer el tiempo sigue rechazado por el motor. UI/configuración restaura tres opciones, dos controles en AMBAS y etiqueta GOLES POR EQUIPO Y PARTE; reloj muestra parcial y meta sin reemplazar los marcadores acumulados. Historial muestra objetivo/tiempo por parte y resultado acumulado.
+
+Reglas/checkpoint V3 exclusivo de AMBAS nuevo; GOALS/TIME nuevos siguen V2. Tipos/validador admiten 1/2/3 y mantienen coincidencia de versión/configuración/metadatos iniciales. AMBAS V1/V2 conserva suma histórica por parte al recuperar/reexportar. Contenedor ActiveMatchStore V1, IDs y agregado final estable sin cambios; no se reescriben pendientes/resultados ni se migran tablas/RPC/engine_version SQL.
+
+Pruebas: npm test, siete grupos correctos (estadísticas/análisis 41/41); TypeScript/build normal y aislado; navegador Chromium 14/14, sin omitidos/pageerror. Motor: 3–2 continúa con objetivo 5; cierre por goles en ambas partes, segunda parte exige su propio objetivo pese al acumulado; cierre por reloj en ambas; ganador 5–9 o 4–2. Recuperación contrasta AMBAS V2/V3, pausa tras 24 horas cerrada, objetivo reiniciado y documento final idéntico. Browser: 1–1 continúa con objetivo 2, primera parte 2–1, segunda 0–2 con recarga, final Azul 3–2 y detalle; configuración a 320×568, 390×844, 800×480. Primer intento falló por comprobar AMBAS después de haber navegado a selección de jugadores: retirada esa comprobación de la pantalla incorrecta; el caso específico sigue comprobando selección real de AMBAS y su comportamiento. Revisión visual local y evidencia en VERIFICACION_MODALIDADES.md.
+
+Sin dependencias, migraciones, servicios, cuentas nuevas, costes ni promoción a main/producción. Verificación Supabase/Vercel remota de las reglas no realizada; pruebas con repositorios en memoria y tráfico Supabase bloqueado. Siguiente prueba humana cuando esté disponible la actualización: crear AMBAS nuevo y comprobar parcial/total en dos partes. Push de la rama se informa con referencia Git; no acredita despliegue Vercel.
 
 ### 2026-10-01 — Dos condiciones de victoria corregidas por decisión del propietario
 

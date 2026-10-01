@@ -162,4 +162,41 @@ for (const winner of ['WHITE', 'BLUE'] as const) {
   assert.equal(match.getState().events.at(-1)?.matchTimeSeconds, 120)
 }
 
+// BOTH: a team reaches the target within this half, or the clock expires.
+// The match winner always comes from the two halves' cumulative score.
+for (const byClock of [false, true]) {
+  let time = 0
+  const match = new MatchEngine(() => time)
+  match.createMatch({ ...config, halfDurationMinutes: 1 }); match.skipCountdown()
+  const score = (team: 'WHITE' | 'BLUE') => { match.dispatch(team === 'WHITE' ? 'GOL_BLANCO' : 'GOL_AZUL'); time += 3_000 }
+  score('WHITE'); score('BLUE'); score('WHITE'); score('BLUE'); score('WHITE')
+  assert.equal(match.getState().status, 'PLAYING', '3–2 no alcanza cinco por equipo')
+  if (byClock) { time = 60_000; match.tick() }
+  else { score('BLUE'); score('WHITE'); score('BLUE'); score('WHITE') }
+  assert.equal(match.getState().status, 'PERIOD_END', 'Cierra la parte, todavía no hay ganador del partido')
+  assert.equal(match.getState().finishedAt, null)
+  match.continueToNextPeriod(); match.skipCountdown()
+  const secondStarted = time
+  assert.equal(match.getState().period, 'SECOND_HALF')
+  if (byClock) { score('WHITE'); time = secondStarted + 60_000; match.tick() }
+  else {
+    for (let i = 0; i < 4; i++) score('BLUE')
+    assert.equal(match.getState().status, 'PLAYING', 'El acumulado azul supera cinco pero su parcial todavía es cuatro')
+    score('BLUE')
+  }
+  assert.equal(match.getState().status, 'PERIOD_END')
+  match.continueToNextPeriod()
+  assert.equal(match.getState().status, 'MATCH_END')
+  assert.deepEqual([match.getState().whiteGoals, match.getState().blueGoals], byClock ? [4, 2] : [5, 9])
+}
+
+{
+  let time = 0
+  const match = new MatchEngine(() => time)
+  match.createMatch({ ...config, halfDurationMinutes: 1 }); match.skipCountdown()
+  time = 60_000; match.dispatch('GOL_BLANCO')
+  assert.equal(match.getState().status, 'PERIOD_END')
+  assert.equal(match.getState().whiteGoals, 0, 'Un gol al vencer el tiempo ya no entra en esa parte')
+}
+
 console.log('MatchEngine: modalidades actuales, bloqueo, correcciones, reloj y compatibilidad superados.')

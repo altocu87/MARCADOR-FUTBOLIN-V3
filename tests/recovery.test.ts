@@ -127,6 +127,39 @@ assert.deepEqual(mapMatch(phases.getState(), players, id, false), beforeDocument
   assert.equal(old.getCheckpoint().version, 2, 'El siguiente partido sí usa las nuevas reglas')
 }
 // Current untimed goal matches survive closure and preserve their exact final document.
+// V2 BOTH retains summed goals; V3 counts by team and restarts the target each half.
+for (const version of [2, 3] as const) {
+  let clock = 0
+  const match = new MatchEngine(() => clock)
+  match.createMatch({ ...config, victoryCondition: 'BOTH', goalLimit: 2 }); match.skipCountdown()
+  const initial = match.getCheckpoint()
+  initial.version = version; initial.state.config!.rulesVersion = version
+  initial.state.events[0].metadata.rulesVersion = version
+  match.restoreCheckpoint(initial); match.dispatch('CONTINUAR')
+  match.dispatch('GOL_BLANCO'); clock += 3_000; match.dispatch('GOL_AZUL')
+  assert.equal(match.getState().status, version === 2 ? 'PERIOD_END' : 'PLAYING')
+  const copy = match.getCheckpoint(); validateCheckpoint(copy)
+  clock += 86_400_000; match.restoreCheckpoint(copy)
+  assert.equal(match.getCheckpoint().version, version)
+  if (version === 3) {
+    match.dispatch('CONTINUAR'); match.dispatch('GOL_BLANCO')
+    assert.equal(match.getState().status, 'PERIOD_END')
+  }
+  match.continueToNextPeriod(); match.skipCountdown(); clock += 3_000
+  match.dispatch('GOL_AZUL')
+  assert.equal(match.getState().status, 'PLAYING', 'El objetivo se reinicia al pasar de parte')
+  clock += 3_000; match.dispatch('GOL_AZUL'); match.continueToNextPeriod()
+  assert.equal(match.getState().status, 'MATCH_END')
+  const final = match.getCheckpoint(); validateCheckpoint(final)
+  const document = mapMatch(match.getState(), players, id, false)
+  match.restoreCheckpoint(final)
+  assert.deepEqual(mapMatch(match.getState(), players, id, false), document)
+  if (version === 3) {
+    const broken = structuredClone(final); broken.state.events[0].metadata.rulesVersion = 2
+    assert.throws(() => match.restoreCheckpoint(broken), /dañada/)
+  }
+}
+
 {
   let clock = 0
   const match = new MatchEngine(() => clock)

@@ -1,8 +1,8 @@
 # Condiciones de victoria — 2026-10-01
 
-Petición explícita del propietario, sobre `89e7981` en `codex/reliability-offline-v1`: POR TIEMPO en dos partes, gana quien marca más; POR GOLES hasta que un equipo alcanza el objetivo, única parte sin límite de tiempo. Reemplaza GOALS sumado por periodo y retira AMBAS de la configuración nueva. Rápido/Caos/Clasificatorio y 1v1/2v2 permanecen.
+Bloque inicial sobre `89e7981` en `codex/reliability-offline-v1`: POR TIEMPO en dos partes; POR GOLES con objetivo por equipo, única parte sin límite de tiempo. Sustituyó GOALS sumado por periodo y retiró AMBAS. **La aclaración posterior del propietario restaura AMBAS:** objetivo por equipo dentro de cada parte o reloj, dos partes y ganador por total acumulado. Esa implementación y comprobaciones aparecen al final. Rápido/Caos/Clasificatorio y 1v1/2v2 permanecen.
 
-## Implementación y compatibilidad
+## Implementación y compatibilidad del bloque inicial
 
 - MatchEngine independiente: GOALS V2 cuenta por equipo, reloj ascendente, duración inicial cero, final directo sin descanso. Fin de parte/prórroga/penaltis forzados no alteran este formato. El bloqueo central de tres segundos continúa vigente.
 - TIME: dos partes de la duración seleccionada, goles acumulados, fin por reloj. Se conserva el desempate previo: prórroga de 60 segundos/gol de oro y penaltis. No se ha solicitado cambiar los empates ni el significado de minutos por parte.
@@ -30,3 +30,16 @@ Las pruebas de navegador usan el build aislado y repositorios en memoria; tráfi
 El propietario comunica login y prueba satisfactorios en la Preview real. Se registra como evidencia reportada; el agente no inspeccionó la sesión ni filas/RPC y no declara cubiertos todos los casos de cierre de fase B. No se pidieron contraseñas ni se crearon cuentas.
 
 Los tests/build locales y un push no prueban el despliegue de Vercel. Git puede generar Preview automática de esta rama; no se ha promovido main/producción. Instalación PWA física y comprobación remota de la nueva regla quedan pendientes. Al estar publicada, cerrar/reabrir el marcador sin borrar datos y crear un nuevo partido POR GOLES: con objetivo 3, 2–1 debe continuar y 3–1 debe mostrar el final sin segunda parte. Las partidas antiguas por recuperar mantienen sus reglas para no cambiarlas a mitad de juego.
+
+## Aclaración siguiente: AMBAS — 2026-10-01
+
+Base `a19dfc5`. La retirada de AMBAS queda reemplazada por la aclaración del propietario: cada parte termina cuando un equipo alcanza el objetivo de esa parte o vence el tiempo; gana quien tenga más goles sumados después de las dos partes. Ejemplo 5 minutos/5 goles: primera 5–4, segunda 0–5 → Azul 9–5. No se cuentan victorias de parte. Empate total mantiene prórroga/gol de oro y penaltis existentes.
+
+- MatchEngine: para AMBAS V3 cuenta goles activos por equipo en el periodo actual. Objetivo y reloj se reinician en segunda parte; acumulado visible se conserva. Cierre por goles publica PERIOD_END, no MATCH_END en primera parte. Correcciones/anulaciones siguen usando goles activos y bloqueo central.
+- UI: tres condiciones, GOLES POR EQUIPO Y PARTE y DURACIÓN DE CADA PARTE en AMBAS. Junto al reloj se muestra PARCIAL y META; los números grandes siguen siendo el total. Historial presenta objetivo/tiempo por parte y resultado acumulado.
+- Checkpoint/reglas V3 exclusivamente para AMBAS nuevo; GOALS/TIME mantienen V2. Validación acepta 1/2/3, verifica configuración y metadatos iniciales V3. AMBAS V1/V2 mantiene suma histórica por parte tras recargas. El contenedor local, IDs, colas, hash de documentos previos y contratos SQL no cambian. Sin migraciones ni modificación de datos remotos.
+- `npm test`: siete grupos correctos, estadísticas/análisis 41/41. Motor prueba 3–2 que continúa con objetivo 5, dos cierres por goles y final 5–9, dos cierres por reloj y final 4–2, parcial reiniciado aunque el acumulado supera el objetivo. Recuperación compara V2/V3, cierre de 24 horas excluido del reloj, segunda parte y documento final idéntico.
+- `npm run test:browser`: TypeScript/builds normal y aislado correctos, Chromium 14/14, sin omitidos/pageerror. AMBAS con objetivo 2/minuto: 1–1 continúa; primera 2–1, segunda 0–2 con recarga y checkpoint V3; final Azul 3–2 y detalle coherente. También se conservan los recorridos GOALS/TIME, pendientes, perfiles, protección y PWA.
+- Configuración comprobada en 320×568, 390×844 y 800×480 sin scroll general; captura local revisada `/tmp/futbolin-combined-configuration.png`, fuera de Git. Primer intento de navegador encontró una aserción sobre AMBAS después de abandonar la configuración: eliminada esa comprobación de la pantalla incorrecta, preservando el recorrido específico que selecciona AMBAS y verifica sus reglas. TypeScript detectó una lectura nullable de configuración tras reemplazar estado: corregida con acceso seguro antes de repetir build.
+
+Datos de navegador aislados/en memoria; no es Auth, RPC ni despliegue Vercel real. Cuando la nueva Preview esté disponible, crear AMBAS nuevo y comprobar parciales y total en ambas partes. Las copias antiguas siguen sus reglas, sin reinterpretarlas durante una partida.

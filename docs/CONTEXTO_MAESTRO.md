@@ -180,18 +180,19 @@ Idealmente:
 
 ## 8. CONFIGURACIÓN DE VICTORIA
 
-**Decisión explícita posterior del propietario, 2026-10-01:** existen dos condiciones para partidos nuevos: POR GOLES y POR TIEMPO. Reemplaza la selección anterior de GOALS/TIME/BOTH y el criterio de goles sumados por periodo del apartado 59.
+**Decisiones explícitas posteriores del propietario, 2026-10-01:** POR GOLES y POR TIEMPO conservan las reglas aclaradas; la aclaración siguiente mantiene también AMBAS. Reemplazan el criterio anterior de goles sumados por periodo del apartado 59 y la retirada temporal de AMBAS.
 
 - POR GOLES: una única parte, sin límite de tiempo. Gana el primer equipo que alcanza el objetivo configurado (1–20). Ejemplo: objetivo 5; un 3–2 continúa y un 5–2 termina. El reloj muestra tiempo jugado y excluye pausas.
 - POR TIEMPO: dos partes con marcador acumulado; gana quien tiene más goles tras las dos partes. La duración configurada sigue correspondiendo a cada parte (1–30 minutos).
+- AMBAS: dos partes; cada una termina cuando un equipo alcanza el objetivo de goles de esa parte o vence su reloj, lo que ocurra primero. Objetivo reiniciado por parte y marcador acumulado conservado. El ganador se decide al terminar las dos partes por el total, no por victorias de parte. Ejemplo 5 goles/5 minutos: primera 5–4, segunda 0–5 → gana Azul 9–5.
 
-AMBAS permanece únicamente como compatibilidad del motor/datos anteriores; no se ofrece para partidos nuevos en la UI. Los controles siguen siendo grandes y táctiles.
+La UI ofrece las tres condiciones. AMBAS nuevo usa reglas/checkpoint V3; sus copias V1/V2 mantienen la antigua suma por parte. GOALS/TIME nuevos siguen V2. Los controles siguen siendo grandes y táctiles.
 
 ## 9. ESTRUCTURA DEL PARTIDO
 
-POR TIEMPO: 1ª PARTE → 2ª PARTE → FINAL. POR GOLES: ÚNICA PARTE → FINAL al alcanzar un equipo el objetivo, sin descanso, segunda parte, prórroga ni penaltis.
+POR TIEMPO y AMBAS: 1ª PARTE → 2ª PARTE → FINAL con marcador acumulado. POR GOLES: ÚNICA PARTE → FINAL al alcanzar un equipo el objetivo, sin descanso, segunda parte, prórroga ni penaltis.
 
-Si hay empate tras las dos partes por tiempo: PRÓRROGA. Se conserva el desempate existente; no se ha solicitado modificarlo.
+Si hay empate tras las dos partes por tiempo o AMBAS: PRÓRROGA. Se conserva el desempate existente; no se ha solicitado modificarlo.
 
 Duración prevista: 1 minuto. La prórroga utiliza GOL DE ORO. El primer gol gana inmediatamente.
 
@@ -1022,6 +1023,8 @@ Nunca romper estos comportamientos sin motivo explícito.
 En la V1 se tomó la decisión: la condición de goles se evalúa POR PERIODO, mientras el marcador total permanece visible durante todo el partido.
 
 **Reemplazada por autorización explícita del propietario el 2026-10-01:** para nuevos partidos GOALS, objetivo por equipo en una sola parte sin límite de tiempo (apartados 8–9). Checkpoint V2 y `config.rulesVersion=2` fijan esa semántica. Copias V1 sin marcador de versión mantienen sus reglas al recuperar y se vuelven a exportar V1; no se reinterpreta una partida empezada. Los resultados históricos y colas pendientes no se reescriben.
+
+**Aclaración siguiente del propietario:** mantener AMBAS con dos partes y ganador por total acumulado. El objetivo pertenece a un equipo dentro de cada parte, sin sumar goles de ambos equipos ni usar el acumulado para cerrar la segunda parte. `rulesVersion=3`/checkpoint V3 para AMBAS nuevo; copias AMBAS V1/V2 continúan bajo sus reglas anteriores. GOALS y TIME V2 conservan su comportamiento. El parcial de la parte y objetivo se muestran junto al reloj; los números grandes siguen siendo el acumulado. Historial distingue AMBAS V3 por los metadatos del inicio.
 
 El evento inicial registra `metadata.rulesVersion`, admitido por el esquema existente. El historial distingue las reglas nuevas de las anteriores y no presenta un límite de tiempo para GOALS. No se cambian tablas/RPC: `engine_version` de la base sigue siendo el valor original del contrato V1, distinto de la versión del checkpoint/reglas. El campo obligatorio `time_limit_seconds` conserva su valor compatible, sin intervenir en GOALS.
 
