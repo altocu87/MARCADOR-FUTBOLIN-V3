@@ -15,7 +15,7 @@
 
 El 2026-10-01 se preparó en `/workspace/MARCADOR-FUTBOLIN-V3` un bloque independiente, autorizado en el chat de configuración: jugadores reales, recuperación de partidos e historial **local al navegador**. Se desarrolló desde b10b1df antes de descubrir la actualización documental 900e470. Al preparar su publicación se incorporó 900e470 mediante fast-forward, preservando los cambios de código y los documentos del propietario.
 
-Rama de entrega: `codex/local-players-match-recovery`. Se mantiene separada de `main` para integrar las mejoras con el bloque Supabase del PC sin sustituirlo ni perder trabajo. El hash y la confirmación del push se registrarán cuando la operación se haya ejecutado. No se ha publicado un despliegue ni aplicado migraciones desde este bloque.
+Rama de entrega: `codex/local-players-match-recovery`. Se mantiene separada de `main` para integrar las mejoras con el bloque Supabase del PC sin sustituirlo ni perder trabajo. **Código publicado en GitHub en el commit 84cc183 — feat: add local players, match recovery and history; push confirmado el 2026-10-01.** Se verificó la referencia remota con `git ls-remote`. `main` continúa en 900e470, sin integrar este bloque. No se ha publicado un despliegue ni aplicado migraciones desde este bloque. La API de GitHub devuelve Forbidden incluso tras reintentar fuera del sandbox: no se ha creado un PR; esto no impidió el push mediante Git.
 
 Implementación de esta rama:
 
@@ -45,7 +45,7 @@ Límites y diferencias que deben resolverse antes de integrar en main:
 | --- | --- |
 | A. Simulador funcional | Publicado en b10b1df |
 | B. Persistencia Supabase V1 | Implementada y probada en el checkout local; falta prueba autenticada de navegador y commit/push del código |
-| Bloque cloud paralelo | Jugadores, recuperación e historial locales; entrega en rama separada, pendiente integración con Supabase V1 |
+| Bloque cloud paralelo | Publicado en 84cc183, rama codex/local-players-match-recovery; pendiente integración con Supabase V1 y main |
 | C–J. Estadísticas, XP/ELO, logros, torneos, audiovisual avanzado, ESP32, OTA | Futuras; no autorizadas para implementación inmediata |
 
 ## Código local implementado en la fase B
@@ -143,9 +143,9 @@ Después, el agente debe verificar con la capa Supabase real:
 
 ## Registro de cambios
 
-### 2026-10-01 — Bloque cloud local preparado para publicación en rama separada
+### 2026-10-01 — Bloque cloud local publicado en rama separada
 
-El usuario autorizó subir a GitHub jugadores, recuperación e historial locales. Se descubrió y conservó el contexto de Supabase del PC al sincronizar origin/main. Documentadas las 40 pruebas superadas, las diferencias de navegación/modo prueba/journal y el bloqueo de gol todavía pendiente. No se modifica el proyecto Supabase ni se considera cerrada su fase B.
+El usuario autorizó subir a GitHub jugadores, recuperación e historial locales. Se descubrió y conservó el contexto de Supabase del PC al sincronizar origin/main. Documentadas las 40 pruebas superadas, las diferencias de navegación/modo prueba/journal y el bloqueo de gol todavía pendiente. Publicado el código en 84cc183 con push confirmado; main no se modifica y no hay PR ni despliegue confirmado. No se modifica el proyecto Supabase ni se considera cerrada su fase B.
 
 ### 2026-10-01 — Persistencia Supabase V1, trabajo local pendiente de acceso humano
 
