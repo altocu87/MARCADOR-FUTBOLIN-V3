@@ -26,7 +26,7 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 | Bloque | Entrega | Estado al preparar el plan | Condición para comenzar |
 | --- | --- | --- | --- |
-| 01 | Consolidación y comprobación real | 2026-10-01: prueba 1 humana OK; cierre directo de prueba 2 corregido; 3–5 simuladas; faltan recorrido real 6–11/PWA y confirmación del arreglo | Evidencia y pasos restantes en VERIFICACION_BLOQUE_01.md |
+| 01 | Consolidación y comprobación real | 2026-10-01: pruebas 1 y 6 humanas OK; cierre de 2 corregido; 3–5 simuladas; incidencia 7 pendiente de diagnóstico y restantes 8–11/PWA | Evidencia y pasos restantes en VERIFICACION_BLOQUE_01.md |
 | 02 | XP y niveles | Siguiente propuesto, todavía condicionado | Cerrar pendientes concretos del 01 y aprobar XP/curva/históricos |
 | 03 | ELO, ranking y categorías | Propuesto | Base verificada; parámetros competitivos aprobados |
 | 04 | Análisis competitivo y predicción | Propuesto | 03 y reglas/muestra aprobadas |
@@ -39,7 +39,7 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 Ejecución del bloque 01: sincronización final sobre f9ebe15, dos bugs corregidos; npm test siete grupos/estadísticas 41/41, Chromium 15/15 y builds correctos. RPC real desde motor con ROLLBACK y cuenta existente; datos originales preservados. Preview denegada por alcance Vercel, sin sesión web del operador; no se declara cierre completo. Detalles en [VERIFICACION_BLOQUE_01.md](VERIFICACION_BLOQUE_01.md) y estado vivo. Publicación fast-forward de eb0f098/e164b5b comprobada por push y referencia remota; esta anotación se versiona después. La publicación no promueve main ni activa XP/ELO.
 
-Continuación por feedback humano: prueba 1 confirmada; prueba 2 elimina el paso VER RESULTADO al cerrar segunda parte con ganador. npm test correcto y Chromium 20/20, incluidas simulaciones 3–5 y cuatro recorridos naturales de desempate TIME/AMBAS. No pedir repetir esas simulaciones por rutina ni dar por aprobada la prueba 2 completa: falta confirmar el arreglo en Preview y pruebas reales 6–11. Ledger en VERIFICACION_BLOQUE_01.md; bloque 02 sigue condicionado.
+Continuación por feedback humano: prueba 1 confirmada; prueba 2 elimina el paso VER RESULTADO al cerrar segunda parte con ganador. npm test correcto y Chromium 20/20, incluidas simulaciones 3–5 y cuatro recorridos naturales de desempate TIME/AMBAS. No pedir repetir esas simulaciones por rutina ni dar por aprobada la prueba 2 completa: falta confirmar el arreglo en Preview y las comprobaciones reales pendientes del checklist. Seguimiento posterior: prueba 6 confirmada por el operador; prueba 7 vuelve al inicio sin recuperar, pendiente aclarar modo al inicio/origen/avisos. No repetir la 6. Registro en VERIFICACION_BLOQUE_01.md; bloque 02 sigue condicionado.
 
 Cada fila pasa a en curso, completado o pendiente de verificación con evidencia fechada; no marcar todas completadas al copiar los prompts. El orden puede ajustarse expresamente: el pulido web no depende de disponer de hardware y el diseño del protocolo puede prepararse sin una placa conectada.
 

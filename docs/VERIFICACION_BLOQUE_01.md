@@ -72,12 +72,14 @@ Verificación de esta continuación: npm test, siete grupos correctos (estadíst
 | 3 · AMBAS entre partes | Simulación automatizada correcta; no pedir repetirla manualmente por rutina |
 | 4 · AMBAS final en primera | Simulación automatizada correcta; no pedir repetirla manualmente por rutina |
 | 5 · Prórroga/penaltis | Simulación automatizada correcta para TIME/AMBAS; no pedir repetirla manualmente por rutina |
-| 6 · Guardado/historial/perfiles | Falta evidencia desde la sesión real del operador |
-| 7 · Recuperación tras recarga | Falta recorrido desde el origen real |
+| 6 · Guardado/historial/perfiles | Confirmada OK por el propietario; no repetir |
+| 7 · Recuperación tras recarga | Incidencia reportada: vuelve al inicio sin ofrecer copia; pendiente aclarar modo al iniciar, partido sin finalizar, origen y avisos |
 | 8 · Pendiente offline/reconexión | Falta recorrido desde el origen real; mismo ID, un solo resultado |
 | 9 · Prueba ON sin incremento | Falta contraste de historial/perfiles reales antes/después |
 | 10 · Alias/baja lógica | Falta comprobación desde UI real; no borrar jugadores |
 | 11 · PWA física | Falta instalación y reapertura offline en el teléfono real |
+
+Seguimiento posterior del propietario: **6 OK**. En **7**, recargó y volvió a la página principal sin partido por recuperar. Se registra la incidencia; no se afirma todavía pérdida de una copia existente ni causa confirmada. La recuperación está prevista únicamente para partidos iniciados con PRUEBA OFF, sin finalizar, en el mismo navegador/origen/cuenta. Cambiar a OFF después de iniciar no cambia ese partido. Con PRUEBA ON no se escribe copia y volver al inicio tras recarga es el comportamiento aprobado. No borrar almacenamiento ni crear otra cuenta para diagnosticar.
 
 El agente asume las simulaciones 3–5. Una simulación local no cierra la dependencia de Preview autenticada/PWA física, pero no requiere repetir esos guiones completos por rutina.
 
@@ -88,8 +90,8 @@ El conector Vercel deniega el equipo `altocuvlc-9686s-projects` con 403 de autor
 En la [Preview estable de esta rama](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app), usando la cuenta existente y una sola pestaña:
 
 1. Cuando Vercel muestre la actualización, cerrar/reabrir sin borrar almacenamiento. Con prueba ON, confirmar únicamente el arreglo de la prueba 2: al acabar la segunda parte con marcador desigual aparece directamente FINAL DEL PARTIDO y ganador, sin VER RESULTADO. GOALS ya confirmado; simulaciones 3–5 a cargo del agente, no repetirlas por rutina.
-2. Con prueba OFF y jugadores existentes, completar un resultado que se quiera conservar: comprobar resumen, historial/detalle (participantes/eventos) y perfiles de ambos equipos; editar alias/desactivar/reactivar conserva la identidad e historial. No intentar borrar jugadores reales para probar protección.
-3. Mismo origen/cuenta: con prueba OFF, recargar una partida en curso, recuperar en pausa y conservar marcador/tiempo/ID; terminar sin conexión, consultar pendiente, recargar y reconectar. Debe quedar un único resultado y la cola vacía. Ese resultado también se conserva como dato real.
+2. Guardado/historial/perfiles (prueba 6) ya confirmados; no repetirlos. Pendiente solo prueba 10 de edición de alias/desactivar/reactivar, conservando identidad e historial. No intentar borrar jugadores reales para probar protección.
+3. Resolver primero la incidencia de prueba 7: confirmar PRUEBA OFF desde el inicio, partido todavía en marcador, mismo origen/navegador/cuenta y cualquier aviso. Si requiere reproducción humana, POR GOLES objetivo 5, un gol (1–0), recargar la misma pestaña sin finalizar y comprobar recuperación en pausa. Después, terminar sin conexión, consultar pendiente, recargar y reconectar. Debe quedar un único resultado y la cola vacía. Ese resultado también se conserva como dato real.
 4. Repetir un partido con prueba ON: no aumenta historial/perfiles/partidos/eventos ni crea pendientes/checkpoint. Comparar antes/después; comunicar solo resultados o errores, sin credenciales.
 5. En el teléfono real, preparar OFFLINE DISPONIBLE e instalar/abrir la PWA, comprobar reapertura offline y actualización detrás de la protección Vercel. La emulación local no cierra esta comprobación física.
 
