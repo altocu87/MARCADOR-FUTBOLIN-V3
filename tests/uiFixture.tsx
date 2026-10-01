@@ -20,24 +20,26 @@ const saveMode = new URLSearchParams(window.location.search).get('save')
 const realNetwork = new URLSearchParams(window.location.search).get('network') === 'real'
 const statisticsMode = new URLSearchParams(window.location.search).get('statistics')
 // Built, isolated profile/pagination fixtures. No database writes.
-if (statisticsMode === 'seed') {
-  for (let i = 0; i < 25; i++) {
-    let now = Date.UTC(2026, 9, 1) + i * 180_000
+if (statisticsMode === 'seed' || statisticsMode === 'analysis') {
+  const analysis = statisticsMode === 'analysis'
+  for (let i = 0; i < (analysis ? 12 : 25); i++) {
+    let now = Date.UTC(2026, 9, 1) + i * (analysis ? 86_400_000 : 180_000)
+    const extra = analysis ? i % 3 !== 0 : i >= 23
     const engine = new MatchEngine(() => now)
-    engine.createMatch({ mode: 'QUICK', victoryCondition: 'GOALS', goalLimit: 1, halfDurationMinutes: 1 })
+    engine.createMatch({ mode: analysis ? (['QUICK', 'CHAOS', 'RANKED'] as const)[i % 3] : 'QUICK', victoryCondition: 'GOALS', goalLimit: 1, halfDurationMinutes: 1 })
     engine.skipCountdown(); engine.dispatch('GOL_BLANCO'); engine.continueToNextPeriod(); engine.skipCountdown()
     now += 3_000
-    engine.dispatch(i < 23 ? 'GOL_BLANCO' : 'GOL_AZUL'); engine.continueToNextPeriod()
-    if (i >= 23) {
+    engine.dispatch(extra ? 'GOL_AZUL' : 'GOL_BLANCO'); engine.continueToNextPeriod()
+    if (extra) {
       engine.skipCountdown()
-      if (i === 23) { now += 3_000; engine.dispatch('GOL_AZUL') }
+      if (analysis ? i % 3 === 1 : i === 23) { now += 3_000; engine.dispatch('GOL_AZUL') }
       else {
         now += 60_000; engine.tick(); engine.continueToNextPeriod()
         for (let kick = 0; kick < 3; kick++) { engine.dispatch('PENALTI_BLANCO_FALLO'); engine.dispatch('PENALTI_AZUL_GOL') }
       }
     }
     const id = `00000000-0000-4000-8000-${String(100 + i).padStart(12, '0')}`
-    matches.set(id, mapMatch(engine.getState(), players, id, false))
+    matches.set(id, mapMatch(engine.getState(), analysis && i % 2 === 0 ? players.slice(0, 2) : players, id, false))
   }
   players[3].active = false
   players.push({ ...players[0], id: '00000000-0000-4000-8000-000000000005', name: 'SIN PARTIDOS' })

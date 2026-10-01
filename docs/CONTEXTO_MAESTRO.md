@@ -437,6 +437,8 @@ Esto permite hacer pruebas sin contaminar datos reales.
 
 Decisión posterior del propietario, 2026-10-01: autoriza desarrollar en su totalidad el bloque de estadísticas básicas propuesto, con datos simulados mientras queda pendiente la comprobación real de fase B. Perfil básico e historial filtrado implementados: partidos, victorias, derrotas, empates, porcentaje y goles de su equipo a favor/en contra/diferencia. No es autorización de XP/ELO/niveles calculados, logros ni estadísticas avanzadas. El resto de este apartado sigue siendo hoja de ruta futura.
 
+Autorización posterior del mismo día: ampliar el análisis del perfil con últimos cinco resultados, racha actual/mejor racha de victorias, rendimiento 1v1/2v2, filtros inclusivos de fechas/modalidad/formato y evolución acumulada de victorias. Todas las secciones e historial del perfil usan el mismo conjunto. Empates interrumpen victorias/derrotas; penaltis deciden resultado sin sumar goles. Datos en memoria, sin nuevos contadores/tablas ni escritura; no habilita XP/ELO, logros, predicción o forma competitiva. Evidencia y límites en VERIFICACION_ESTADISTICAS.md.
+
 Perfil futuro de jugador:
 
 - foto;
@@ -1141,6 +1143,8 @@ Nunca sacrificar 1–5 por funciones online.
 
 Actualización posterior, 2026-10-01: el propietario autoriza avanzar a estadísticas básicas/perfiles (primer bloque C), sin cerrar artificialmente B ni promover a main. Lecturas privadas desde resultados existentes, sin nuevas tablas ni contadores. Se excluyen prueba/pendientes, se deduplican IDs y se recorre el historial completo con cursor. Los penaltis deciden el ganador sin añadirse a goles del partido. XP/ELO y el resto de fases permanecen fuera del bloque. Ver ESTADO_ACTUAL.md y VERIFICACION_ESTADISTICAS.md.
 
+Siguiente ampliación autorizada e implementada: análisis de últimos resultados/rachas, formatos, filtros y evolución en el perfil. Fechas locales inclusivas y orden cronológico estable; rango inválido no sustituye el filtro vigente. Reutiliza la lectura completa en memoria para mantener coherencia entre análisis e historial paginado. El acceso autenticado real sigue pendiente; no cambia esa condición de cierre ni promueve main.
+
 La siguiente gran fase prevista es PERSISTENCIA SUPABASE V1.
 
 Actualización de traspaso del 2026-10-01: esta fase ya tiene cliente/Auth, jugadores, repositorios, guardado transaccional, historial, cola offline, recuperación y PWA implementados en la rama de desarrollo. No es una orden de rehacerlos. Sigue abierta por la verificación autenticada navegador → Supabase y la revisión/promoción pendientes. Consultar ESTADO_ACTUAL.md para las referencias y bloqueos reales.
@@ -1270,6 +1274,8 @@ Desde el bloque responsive, npm run test:layout verifica preferencia/escala fís
 Revisión cloud del 2026-10-01: `npm run test:browser` añade cinco recorridos reproducibles sobre builds y fixture aislada, incluido servidor realmente apagado. No sustituye la cuenta/RPC reales. Al vencer el reloj se publica únicamente el estado definitivo de fin de parte; un tick retrasado no suma tiempo después del límite. Se mantienen los tiempos de journals/copias V1 anteriores para no retrocederlos. No cambia la condición GOALS por periodo, los tres segundos de bloqueo ni las reglas de penaltis. Evidencia en VERIFICACION_NUBE.md y estado operativo en ESTADO_ACTUAL.md.
 
 Bloque posterior de estadísticas: `npm test` añade test:statistics (siete grupos); test:browser amplía a ocho recorridos. Probar más de 20 partidos, 1v1/2v2, reintentos, anulaciones, gol de oro/penaltis, jugadores inactivos/renombrados, errores y cancelación. Comprobar navegación, historial filtrado y controles visibles en web/800×480. No confundir pruebas SDK con transporte aislado con una consulta autenticada del proyecto real.
+
+Ampliación de análisis: test:statistics suma 41 casos; test:browser, diez recorridos. Añade rachas/empates, filtros combinados, límites inclusivos, días de 23/25 horas, precisión temporal, evolución sobre 200 resultados, gráfico acotado, rango inválido, filtro vacío, vuelta del historial y pérdida/reconexión conservando filtro. Verificar formularios, tablas y gráfico con scroll interno en móvil y referencia física. Las cifras actuales de comprobación están en ESTADO_ACTUAL.md.
 
 ## 77. VERIFICACIÓN VISUAL
 

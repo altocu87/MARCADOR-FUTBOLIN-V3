@@ -8,7 +8,7 @@ Antes de modificar código, leer `AGENTS.md`, `docs/CONTEXTO_MAESTRO.md` y `docs
 
 Persistencia V1 está en revisión en `codex/reliability-offline-v1`: tests locales y simulaciones correctos, pero falta el recorrido autenticado navegador → Supabase con la cuenta del operador. No considerar esta fase cerrada ni promoverla a main hasta completar esa validación. Las migraciones del proyecto existente ya están aplicadas; no repetirlas.
 
-Por autorización posterior del propietario, se añade el primer bloque de fase C: estadísticas básicas y perfiles, desarrollado/verificado con datos aislados mientras sigue pendiente el recorrido real de fase B. No incluye XP, niveles calculados, ELO ni una clasificación competitiva.
+Por autorización posterior del propietario, se añade el primer bloque de fase C: estadísticas básicas, perfiles y análisis de resultados con filtros, desarrollado/verificado con datos aislados mientras sigue pendiente el recorrido real de fase B. No incluye XP, niveles calculados, ELO ni una clasificación competitiva.
 
 ## Continuar en Codex Cloud
 
@@ -57,7 +57,7 @@ npm run preview
 
 El build comprueba TypeScript y genera `dist/`. Las pruebas SQL reproducibles están en `supabase/tests/persistence_v1.sql`: ejecutar completas como administrador, con su ROLLBACK final. Usan fixtures temporales y no dejan cuentas ni partidos.
 
-`npm run test:browser` genera ambos builds y ejecuta ocho regresiones Chromium con Playwright 1.63.0: vistas, prueba sin guardado, recuperación 2v2, pendientes/historial sin duplicados, perfiles/estadísticas y reapertura PWA con servidor apagado. Usa `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, Chromium del sistema en `/usr/bin/chromium` o el navegador de Playwright (`npx playwright install chromium`). Preview aislado en 5197, contextos temporales y tráfico Supabase bloqueado; no verifica Auth ni datos reales. `npm test` ejecuta siete grupos independientes del navegador. Resultados del bloque inicial cloud y pasos para cerrar fase B en [VERIFICACION_NUBE.md](docs/VERIFICACION_NUBE.md); estadísticas en [VERIFICACION_ESTADISTICAS.md](docs/VERIFICACION_ESTADISTICAS.md).
+`npm run test:browser` genera ambos builds y ejecuta diez regresiones Chromium con Playwright 1.63.0: vistas, prueba sin guardado, recuperación 2v2, pendientes/historial sin duplicados, perfiles/estadísticas, análisis/filtros y reapertura PWA con servidor apagado. Usa `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, Chromium del sistema en `/usr/bin/chromium` o el navegador de Playwright (`npx playwright install chromium`). Preview aislado en 5197, contextos temporales y tráfico Supabase bloqueado; no verifica Auth ni datos reales. `npm test` ejecuta siete grupos independientes del navegador; test:statistics incluye 41 casos de estadísticas/análisis. Resultados del bloque inicial cloud y pasos para cerrar fase B en [VERIFICACION_NUBE.md](docs/VERIFICACION_NUBE.md); estadísticas en [VERIFICACION_ESTADISTICAS.md](docs/VERIFICACION_ESTADISTICAS.md).
 
 La página `/tests/ui-fixture.html` inyecta repositorios en memoria para verificar formularios, partido e historial sin usar credenciales ni modificar Supabase. Está disponible en desarrollo y en el build aislado `npm run build:test-offline` → `npm run preview:test-offline` (puerto 5188, salida ignorada `tmp/pwa-test`). No valida Supabase real ni forma parte de `dist/` de producción. `?network=real` exige respuesta del servidor local para simular identidad, jugadores y guardado; permite apagar ese servidor y verificar el arranque desde la caché PWA.
 
@@ -140,6 +140,16 @@ RANKING → ESTADÍSTICAS → elegir jugador, o AJUSTES → JUGADORES → PERFIL
 Totales calculados desde **todos** los resultados guardados, no solo los primeros 20. Lectura por cursor fecha/ID, deduplicación por UUID y ninguna actualización de contadores. 1v1 y 2v2 usan la perspectiva del equipo; los goles no se atribuyen individualmente. Prórroga incluida en el marcador; penaltis deciden victoria/derrota pero sus lanzamientos no suman goles. Porcentaje = victorias / partidos × 100, redondeado a una decimal; sin partidos es 0%. Empates guardados se conservan como empates, aunque el flujo actual normalmente los resuelva.
 
 Modo prueba, partidos no finalizados y cola pendiente quedan fuera. La baja lógica/renombrado no pierde resultados porque se relacionan por ID. Errores de página impiden mostrar totales parciales; sin conexión no se presentan ceros como estadísticas reales. Cancelación al abandonar/cambiar de perfil o cuenta. Actualizar vuelve a consultar; resultados añadidos durante la lectura requieren otra consulta para obtener una vista nueva, no se promete un snapshot transaccional entre dispositivos. No hay nueva tabla, migración, API de escritura ni modificación de Auth/RLS. El SDK/fixture aislados no sustituyen la verificación Supabase autenticada pendiente.
+
+### Análisis, filtros y evolución
+
+El perfil añade los últimos cinco resultados (más reciente primero), racha actual de victorias/derrotas/empates, mejor racha de victorias y comparación 1v1/2v2. Los empates cortan las rachas de victorias/derrotas; un triunfo por penaltis cuenta como victoria. Los nombres del listado reciente son snapshots históricos, no goleadores.
+
+FILTRAR ANÁLISIS permite elegir Desde/Hasta, modalidad Rápido/Caos/Clasificatorio y formato. APLICAR FILTROS cambia todas las métricas, rachas, últimos resultados, evolución e historial abierto desde el perfil al mismo conjunto; QUITAR FILTROS restablece todo. Fechas inclusivas según la zona horaria del dispositivo, con límites de día calendario (incluidos cambios de horario). Rango inválido conserva el filtro anterior y muestra aviso. Volver del historial conserva filtros; cambiar de jugador/cuenta los reinicia. No se guardan en almacenamiento ni se envían consultas por cada cambio de selector.
+
+Evolución: porcentaje acumulado de victorias sobre todos los partidos del filtro, ordenados por finalización (con UUID para desempatar fechas idénticas). El gráfico usa hasta 60 puntos representativos; el eje horizontal expresa orden, no distancia temporal. Una tabla desplegable muestra los últimos diez valores exactos y el gráfico tiene descripción accesible. Sin partidos no se dibuja una evolución ficticia ni se recomienda un formato sin muestra.
+
+El perfil carga una vez el historial completo en memoria y filtra localmente. ACTUALIZAR vuelve a leerlo, conservando el filtro; el historial del perfil pagina ese mismo conjunto de 20 en 20 y consulta el detalle por el repositorio existente. El historial global conserva su consulta remota. Al perder conexión se retira el análisis y se vuelve al perfil; al reconectar se consulta de nuevo. No hay caché privada nueva ni garantía de snapshot entre dispositivos. Fixture `?statistics=analysis`: doce resultados del motor real en días/modalidades/formatos distintos, únicamente en memoria.
 
 ### Preparar e instalar la PWA
 

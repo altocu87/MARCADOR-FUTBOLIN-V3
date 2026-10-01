@@ -20,8 +20,8 @@
 | --- | --- |
 | A. Simulador funcional | Publicado en b10b1df |
 | B. Persistencia Supabase V1 | Implementada y probada localmente; rama de desarrollo para revisión; falta prueba autenticada de navegador y promoción a main |
-| C. Estadísticas básicas y perfil | Implementadas por autorización explícita del propietario; pruebas aisladas correctas; pendiente comprobación con Supabase real |
-| C–J. XP/ELO, estadísticas avanzadas, logros, torneos, audiovisual avanzado, ESP32, OTA | Futuras; fuera del bloque autorizado actual |
+| C. Estadísticas, perfil y análisis de resultados | Implementados por autorización explícita del propietario; pruebas aisladas correctas; pendiente comprobación con Supabase real |
+| C–J. XP/ELO, otros análisis competitivos, logros, torneos, audiovisual avanzado, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
 
 ## Código local implementado en la fase B
 
@@ -34,6 +34,7 @@
 - Modo prueba ON por defecto, preferencia local; no guarda partidos/participantes/eventos ni los introduce en la cola local. Sin jugadores reales ofrece dos plazas de práctica solo en este modo. La gestión autenticada de jugadores sí es real.
 - Historial V1 dentro de RANKING: lista paginada de 20 y detalle de configuración, participantes, resultado y cronología. No hay cálculo de ranking.
 - Estadísticas básicas: perfiles de jugadores activos/inactivos desde Ajustes o RANKING → ESTADÍSTICAS, búsqueda e historial filtrado. Partidos, victorias, derrotas, empates, porcentaje y goles de equipo a favor/en contra/diferencia. Cálculo desde todos los resultados guardados con cursor estable e identidad del jugador; sin contadores persistidos, goleadores individuales, XP ni ELO. Prácticas, partidas sin finalizar y pendientes locales quedan excluidos. Sin red o ante error se informa, no se presentan ceros como datos reales.
+- Análisis del perfil: últimos cinco resultados, racha actual y mejor racha de victorias, comparación 1v1/2v2 y porcentaje acumulado de victorias. Filtros locales inclusivos de fechas, modalidad y formato; todo el perfil e historial usan el mismo conjunto. Carga completa reutilizable en memoria, sin almacenamiento nuevo. Gráfico accesible limitado a 60 puntos, tabla de diez valores exactos; cálculos sobre todos los resultados, no solo esos puntos. Al volver del historial conserva filtros; actualizar/reconectar vuelve a consultar.
 - Caché de jugadores y cola de resultados finalizados en localStorage, aisladas por proyecto/cuenta. Reintento manual y automático al reconectar con sesión verificada, fuera del partido activo/guardado. Ajustes incluye lista/detalle local de pendientes. Los goles no dependen de Internet.
 - Web adaptable por defecto: móvil vertical/horizontal, tablet y escritorio; controles táctiles, formularios/listas con scroll interno y área útil centrada de máximo 1600×1000. Referencia física 800×480 conservada y seleccionable en AJUSTES → GENERAL; escalada solo si no cabe. Cambio de vista/tamaño sin reiniciar el motor ni el partido.
 - Panel de simulación solo en desarrollo. No hay comunicaciones físicas ni firmware.
@@ -102,7 +103,7 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 - npm run test:offline: plantilla real de worker, allowlist/privacidad, navegación offline, actualizaciones/cache incompleta, iconos, alcance de identidad, respuestas de conexión desordenadas y observadores de cola.
 - npm run test:layout: preferencia, escala física y navegación/selector/modalidades accesibles.
 - npm run test:auth: validación, normalización, retorno sin tokens, mensajes y SDK con transporte aislado. No equivale a una prueba Auth real.
-- npm test ejecuta siete grupos, todos correctos en la última comprobación; test:statistics aporta 24 casos. npm run test:browser: 8/8 recorridos Chromium, incluidos perfiles, historial filtrado, 25 resultados, jugadores inactivos y errores/offline; builds normal y aislado correctos. No equivale a comprobar Supabase real.
+- npm test ejecuta siete grupos, todos correctos en la última comprobación; test:statistics aporta 41 casos. npm run test:browser: 10/10 recorridos Chromium, incluidos perfiles, análisis/filtros/evolución, historial filtrado, 25 resultados, jugadores inactivos y errores/offline; builds normal y aislado correctos. No equivale a comprobar Supabase real.
 - npm run build: TypeScript y Vite correctos.
 - npm audit: cero vulnerabilidades en la última ejecución.
 - Pruebas SQL en el proyecto real: RLS, cuentas, permisos, equipos/agregado, idempotencia, snapshot, restricciones de borrado, secuencia, modo prueba y rollback correctos. Fixtures íntegramente revertidos con ROLLBACK.
@@ -140,6 +141,8 @@ Después, el agente debe verificar con la capa Supabase real:
 
 Excepción de alcance autorizada posteriormente por el propietario: desarrollar íntegramente estadísticas básicas, perfil e historial filtrado mientras sigue pendiente el acceso externo. Este bloque ya está implementado y probado de forma aislada; no cierra la fase B ni autoriza XP/ELO, cambios de esquema o promoción a main. En la prueba autenticada añadir la comprobación del perfil frente a los resultados reales guardados.
 
+Ampliación autorizada después: últimos resultados, rachas, rendimiento por formato, filtros y evolución. También implementada con datos aislados; añadir esos filtros/valores a la comprobación real. El siguiente cierre pendiente sigue siendo el recorrido autenticado; no es necesario rehacer la configuración del entorno para programar este análisis.
+
 ## Límites conocidos y decisiones a preservar
 
 - Discrepancia del bloqueo de gol corregida el 2026-10-01 en la rama de desarrollo: reproducida con una prueba fallida antes del arreglo y ocho casos correctos después. El motor conserva el plazo al deshacer/corregir/cambiar parte o prórroga. Main aún no contiene esta corrección mientras no se integre la rama.
@@ -150,9 +153,19 @@ Excepción de alcance autorizada posteriormente por el propietario: desarrollar 
 - Usar una sola pestaña activa. La protección frente a journal antiguo no es un protocolo de coordinación simultánea entre pestañas. Copias inválidas se conservan y bloquean su sobrescritura; no hay borrado automático ni botón de descarte de partidas. La precisión de recuperación del reloj es de segundos; una caída abrupta puede perder la fracción aún no escrita.
 - Pendientes locales no son backup ni se comparten entre PC/móvil; la desactivación es más segura que eliminar cuando otros dispositivos puedan tener resultados sin sincronizar.
 - Clave pública configurada localmente en .env.local ignorado; cloud/Vercel necesitan su propia configuración segura. No copiar credenciales a esta documentación.
-- Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, estadísticas avanzadas, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
+- Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, predicción/forma competitiva, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Análisis de resultados, rachas, filtros y evolución
+
+Petición explícita «Hazlo» sobre el bloque propuesto. Base funcional **55b6632**, rama `codex/reliability-offline-v1`, árbol limpio al iniciar y referencia remota main **900e470**. `playerAnalysis.ts` prepara/deduplica/valida y ordena resultados con fracciones temporales y desempate UUID; calcula últimos cinco, racha actual/mejor de victorias, formatos y evolución sobre un único subconjunto. `loadPlayerMatches` reutiliza la carga completa con cursor/cancelación existente; `loadPlayerStatistics` mantiene su contrato.
+
+StatisticsScreen añade filtros explícitos Desde/Hasta/modalidad/formato, validación sin perder el filtro anterior, coherencia entre métricas y subpaneles, retención al volver del historial y retiro del análisis sin red. AnalysisDetails separa presentación, comparación, últimos resultados, gráfico SVG accesible de hasta 60 puntos y tabla exacta de diez. HistoryScreen pagina la misma selección en memoria y conserva detalle remoto/guardas frente a respuestas abandonadas; historial global intacto. Cambios de formato de partido solo inferidos de 2/4 participantes balanceados, no de modalidad ni nombres. Fechas locales inclusivas por día calendario, incluidos cambios DST; empates cortan rachas de victorias/derrotas. No hay premios ni forma/predicción competitiva.
+
+Verificación: npm test (siete grupos, estadísticas/análisis **41/41**), navegador **10/10**, TypeScript y builds normal/fixture correctos; auditoría de producción 0 vulnerabilidades, sin nuevas dependencias ni lockfile cambiado. Nuevos tests incluyen filtros combinados/vacíos/inválidos, perspectiva 1v1/2v2, orden/fracciones/desfase, DST 23/25h, duplicados/conflictos y evolución/gráfico sobre 200 partidos. Fixture aislada de doce partidos del motor real, días/modalidades/formatos distintos, reconexión en historial filtrado y tamaños 320×568, 390×844, 844×390, 800×480, 768×1024, 1440×900 y vista física. Corregidos nombres accesibles de selectores y reapertura del panel de filtros detectados por navegador. Revisión visual móvil/física sin pageerror, evidencias temporales fuera de Git.
+
+Sin cambios de motor, tablas, RPC, migraciones, permisos, Auth, datos externos, planes o producción. Contexto/README/verificación actualizados; publicación de la rama se comprueba con Git y se informa al entregar, sin afirmar un nuevo despliegue Preview verificado. Supabase real permanece pendiente. El siguiente paso de cierre es comprobar jugadores → guardado → perfil/filtros/historial con cuenta del operador; XP/ELO no autorizado automáticamente.
 
 ### 2026-10-01 — Estadísticas básicas, perfil e historial de jugador
 
