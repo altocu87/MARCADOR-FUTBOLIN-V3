@@ -11,6 +11,8 @@
 - Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**, persistencia/fiabilidad **eeb23b8**, recuperación activa **176d470** y PWA **917de97**, con push comprobado. Las actualizaciones documentales posteriores tienen sus propios commits; contrastar `git log`/referencias al retomar. No equivale a promoverla a main ni completar la fase B.
 - Entorno de esta implementación: **PC local Windows**, no Codex Cloud. Las instrucciones de nube del apartado 79 se aplican cuando se trabaje realmente allí.
 - Esta ficha describe persistencia/fiabilidad/recuperación, PWA y adaptación responsive de la rama de desarrollo. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
+- Base comprobada al preparar el traspaso cloud: HEAD **f8ee98c — Record verified data-enabled preview deployment**, código funcional **9537c79**, en **codex/reliability-offline-v1**; origin/main sigue en **900e470**. Fetch y comparación remota: rama de desarrollo 0/0, árbol limpio al iniciar. Esta actualización documental se versiona después; obtener su hash con `git log`, no tratar f8ee98c como un pin para las futuras tareas.
+- Entrada para un agente nuevo: [TRASPASO_NUBE.md](TRASPASO_NUBE.md), resumen fechado y guía de arranque. Esta ficha sigue siendo el estado operativo de referencia.
 
 ## Fases
 
@@ -62,6 +64,7 @@
 - `src/ui/layout/displayMode.ts`, `FixedCanvas.tsx`, `src/ui/components/DisplaySettings.tsx`: preferencia versionada, viewport visible, ambas vistas y selector.
 - `src/styles/responsive.css`, `TopMenu.tsx`, `MatchFlow.tsx`: presentación web, navegación accesible, cuenta atrás nativa y cifras ajustables. Las medidas originales de global.css siguen sirviendo a la vista física.
 - `tests/layout.test.tsx`, `docs/VERIFICACION_RESPONSIVE.md`: regresiones de presentación y evidencia visual. Vite separa React en un paquete estático que la PWA también precachea.
+- `src/services/supabase/auth.ts`, `authFeedback.ts`, `tests/auth.test.ts`, `docs/VERIFICACION_VERCEL_DATOS.md`: acceso privado, validación, retorno seguro, SDK aislado y evidencia de la conexión Preview.
 
 ## Supabase ya aplicado — no repetir a ciegas
 
@@ -94,7 +97,8 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 - npm run test:persistence y npm test: correctos.
 - npm run test:recovery: reloj, bloqueo, IDs anulados, estados, penaltis, corrupción, aislamiento, modo prueba y entrega del resultado sin duplicados.
 - npm run test:offline: plantilla real de worker, allowlist/privacidad, navegación offline, actualizaciones/cache incompleta, iconos, alcance de identidad, respuestas de conexión desordenadas y observadores de cola.
-- npm run test:layout: preferencia, escala física y navegación/selector/modalidades accesibles. npm test ejecuta cinco grupos; todos correctos tras el bloque responsive.
+- npm run test:layout: preferencia, escala física y navegación/selector/modalidades accesibles.
+- npm run test:auth: validación, normalización, retorno sin tokens, mensajes y SDK con transporte aislado. npm test ejecuta seis grupos; todos correctos en la comprobación de traspaso. No equivale a una prueba Auth real.
 - npm run build: TypeScript y Vite correctos.
 - npm audit: cero vulnerabilidades en la última ejecución.
 - Pruebas SQL en el proyecto real: RLS, cuentas, permisos, equipos/agregado, idempotencia, snapshot, restricciones de borrado, secuencia, modo prueba y rollback correctos. Fixtures íntegramente revertidos con ROLLBACK.
@@ -139,6 +143,18 @@ Después, el agente debe verificar con la capa Supabase real:
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, estadísticas avanzadas, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Resumen completo y traspaso documentado a Codex Cloud
+
+Petición del propietario: conservar todos los avances y preparar continuidad en la nube. Creado TRASPASO_NUBE.md con resumen funcional, arquitectura, hitos, estado de servicios, configuración mínima, limitaciones y mensaje inicial reutilizable. Actualizados AGENTS.md, README, esta ficha y los apartados 69/76/79 del contexto maestro. Se conservan los 84 apartados y las decisiones históricas; no se cambia ninguna regla del marcador.
+
+Inspeccionado el chat existente «Configurar MARCADOR-FUTBOLIN-V3»: seleccionó el repositorio con ref main, guardó un borrador de instalación/arranque y validó motor/build de aquella versión. No hay evidencia de publicación posterior del entorno en ese chat. Sus instrucciones de Supabase futura y solo test:engine están desactualizadas respecto a la rama de desarrollo. La captura muestra Review; comprobar publicación/republish y pedir sincronización de la rama correcta antes de continuar. No se envió ningún mensaje a ese chat ni se modificó su configuración.
+
+Comprobaciones de este bloque: lectura completa del contexto/estado e inspección de archivos/scripts/historial; fetch correcto y rama remota 0/0 antes de editar; npm test (seis grupos) y npm run build correctos, sin errores TypeScript. Revisión documental de enlaces, numeración y git diff --check antes de publicar. No se repite verificación visual, Auth real, SQL ni auditoría remota por ser un bloque exclusivamente documental. La evidencia de servicios/pruebas visuales procede de los bloques anteriores, no de nuevas comprobaciones autenticadas.
+
+Sin cambios en aplicación, dependencias, migraciones, datos, variables, planes, producción o protección. La publicación documental en la rama de desarrollo puede generar otra Preview automática con el mismo código; no se solicita despliegue manual ni se afirma haberlo verificado en este bloque. El commit de traspaso y su push se comprueban con el historial/referencia remota y se informan al propietario; no se incrusta el hash del propio commit dentro de él.
+
+Siguiente acción: publicar/actualizar el entorno si está en borrador, iniciar la tarea cloud desde la rama actual y leer los documentos compartidos. Para trabajar en código no es imprescindible crear todavía la cuenta del marcador. Para cerrar la fase B sí faltan Redirect URLs, cuenta/confirmación del operador y recorrido real jugadores → partido → guardado → historial. No promover a main ni avanzar a XP/ELO por el mero traslado a la nube.
 
 ### 2026-10-01 — Persistencia Supabase V1, trabajo local pendiente de acceso humano
 

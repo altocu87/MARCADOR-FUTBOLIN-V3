@@ -8,6 +8,14 @@ Antes de modificar código, leer `AGENTS.md`, `docs/CONTEXTO_MAESTRO.md` y `docs
 
 Persistencia V1 está en revisión en `codex/reliability-offline-v1`: tests locales y simulaciones correctos, pero falta el recorrido autenticado navegador → Supabase con la cuenta del operador. No considerar esta fase cerrada ni promoverla a main hasta completar esa validación. Las migraciones del proyecto existente ya están aplicadas; no repetirlas.
 
+## Continuar en Codex Cloud
+
+El [resumen y guía de traspaso](docs/TRASPASO_NUBE.md) reúne los avances, los módulos, las comprobaciones y un mensaje listo para la primera tarea cloud. El [estado actual](docs/ESTADO_ACTUAL.md) mantiene los datos operativos posteriores.
+
+La configuración cloud inicial utilizó `main`, que todavía no contiene persistencia, recuperación, PWA ni la adaptación responsive. Antes de modificar, sincronizar de forma segura **origin/codex/reliability-offline-v1** y leer el contexto de esa rama. No fusionar a main para resolver el traspaso.
+
+En el entorno cloud, usar Node 24 y `npm ci --cache /tmp/codex-npm-cache`, después `npm test` (seis grupos) y `npm run build`. Revisar/publicar la configuración preparada del entorno si aún está en borrador. Las variables públicas Supabase son opcionales para compilar/probar el simulador, pero necesarias para probar datos reales; las variables de Vercel no se transfieren automáticamente al entorno cloud.
+
 ## Vista previa online
 
 [Abrir la versión responsive de desarrollo](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app).
@@ -18,7 +26,7 @@ El 2026-10-01 se configuraron las variables públicas de conexión solo para Pre
 
 ## Instalación
 
-Node.js 22.12 o superior (validado con Node 24), npm y un proyecto Supabase existente.
+Node.js 22.12 o superior (validado con Node 24) y npm. El proyecto Supabase existente solo es necesario para el acceso y la persistencia reales; el simulador en modo prueba, los tests y el build pueden funcionar sin configurarlo.
 
 ```bash
 npm ci

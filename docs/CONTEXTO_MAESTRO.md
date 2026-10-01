@@ -1139,6 +1139,8 @@ Nunca sacrificar 1–5 por funciones online.
 
 La siguiente gran fase prevista es PERSISTENCIA SUPABASE V1.
 
+Actualización de traspaso del 2026-10-01: esta fase ya tiene cliente/Auth, jugadores, repositorios, guardado transaccional, historial, cola offline, recuperación y PWA implementados en la rama de desarrollo. No es una orden de rehacerlos. Sigue abierta por la verificación autenticada navegador → Supabase y la revisión/promoción pendientes. Consultar ESTADO_ACTUAL.md para las referencias y bloqueos reales.
+
 Objetivo: jugadores reales + partidos persistentes + participantes + eventos + historial básico.
 
 NO implementar todavía:
@@ -1259,7 +1261,7 @@ Como mínimo npm run test:engine y npm run build, si esos scripts siguen existie
 
 La rama de desarrollo incorpora npm run test:offline junto a motor, persistencia y recuperación en npm test. Verificar el service worker del build y reapertura con el servidor realmente apagado; una fixture con guardado simulado no sustituye esa prueba ni el recorrido Auth/Supabase real.
 
-Desde el bloque responsive, npm run test:layout verifica preferencia/escala física y marcado accesible del menú, selector y modalidades. npm test ejecuta cinco grupos. Verificar ambas vistas, móvil vertical/horizontal, tablet y escritorio, continuidad del estado al redimensionar, navegación real y ausencia de solapamientos. Evidencia en VERIFICACION_RESPONSIVE.md.
+Desde el bloque responsive, npm run test:layout verifica preferencia/escala física y marcado accesible del menú, selector y modalidades. Tras el bloque de registro, npm test ejecuta seis grupos: motor, persistencia, recuperación, offline, layout y Auth. El test:auth usa transporte aislado, no valida cuentas reales. Verificar ambas vistas, móvil vertical/horizontal, tablet y escritorio, continuidad del estado al redimensionar, navegación real y ausencia de solapamientos. Evidencia en VERIFICACION_RESPONSIVE.md y VERIFICACION_VERCEL_DATOS.md.
 
 ## 77. VERIFICACIÓN VISUAL
 
@@ -1292,7 +1294,11 @@ Misma regla para Vercel, GitHub y otros servicios.
 
 Cuando se trabaje en un entorno Codex en la nube, el repositorio GitHub es la referencia compartida.
 
-Antes de modificar: git pull / sincronizar. Después: tests, build, commit, push.
+Antes de modificar: identificar rama/commit/árbol/remoto, consultar las referencias remotas y sincronizar de forma segura; no usar pull, reset, stash ni checkout que sobrescriban trabajo ajeno. Después: tests, build, contexto actualizado, commit y push cuando estén autorizados.
+
+Decisión del propietario del 2026-10-01: preparar el traspaso documentado para continuar el desarrollo en la nube. Leer además TRASPASO_NUBE.md. La configuración inicial cloud se preparó con main, pero los avances posteriores están en una rama de desarrollo; usar la referencia indicada en ESTADO_ACTUAL.md, no recrear la integración ni fusionar a main para cambiar de entorno.
+
+El contexto compartido viaja por GitHub, no por el historial de un chat. .env.local, sesiones, credenciales CLI, capturas temporales y partidas pendientes de un navegador no se transfieren. Configurar por separado las variables públicas necesarias en el entorno cloud y comprobar permisos/herramientas disponibles. Un conector conectado en otra conversación no demuestra acceso en la tarea nueva. Si no hay navegador disponible en la nube, registrar esa limitación y coordinar la prueba real con el propietario; nunca sustituirla por mocks ni rebajar seguridad.
 
 No depender de rutas Windows locales anteriores. No asumir acceso al hardware físico.
 

@@ -8,6 +8,8 @@ Antes de modificar código, leer completamente:
 2. `docs/ESTADO_ACTUAL.md`: implementación verificada, trabajo pendiente y punto de continuación.
 3. `README.md` y la documentación de verificación pertinente al bloque.
 
+Al entrar en un entorno nuevo o trasladar trabajo a la nube, leer también `docs/TRASPASO_NUBE.md`. Es una fotografía del traspaso; `ESTADO_ACTUAL.md` sigue siendo la referencia operativa viva. Comprobar la rama de desarrollo indicada allí antes de asumir que main contiene todos los avances.
+
 No ejecutar toda la hoja de ruta por el mero hecho de leerla. La tarea autorizada es la petición vigente del usuario. Distinguir decisiones aprobadas, propuestas configurables, funciones futuras, código implementado y pruebas pendientes.
 
 ## Antes de cada bloque
