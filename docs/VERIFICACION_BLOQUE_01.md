@@ -57,7 +57,7 @@ Advisor actual: WARN de protección de contraseñas filtradas deshabilitada, no 
 
 ## Preview y pasos humanos que aún faltan
 
-El conector Vercel deniega el equipo `altocuvlc-9686s-projects` con 403 de autorización. La lectura protegida de `/connection.json` también es denegada. No hay sesión Auth del operador en este navegador cloud; no se extraen tokens ni se retira protección. No se ha comprobado el despliegue remoto del commit final. GitHub informa el check Vercel de `e164b5b` en estado pending después del push: despliegue en curso, no confirmación de READY ni recorrido web. El push a la rama conectada puede generar Preview automáticamente.
+El conector Vercel deniega el equipo `altocuvlc-9686s-projects` con 403 de autorización. La lectura protegida de `/connection.json` también es denegada. No hay sesión Auth del operador en este navegador cloud; no se extraen tokens ni se retira protección. No se ha comprobado el despliegue remoto del commit final. GitHub informó primero pending y después **success** para el check Vercel de `e164b5b`, con enlace al despliegue FiFcv5wQvD77zoo3a26yvHqsrjcA. Es evidencia del check remoto de la entrega funcional; el conector Vercel sigue denegado y no se ha inspeccionado READY ni el recorrido web autenticado. El push a la rama conectada puede generar Preview automáticamente.
 
 En la [Preview estable de esta rama](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app), usando la cuenta existente y una sola pestaña:
 
