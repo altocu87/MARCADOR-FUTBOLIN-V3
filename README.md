@@ -14,6 +14,8 @@ Por autorización posterior del propietario, se añade el primer bloque de fase 
 
 El [resumen y guía de traspaso](docs/TRASPASO_NUBE.md) reúne los avances, los módulos, las comprobaciones y un mensaje listo para la primera tarea cloud. El [estado actual](docs/ESTADO_ACTUAL.md) mantiene los datos operativos posteriores.
 
+Para una conversación por entrega, usar [Bloques de desarrollo y prompts](docs/BLOQUES_DESARROLLO.md). Registra el punto alcanzado, diez bloques propuestos, dependencias, criterios de cierre y un prompt completo por bloque. El siguiente recomendado es el 01: consolidación y comprobación real de la versión actual. Leer el plan no autoriza ejecutar todas las fases; las reglas propuestas se concretan antes de activarlas.
+
 La configuración cloud inicial utilizó `main`, que todavía no contiene persistencia, recuperación, PWA ni la adaptación responsive. Antes de modificar, sincronizar de forma segura **origin/codex/reliability-offline-v1** y leer el contexto de esa rama. No fusionar a main para resolver el traspaso.
 
 En el entorno cloud, usar Node 24 y `npm ci --cache /tmp/codex-npm-cache`, después `npm test` (siete grupos) y `npm run build`. Revisar/publicar la configuración preparada del entorno si aún está en borrador. Las variables públicas Supabase son opcionales para compilar/probar el simulador, pero necesarias para probar datos reales; las variables de Vercel no se transfieren automáticamente al entorno cloud.

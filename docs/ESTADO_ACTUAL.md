@@ -2,7 +2,15 @@
 
 Última actualización: **2026-10-01**. Leer junto con `CONTEXTO_MAESTRO.md` y contrastar con el código real.
 
-**Último bloque:** aclaración posterior del propietario: mantener también AMBAS, dos partes que terminan por objetivo de goles de un equipo dentro de cada parte o por tiempo; ganador por el total acumulado de las dos. AMBAS nuevo usa V3 y copias anteriores conservan sus reglas. GOALS/TIME mantienen V2: única parte sin límite para GOALS y dos por reloj para TIME. El propietario comunica login y prueba satisfactorios; es evidencia humana, no una inspección remota del agente. Detalles en el registro y [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md).
+**Último cambio funcional:** aclaración posterior del propietario: mantener también AMBAS, dos partes que terminan por objetivo de goles de un equipo dentro de cada parte o por tiempo; ganador por el total acumulado de las dos. AMBAS nuevo usa V3 y copias anteriores conservan sus reglas. GOALS/TIME mantienen V2: única parte sin límite para GOALS y dos por reloj para TIME. El propietario comunica login y prueba satisfactorios; es evidencia humana, no una inspección remota del agente. Detalles en el registro y [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md).
+
+## Punto de continuidad para conversaciones nuevas
+
+Petición del propietario: guardar el estado/cambios al terminar y organizar una conversación por bloque, con prompt listo. Plan y seguimiento en [BLOQUES_DESARROLLO.md](BLOQUES_DESARROLLO.md); AGENTS exige actualizarlo y entregar el siguiente prompt al cerrar cada bloque.
+
+Base comprobada al preparar ese plan: **871c363** en `codex/reliability-offline-v1`, código funcional **b9dfc7b**, referencias locales/remotas coincidentes y árbol limpio. `main` permanece en **900e470**. Estos hashes son una fotografía: futuras conversaciones deben obtener la punta de desarrollo vigente, no volver a ellos automáticamente. Implementados persistencia/fiabilidad/recuperación/PWA/responsive, perfiles/estadísticas/análisis y las tres condiciones de victoria corregidas. No hay XP/ELO, logros, torneos completos, backup o firmware/OTA implementados por este plan.
+
+**Siguiente bloque recomendado: 01 — Consolidación y comprobación real.** Detallar lo que cubrió la prueba satisfactoria comunicada por el operador, verificar nueva Preview/reglas/guardado/perfil/recuperación/PWA donde haya acceso y corregir bugs. No recrear cuentas ni migraciones. Después: XP/niveles → ELO/ranking/categorías → análisis competitivo → logros/récords → torneos → sonido/pulido → backup → firmware/entradas físicas → OTA/administración local. Son entregas propuestas, con dependencias y decisiones pendientes explícitas; no una orden de implementarlas ahora ni promoción a main.
 
 ## Referencias y alcance de esta ficha
 
@@ -105,7 +113,7 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 - npm run test:offline: plantilla real de worker, allowlist/privacidad, navegación offline, actualizaciones/cache incompleta, iconos, alcance de identidad, respuestas de conexión desordenadas y observadores de cola.
 - npm run test:layout: preferencia, escala física y navegación/selector/modalidades accesibles.
 - npm run test:auth: validación, normalización, retorno sin tokens, mensajes y SDK con transporte aislado. No equivale a una prueba Auth real.
-- npm test ejecuta siete grupos, todos correctos en la última comprobación; test:statistics aporta 41 casos. npm run test:browser: 11/11 recorridos Chromium, incluidos cookie/acceso de Preview protegido, perfiles, análisis/filtros/evolución, historial filtrado, 25 resultados, jugadores inactivos y errores/offline; builds normal y aislado correctos. No equivale a comprobar Supabase real.
+- Última comprobación funcional, bloque AMBAS: npm test, siete grupos correctos; estadísticas/análisis 41/41. npm run test:browser: 14/14 recorridos Chromium, incluidas las tres condiciones, recuperación de parcial AMBAS, cookie/acceso protegido, perfiles, filtros, historial y PWA; TypeScript/builds normal y aislado correctos. Este bloque documental no los reejecuta ni equivale a comprobar Supabase real.
 - npm run build: TypeScript y Vite correctos.
 - npm audit: cero vulnerabilidades en la última ejecución.
 - Pruebas SQL en el proyecto real: RLS, cuentas, permisos, equipos/agregado, idempotencia, snapshot, restricciones de borrado, secuencia, modo prueba y rollback correctos. Fixtures íntegramente revertidos con ROLLBACK.
@@ -158,6 +166,16 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, predicción/forma competitiva, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Contexto de continuidad y prompts por bloques
+
+Solicitud explícita: registrar el punto alcanzado/cambios y entregar bloques con un prompt para cada conversación de programación. Base **871c363**, último código funcional **b9dfc7b**, rama `codex/reliability-offline-v1` y main **900e470**, remotos comprobados y árbol limpio al iniciar. Se conserva el historial funcional previo; no se cambian motor ni reglas.
+
+Creado BLOQUES_DESARROLLO.md: fotografía de continuidad, diferencias entre implementado/verificado/reportado, diez bloques propuestos, dependencias, entregables del agente, pasos humanos imprescindibles, criterios de cierre y diez prompts autocontenidos. AGENTS incorpora lectura/seguimiento del plan y entrega obligatoria del siguiente prompt tras cada bloque. README y apartados 69/80 del contexto maestro enlazan la continuidad. Se corrige el resumen vigente de verificación de 11 a 14 recorridos según el último bloque realmente ejecutado.
+
+Bloque 01 recomendado antes de progresión: consolidación y comprobación real sin repetir cuentas, tablas o estadísticas ya existentes. XP/ELO/logros/torneos/hardware continúan como futuros y requieren el bloque solicitado y las decisiones de reglas que falten; preparar este plan no los implementa ni activa. Login/prueba del propietario conservados como evidencia humana, nuevos despliegues/reglas remotos pendientes de comprobación del agente.
+
+Verificación de esta entrega documental: referencias Git, enlaces relativos, integridad de los 84 apartados y revisión de diff antes de publicar. No se reejecutan tests/build, SQL, Auth ni navegador: código/dependencias sin cambios. Sin migraciones, datos, secretos, variables, costes o promoción a main. Contexto/plan se publica en la rama de revisión; commit/push se comprueban con Git al entregar, no se infiere publicación Vercel.
 
 ### 2026-10-01 — Aclaración de AMBAS: dos partes y ganador por acumulado
 

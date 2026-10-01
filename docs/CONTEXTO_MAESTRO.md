@@ -1147,6 +1147,8 @@ Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
 
+Organización solicitada posteriormente por el propietario, 2026-10-01: una conversación por bloque, con contexto registrado y prompt listo para continuar. [BLOQUES_DESARROLLO.md](BLOQUES_DESARROLLO.md) define diez entregas propuestas y sus dependencias. Siguiente recomendado: bloque 01, consolidar las tres condiciones ya corregidas y detallar/comprobar el recorrido real; el operador ya comunica login y prueba satisfactorios. Los bloques futuros no se ejecutan por leer ese plan, ni convierten parámetros de XP/ELO, formato de torneos o conexiones de hardware propuestos en decisiones aprobadas. ESTADO_ACTUAL mantiene el seguimiento operativo real.
+
 Actualización posterior, 2026-10-01: el propietario autoriza avanzar a estadísticas básicas/perfiles (primer bloque C), sin cerrar artificialmente B ni promover a main. Lecturas privadas desde resultados existentes, sin nuevas tablas ni contadores. Se excluyen prueba/pendientes, se deduplican IDs y se recorre el historial completo con cursor. Los penaltis deciden el ganador sin añadirse a goles del partido. XP/ELO y el resto de fases permanecen fuera del bloque. Ver ESTADO_ACTUAL.md y VERIFICACION_ESTADISTICAS.md.
 
 Siguiente ampliación autorizada e implementada: análisis de últimos resultados/rachas, formatos, filtros y evolución en el perfil. Fechas locales inclusivas y orden cronológico estable; rango inválido no sustituye el filtro vigente. Reutiliza la lectura completa en memoria para mantener coherencia entre análisis e historial paginado. El acceso autenticado real sigue pendiente; no cambia esa condición de cierre ni promueve main.
@@ -1345,6 +1347,8 @@ Al terminar un bloque importante informar:
 11. Próximo bloque recomendado.
 
 No limitarse a decir "terminado".
+
+Petición posterior del propietario, 2026-10-01: guardar al cerrar cada bloque el punto de continuación y todos sus cambios pertinentes en el contexto del repositorio; mantener el seguimiento de BLOQUES_DESARROLLO y entregar el siguiente bloque recomendado con un prompt completo para una nueva conversación. No depender de que otro chat herede esta conversación ni ejecutar automáticamente el bloque siguiente.
 
 ## 81. REGLA PARA CAMBIOS FUTUROS
 
