@@ -37,7 +37,7 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 | 09 | Firmware y entradas físicas | Propuesto | Modelos/protocolo y conexiones reales verificables |
 | 10 | OTA y administración local | Propuesto | 08 y firmware probado del 09 |
 
-Ejecución del bloque 01: sincronización final sobre f9ebe15, dos bugs corregidos; npm test siete grupos/estadísticas 41/41, Chromium 15/15 y builds correctos. RPC real desde motor con ROLLBACK y cuenta existente; datos originales preservados. Preview denegada por alcance Vercel, sin sesión web del operador; no se declara cierre completo. Detalles en [VERIFICACION_BLOQUE_01.md](VERIFICACION_BLOQUE_01.md) y estado vivo. La publicación no promueve main ni activa XP/ELO.
+Ejecución del bloque 01: sincronización final sobre f9ebe15, dos bugs corregidos; npm test siete grupos/estadísticas 41/41, Chromium 15/15 y builds correctos. RPC real desde motor con ROLLBACK y cuenta existente; datos originales preservados. Preview denegada por alcance Vercel, sin sesión web del operador; no se declara cierre completo. Detalles en [VERIFICACION_BLOQUE_01.md](VERIFICACION_BLOQUE_01.md) y estado vivo. Publicación fast-forward de eb0f098/e164b5b comprobada por push y referencia remota; esta anotación se versiona después. La publicación no promueve main ni activa XP/ELO.
 
 Cada fila pasa a en curso, completado o pendiente de verificación con evidencia fechada; no marcar todas completadas al copiar los prompts. El orden puede ajustarse expresamente: el pulido web no depende de disponer de hardware y el diseño del protocolo puede prepararse sin una placa conectada.
 

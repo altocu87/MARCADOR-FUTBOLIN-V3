@@ -4,7 +4,7 @@ Estado: programación y pruebas independientes completas; pendiente recorrido au
 
 ## Base y alcance
 
-Checkout cloud inicialmente limpio en `work`, `900e470`. Git sin permisos de red falló al conectar con el proxy. Se recuperaron objetos mediante el conector GitHub y se verificaron sus SHA originales; después, con permiso de red del comando, funcionó `git fetch`. El remoto había avanzado de `472f945` a `f9ebe15`: se integraron esos cuatro commits posteriores antes de la verificación final, conservando el historial y las correcciones del propietario. Se resolvió el único conflicto de pruebas manteniendo ambos conjuntos de regresiones. Main permanece `900e470`; sin promoción ni force push.
+Checkout cloud inicialmente limpio en `work`, `900e470`. Git sin permisos de red falló al conectar con el proxy. Se recuperaron objetos mediante el conector GitHub y se verificaron sus SHA originales; después, con permiso de red del comando, funcionó `git fetch`. El remoto había avanzado de `472f945` a `f9ebe15`: se integraron esos cuatro commits posteriores antes de la verificación final, conservando el historial y las correcciones del propietario. Se resolvió el único conflicto de pruebas manteniendo ambos conjuntos de regresiones. Main permanece `900e470`; sin promoción ni force push. Correcciones `eb0f098` y entrega `e164b5b` publicadas por push fast-forward; `git ls-remote` confirma `e164b5bc67c062465410b032a8f661e25e580a23` en la rama de revisión. Esta evidencia se añade en un commit documental posterior.
 
 Reglas vigentes comprobadas:
 
@@ -57,7 +57,7 @@ Advisor actual: WARN de protección de contraseñas filtradas deshabilitada, no 
 
 ## Preview y pasos humanos que aún faltan
 
-El conector Vercel deniega el equipo `altocuvlc-9686s-projects` con 403 de autorización. La lectura protegida de `/connection.json` también es denegada. No hay sesión Auth del operador en este navegador cloud; no se extraen tokens ni se retira protección. No se ha comprobado el despliegue remoto del commit final. El push a la rama conectada puede generar Preview automáticamente.
+El conector Vercel deniega el equipo `altocuvlc-9686s-projects` con 403 de autorización. La lectura protegida de `/connection.json` también es denegada. No hay sesión Auth del operador en este navegador cloud; no se extraen tokens ni se retira protección. No se ha comprobado el despliegue remoto del commit final. GitHub informa el check Vercel de `e164b5b` en estado pending después del push: despliegue en curso, no confirmación de READY ni recorrido web. El push a la rama conectada puede generar Preview automáticamente.
 
 En la [Preview estable de esta rama](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app), usando la cuenta existente y una sola pestaña:
 
