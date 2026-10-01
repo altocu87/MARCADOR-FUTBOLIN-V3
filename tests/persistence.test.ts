@@ -155,4 +155,39 @@ await assert.rejects(cleanupQueue.save(document), /quota al limpiar/)
 assert.deepEqual(cleanupQueue.getPending(), [document])
 assert.deepEqual(await cleanupQueue.retry(), ['saved'], 'Reintenta sin duplicar tras confirmación remota y fallo local')
 
-console.log('Persistencia: mapeo, equipos, cronología, penaltis, modo prueba, recuperación offline, concurrencia, timeout e aislamiento superados.')
+// A recovered tab must never replace the original result for a stable UUID.
+const conflictStorage = new MemoryStorage()
+const conflictQueue = new SaveCoordinator(partialRepo, conflictStorage, 'conflict')
+assert.equal(await conflictQueue.save(document), 'pending')
+const divergent = structuredClone(document)
+divergent.events[0].metadata.rulesVersion = 1
+const originalRaw = conflictStorage.getItem('conflict')
+await assert.rejects(conflictQueue.save(divergent), /otro contenido/)
+assert.equal(conflictStorage.getItem('conflict'), originalRaw, 'Un conflicto conserva los bytes y reglas del pendiente original')
+
+const inFlightStorage = new MemoryStorage()
+const inFlightQueue = new SaveCoordinator(delayedRepo, inFlightStorage, 'in-flight-conflict')
+const originalSave = inFlightQueue.save(document)
+await assert.rejects(inFlightQueue.save(divergent), /otro contenido/)
+complete.get(document.match.id)!()
+assert.equal(await originalSave, 'saved')
+
+// Acknowledging one payload cannot erase another tab's different copy.
+const changedStorage = new MemoryStorage()
+const changedQueue = new SaveCoordinator(delayedRepo, changedStorage, 'changed-before-ack')
+const changedSave = changedQueue.save(document)
+changedStorage.setItem('changed-before-ack', JSON.stringify([divergent, secondDocument]))
+complete.get(document.match.id)!()
+await assert.rejects(changedSave, /otro contenido/)
+assert.deepEqual(changedQueue.getPending(), [divergent, secondDocument])
+
+// JSON object order does not alter content or require a different RPC hash.
+const reordered: MatchDocument = { events: document.events, participants: document.participants, match: document.match }
+const sameStorage = new MemoryStorage()
+const sameQueue = new SaveCoordinator(partialRepo, sameStorage, 'same-content')
+await sameQueue.save(document)
+const sameRaw = sameStorage.getItem('same-content')
+assert.equal(await sameQueue.save(reordered), 'pending')
+assert.equal(sameStorage.getItem('same-content'), sameRaw, 'El reintento no reserializa el agregado durable')
+
+console.log('Persistencia: mapeo, equipos, cronología, penaltis, modo prueba, recuperación offline, concurrencia, conflictos, timeout e aislamiento superados.')

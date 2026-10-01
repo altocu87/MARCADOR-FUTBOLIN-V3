@@ -222,6 +222,32 @@ for (const version of [2, 3] as const) {
   }
 }
 
+// Goal attribution must agree with the journal for historical V3 and current V4.
+for (const version of [3, 4] as const) {
+  let clock = 0
+  const match = new MatchEngine(() => clock)
+  match.createMatch({ ...config, victoryCondition: 'BOTH', goalLimit: 5 })
+  if (version === 3) {
+    const legacy = match.getCheckpoint(); legacy.version = 3; legacy.state.config!.rulesVersion = 3
+    match.restoreCheckpoint(legacy)
+  }
+  match.skipCountdown(); match.dispatch('GOL_BLANCO'); clock += 3_000; match.dispatch('GOL_BLANCO')
+  clock = 60_000; match.tick(); match.continueToNextPeriod(); match.skipCountdown()
+  clock += 3_000; match.dispatch('GOL_AZUL')
+  const valid = match.getCheckpoint(); validateCheckpoint(valid)
+  for (const mutate of [
+    (c: MatchCheckpoint) => { c.state.goals[0].period = 'SECOND_HALF' },
+    (c: MatchCheckpoint) => { c.state.goals[0].elapsedSeconds++ },
+    (c: MatchCheckpoint) => { c.state.events.find(e => e.metadata.goalId === 'goal-1')!.team = 'BLUE' },
+    (c: MatchCheckpoint) => { c.state.goals[0].scoreWhite++ },
+  ]) {
+    const broken = structuredClone(valid); mutate(broken)
+    const before = match.getState()
+    assert.throws(() => match.restoreCheckpoint(broken), /dañada/)
+    assert.equal(match.getState(), before, 'La copia dañada no cambia el motor ni las reglas de parte')
+  }
+}
+
 const mutations: ((copy: MatchCheckpoint) => void)[] = [
   c => { c.state.whiteGoals++ }, c => { c.goalSequence = 0 }, c => { c.state.elapsedSeconds = -1 },
   c => { c.state.goals[0].team = 'BLUE' }, c => { c.state.events[0].sequence = 99 },

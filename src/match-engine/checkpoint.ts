@@ -37,7 +37,7 @@ export function validateCheckpoint(value: unknown): asserts value is MatchCheckp
   if (!Array.isArray(state.events)) return invalid()
   let previousTime = 0
   const acceptedIds = new Set<string>()
-  const activeIds = new Set<string>()
+  const activeGoals = new Map<string, Record<string, unknown>>()
   for (const [index, event] of state.events.entries()) {
     if (!object(event) || event.sequence !== index + 1 || !eventTypes.has(String(event.eventType)) || !(event.team === null || team(event.team)) || !period(event.period) || !integer(event.matchTimeSeconds) || event.matchTimeSeconds < previousTime || !integer(event.periodTimeSeconds) || !integer(event.whiteScore) || !integer(event.blueScore) || !(event.penaltyScored === null || typeof event.penaltyScored === 'boolean') || !date(event.occurredAt) || !object(event.metadata) || !Object.values(event.metadata).every(v => v === null || typeof v === 'string' || typeof v === 'boolean' || typeof v === 'number' && Number.isFinite(v))) return invalid()
     previousTime = event.matchTimeSeconds
@@ -47,11 +47,18 @@ export function validateCheckpoint(value: unknown): asserts value is MatchCheckp
       if (typeof id !== 'string' || !/^goal-[1-9]\d*$/.test(id) || Number(id.slice(5)) > value.goalSequence) return invalid()
       if (event.eventType === 'goal') {
         if (acceptedIds.has(id) || !team(event.team)) return invalid()
-        acceptedIds.add(id); activeIds.add(id)
-      } else if (!activeIds.delete(id)) return invalid()
+        acceptedIds.add(id); activeGoals.set(id, event)
+      } else {
+        const original = activeGoals.get(id)
+        if (!original || original.team !== event.team || !activeGoals.delete(id)) return invalid()
+      }
     }
   }
-  if (state.goals.some(g => !activeIds.has(String(g.id))) || activeIds.size !== state.goals.length) return invalid()
+  if (activeGoals.size !== state.goals.length || state.goals.some(g => {
+    const event = activeGoals.get(String(g.id))
+    return !event || event.team !== g.team || event.period !== g.period || event.periodTimeSeconds !== g.elapsedSeconds ||
+      event.whiteScore !== g.scoreWhite || event.blueScore !== g.scoreBlue
+  })) return invalid()
   if (singleGoalMatch && state.events.length > 0 && (state.events[0].eventType !== 'period_start' || state.events[0].metadata.rulesVersion !== 2)) return invalid()
   if ([3, 4].includes(value.version) && state.events.length > 0 && state.events[0].metadata.rulesVersion !== value.version) return invalid()
   const lastEvent = state.events.at(-1)
