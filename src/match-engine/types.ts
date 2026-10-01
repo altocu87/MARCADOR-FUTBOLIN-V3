@@ -38,6 +38,7 @@ export interface MatchState {
   whiteGoals: number
   blueGoals: number
   remainingSeconds: number
+  elapsedSeconds: number
   periodInitialSeconds: number
   countdownValue: number | null
   goalInputLocked: boolean
@@ -56,3 +57,18 @@ export type MatchEvent =
   | 'PENALTI_AZUL_GOL' | 'PENALTI_AZUL_FALLO'
 
 export type MatchStateListener = (state: Readonly<MatchState>) => void
+
+/** Datos del motor necesarios para recuperar un partido y poder deshacer goles. */
+export interface MatchCheckpoint {
+  state: MatchState
+  undoStack: MatchState[]
+  sequence: number
+}
+
+export function getMatchWinner(state: Readonly<MatchState>): Team | null {
+  if (state.penalty && state.status === 'MATCH_END' && state.penalty.whiteGoals !== state.penalty.blueGoals) {
+    return state.penalty.whiteGoals > state.penalty.blueGoals ? 'WHITE' : 'BLUE'
+  }
+  if (state.whiteGoals === state.blueGoals) return null
+  return state.whiteGoals > state.blueGoals ? 'WHITE' : 'BLUE'
+}

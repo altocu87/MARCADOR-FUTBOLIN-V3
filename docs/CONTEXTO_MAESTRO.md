@@ -13,6 +13,8 @@ El trabajo debe preservar lo que ya funciona, respetar estas decisiones, desarro
 
 Nota de vigencia: los apartados 56–58 son una referencia histórica de V1. Los apartados 69–70 y 84 describen el bloque de persistencia, no una orden de volver a empezar. El apartado 79 corresponde al trabajo en nube y no implica que cualquier agente esté ejecutándose allí. El estado operativo y las verificaciones posteriores se registran en ESTADO_ACTUAL.md; no se debe confundir una propuesta con una función implementada.
 
+Actualización 2026-10-01: existe un bloque cloud paralelo de persistencia **local** y recuperación, autorizado en otro chat y preparado en la rama `codex/local-players-match-recovery`. No sustituye el trabajo Supabase del PC ni cambia las reglas aprobadas. Alcance, pruebas, diferencias pendientes y publicación se registran en [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md).
+
 ## 1. OBJETIVO GENERAL
 
 MARCADOR FUTBOLÍN V3 es un marcador inteligente para una mesa de futbolín real.
@@ -150,6 +152,8 @@ Indicador pequeño: ● SISTEMA ONLINE, con punto verde cuando corresponda.
 
 Torneo puede permanecer provisional hasta su fase específica.
 
+Nota del bloque cloud local: esta rama añade accesos directos a JUGADORES e HISTORIAL. Es una diferencia a reconciliar al integrar, no una sustitución aprobada de este menú.
+
 ## 7. MODOS DE PARTIDO
 
 Existen tres modos principales:
@@ -252,6 +256,8 @@ Debe bloquear:
 Esta regla pertenece al MATCH ENGINE. NO debe depender únicamente de deshabilitar botones visualmente.
 
 Todas las fuentes de gol deben acabar pasando por la misma validación central.
+
+Nota de verificación: el bloque cloud comprueba y conserva el bloqueo al pausar/recargar, pero todavía lo libera al deshacer o preparar otro periodo. No considerar completa la garantía de este apartado hasta corregir y probar esos casos durante la integración.
 
 ## 15. EFECTOS DE GOL
 
@@ -419,6 +425,8 @@ Cuando está ON, la aplicación funciona normalmente. PERO NO GUARDA:
 - récords.
 
 Esto permite hacer pruebas sin contaminar datos reales.
+
+Nota del bloque cloud local: el modo prueba aún no está implementado en esa rama y sus partidas se guardan localmente. Integrarlo con el modo prueba del bloque Supabase es un requisito antes de unificar ambas implementaciones.
 
 ## 25. PERFILES
 
@@ -1113,6 +1121,8 @@ Nunca sacrificar 1–5 por funciones online.
 La siguiente gran fase prevista es PERSISTENCIA SUPABASE V1.
 
 Objetivo: jugadores reales + partidos persistentes + participantes + eventos + historial básico.
+
+Punto de continuación: preservar y sincronizar el código Supabase del PC ya descrito en ESTADO_ACTUAL.md; integrar selectivamente el bloque local de nube y verificar el recorrido autenticado. No comenzar una segunda integración ni repetir el esquema existente.
 
 NO implementar todavía:
 
