@@ -171,6 +171,8 @@ Pruebas: npm test, siete grupos correctos (estadísticas/análisis 41/41); TypeS
 
 Sin dependencias, migraciones, servicios, cuentas nuevas, costes ni promoción a main/producción. Verificación Supabase/Vercel remota de las reglas no realizada; pruebas con repositorios en memoria y tráfico Supabase bloqueado. Siguiente prueba humana cuando esté disponible la actualización: crear AMBAS nuevo y comprobar parcial/total en dos partes. Push de la rama se informa con referencia Git; no acredita despliegue Vercel.
 
+Publicación funcional comprobada: **b9dfc7b — Restore combined victory with per-team half targets and aggregate winner**, push correcto y `git ls-remote` confirma b9dfc7b75fd52dcd594b8c53e82841b38c2351d3 en origin/codex/reliability-offline-v1; main sigue en 900e470. Árbol limpio tras commit funcional; 14/14 recorridos Chromium en la versión final. Esta anotación documental se versiona después; publicación Vercel no comprobada.
+
 ### 2026-10-01 — Dos condiciones de victoria corregidas por decisión del propietario
 
 Base **89e7981**, rama `codex/reliability-offline-v1`, árbol limpio al iniciar; main comprobada en **900e470**. El propietario aclara expresamente: tiempo en dos partes, gana quien marque más; goles en una única parte, sin límite de tiempo, gana quien alcance el objetivo. Reemplaza las reglas anteriores de GOALS sumado por periodo y la opción AMBAS para nuevos partidos.
