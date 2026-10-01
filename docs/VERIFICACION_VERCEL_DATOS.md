@@ -39,3 +39,15 @@ Referencias oficiales consultadas:
 - [Variables Vercel CLI](https://vercel.com/docs/cli/env).
 
 El contexto vivo es ESTADO_ACTUAL.md. Los límites SMTP pueden cambiar: consultar la documentación antes de configurar un proveedor o ampliar el registro.
+
+## Corrección de sonda en Preview protegido — 2026-10-01
+
+Base **cb3da39**. Captura del propietario: ambos botones de acceso deshabilitados. ENTRAR/CREAR CUENTA requieren conexión/servicios y no estar ocupados; solo registro comprueba longitud de contraseña para deshabilitar. La sonda GET `/connection.json` omitía cookies del origen; Vercel protegido puede rechazarla aun con la página abierta. No es evidencia de contraseña incorrecta ni registro rechazado por Supabase.
+
+Reproducido antes mediante cookie HttpOnly local y endpoint de fixture 401 sin cookie/200 con cookie: incluso añadiéndola, el probe antiguo seguía omitiéndola y nunca habilitaba acceso. Corrección: `credentials: same-origin`, `cache: no-store`, `redirect: error` y timeout 4 s. Valida HTTP/marcador JSON, no acepta HTML/login ni añade Authorization. Conserva protección Vercel; sin cambios de variables, Auth, RLS, precaché worker o datos.
+
+SettingsScreen añade causa visible del bloqueo por conexión/solicitud. npm test (siete grupos, estadísticas/análisis 41/41), TypeScript/builds normal/fixture y test:browser **11/11** correctos. Nuevo recorrido verifica bloqueo sin cookie y habilitación con cookie, formulario/aviso en 320×568, 390×844 y 800×480/física; datos ficticios sin pulsar acceso/enviar correo y Supabase bloqueado. Probe: no-store/mismo origen/no Authorization/señal, 401, marcador ajeno, HTML y rechazo de redirección. Antes: fallo esperado; después: pasa. Revisión visual local sin pageerror.
+
+Revisión visual detectó que el aviso podía solaparse con los botones en físico; corregido con scroll interno/min-height de paneles de Ajustes en global.css. Regresión de navegador usa elementFromPoint sobre el botón para comprobar que el aviso no intercepta el toque. Capturas bajo `/tmp/futbolin-auth-blocked-*.png`, fuera de Git. Sin scroll general.
+
+Limitación: lectura al Preview real denegada por proxy cloud (CONNECT 403). No se verificó despliegue actualizado ni acceso del propietario. No se pide contraseña ni se elude política. Publicación Git se informa por commit/push comprobados; cuando esté disponible Preview, cerrar/reabrir pestañas activa actualización si hay worker previo. COMPROBAR CONEXIÓN permite continuar si el origen devuelve la sonda autorizada. Si sigue bloqueado, revisar indicador/aviso y despliegue, no volver a modificar Supabase sin evidencia.

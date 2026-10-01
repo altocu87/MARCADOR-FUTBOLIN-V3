@@ -103,7 +103,7 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 - npm run test:offline: plantilla real de worker, allowlist/privacidad, navegación offline, actualizaciones/cache incompleta, iconos, alcance de identidad, respuestas de conexión desordenadas y observadores de cola.
 - npm run test:layout: preferencia, escala física y navegación/selector/modalidades accesibles.
 - npm run test:auth: validación, normalización, retorno sin tokens, mensajes y SDK con transporte aislado. No equivale a una prueba Auth real.
-- npm test ejecuta siete grupos, todos correctos en la última comprobación; test:statistics aporta 41 casos. npm run test:browser: 10/10 recorridos Chromium, incluidos perfiles, análisis/filtros/evolución, historial filtrado, 25 resultados, jugadores inactivos y errores/offline; builds normal y aislado correctos. No equivale a comprobar Supabase real.
+- npm test ejecuta siete grupos, todos correctos en la última comprobación; test:statistics aporta 41 casos. npm run test:browser: 11/11 recorridos Chromium, incluidos cookie/acceso de Preview protegido, perfiles, análisis/filtros/evolución, historial filtrado, 25 resultados, jugadores inactivos y errores/offline; builds normal y aislado correctos. No equivale a comprobar Supabase real.
 - npm run build: TypeScript y Vite correctos.
 - npm audit: cero vulnerabilidades en la última ejecución.
 - Pruebas SQL en el proyecto real: RLS, cuentas, permisos, equipos/agregado, idempotencia, snapshot, restricciones de borrado, secuencia, modo prueba y rollback correctos. Fixtures íntegramente revertidos con ROLLBACK.
@@ -156,6 +156,16 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, predicción/forma competitiva, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Bloqueo de registro/login en Preview protegido
+
+Propietario: ambos botones deshabilitados con correo/contraseña introducidos. Base **cb3da39**, árbol limpio al iniciar; main remoto **900e470**. Inspección: ambos dependen de servicios, conexión y solicitud en curso; longitud insuficiente no bloquea ENTRAR. Defecto reproducido antes del arreglo en Chromium: `/connection.json` con `credentials: omit` no envía la cookie del host protegido, devuelve 401/HTML y mantiene acceso bloqueado incluso con cookie válida disponible.
+
+ConnectionMonitor/probeConnection usa ahora `credentials: same-origin`, conserva no-store/límite 4 s y rechaza redirects con `redirect: error`. HTTP correcto y marcador JSON siguen siendo requisitos; sin Authorization, cookies a otros orígenes, cambios de Supabase o retirada de protección. SettingsScreen explica conexión no verificada/solicitud en curso. Fixture `?auth=guest` y regresión de navegador comprueban ausencia/presencia de cookie HttpOnly local; nunca pulsa registrar ni crea cuenta real. Tests offline cubren marcador ajeno, 401, HTML/redirect, señal/caché y ausencia de Authorization.
+
+Verificación: npm test (siete grupos, estadísticas 41/41), TypeScript/builds normal/aislado y navegador **11/11** correctos. Fallo esperado antes, prueba correcta tras el arreglo; vistas 320×568, 390×844 y 800×480/física, sin pageerror, revisión visual local. La revisión visual detectó que un aviso podía tapar contenido físico: `global.css` permite scroll interno de cada panel de Ajustes, y el navegador comprueba que el botón recibe el punto de toque. Sin dependencias, migraciones, motor, datos de negocio o configuración Auth/Vercel cambiados. Worker/precaché estática sin cambios: instalación PWA tras protección sigue pendiente, no se afirma corregida por la sonda.
+
+Acceso HTTP real al Preview rechazado por proxy cloud con CONNECT 403; no demuestra caída de Vercel/Supabase ni rechazo de Auth. Guía runtime/política/readiness inspeccionadas; sin bypass, escalación o borrador modificado. Push se comprueba mediante Git; puede generar Preview automática, pero no acredita su publicación ni el desbloqueo en la sesión del propietario. Siguiente acción: cuando esté disponible la actualización, cerrar/reabrir pestañas del marcador sin borrar almacenamiento, COMPROBAR CONEXIÓN y retomar el punto 4. Si persiste, comprobar indicador/aviso exactos. Registro real y fase B siguen pendientes.
 
 ### 2026-10-01 — Análisis de resultados, rachas, filtros y evolución
 

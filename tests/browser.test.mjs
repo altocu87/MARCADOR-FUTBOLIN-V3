@@ -115,6 +115,45 @@ test('modo prueba: partido completo sin cola ni checkpoint', async () => withPag
   await visible(page, 'No hay partidos guardados.')
 }))
 
+test('vista protegida: cookie del mismo origen habilita acceso, sin cookie sigue bloqueado', async () => withPage(async (page, context) => {
+  const probeRequests = []
+  await context.route(base + '/connection.json', async route => {
+    const cookies = (await route.request().allHeaders()).cookie ?? ''
+    probeRequests.push(cookies.includes('preview-access-fixture=granted'))
+    await route.fulfill(probeRequests.at(-1)
+      ? { status: 200, contentType: 'application/json', body: JSON.stringify({ application: 'marcador-futbolin-v3' }) }
+      : { status: 401, contentType: 'text/html', body: '<h1>Protected preview</h1>' })
+  })
+  await page.goto(fixture + '?auth=guest')
+  await settings(page)
+  await page.getByRole('textbox', { name: 'Correo' }).fill('operator@example.invalid')
+  await page.getByLabel('Contraseña', { exact: true }).fill('fixture-password-123')
+  await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SIN CONEXIÓN'))
+  assert.equal(await page.getByRole('button', { name: 'ENTRAR', exact: true }).isDisabled(), true)
+  assert.equal(await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).isDisabled(), true)
+  await page.getByText(/El acceso está bloqueado porque/).waitFor()
+  for (const [width, height] of [[320, 568], [390, 844], [800, 480]]) {
+    await page.setViewportSize({ width, height })
+    await noOverflow(page)
+    await page.getByRole('button', { name: 'ENTRAR', exact: true }).scrollIntoViewIfNeeded()
+  }
+  await page.getByRole('button', { name: 'PANTALLA 800×480' }).click()
+  await noOverflow(page)
+  const register = page.getByRole('button', { name: 'CREAR CUENTA', exact: true })
+  await register.scrollIntoViewIfNeeded()
+  assert.equal(await register.evaluate(el => {
+    const box = el.getBoundingClientRect()
+    return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2) === el
+  }), true, 'El aviso no tapa el botón en la referencia física')
+  await context.addCookies([{ name: 'preview-access-fixture', value: 'granted', domain: '127.0.0.1', path: '/', httpOnly: true, sameSite: 'Lax' }])
+  await page.getByRole('button', { name: 'COMPROBAR CONEXIÓN', exact: true }).click()
+  await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SISTEMA ONLINE'))
+  assert.equal(await page.getByRole('button', { name: 'ENTRAR', exact: true }).isDisabled(), false)
+  assert.equal(await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).isDisabled(), false)
+  assert.ok(probeRequests.includes(false) && probeRequests.includes(true))
+  // No Auth submission or real account creation; test only the UI prerequisite.
+}))
+
 test('2v2: selección exacta, bloqueo, recarga en pausa y misma identidad del partido', async () => withPage(async page => {
   await page.goto(fixture)
   await realMode(page)

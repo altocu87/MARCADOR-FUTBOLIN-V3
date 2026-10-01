@@ -19,6 +19,7 @@ const matches = new Map<string, MatchDocument>()
 const saveMode = new URLSearchParams(window.location.search).get('save')
 const realNetwork = new URLSearchParams(window.location.search).get('network') === 'real'
 const statisticsMode = new URLSearchParams(window.location.search).get('statistics')
+const guest = new URLSearchParams(window.location.search).get('auth') === 'guest'
 // Built, isolated profile/pagination fixtures. No database writes.
 if (statisticsMode === 'seed' || statisticsMode === 'analysis') {
   const analysis = statisticsMode === 'analysis'
@@ -52,7 +53,7 @@ async function requireNetwork() {
 const services: ApplicationServices = {
   namespace: 'marcador-ui-fixture',
   auth: {
-    async getIdentity() { await requireNetwork(); return { id: 'fixture', email: 'PRUEBA UI LOCAL · SIN SUPABASE' } },
+    async getIdentity() { await requireNetwork(); return guest ? null : { id: 'fixture', email: 'PRUEBA UI LOCAL · SIN SUPABASE' } },
     subscribe() { return () => {} }, async signIn() {}, async signUp() { return 'Prueba local' }, async signOut() {},
   },
   players: {

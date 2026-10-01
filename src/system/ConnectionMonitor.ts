@@ -22,7 +22,9 @@ export class ConnectionMonitor {
 }
 
 export async function probeConnection(): Promise<boolean> {
-  const response = await fetch('/connection.json', { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(4_000) })
+  // A protected Preview needs its own host cookie. Never follow a login
+  // redirect or send credentials to another origin; the probe stays uncached.
+  const response = await fetch('/connection.json', { cache: 'no-store', credentials: 'same-origin', redirect: 'error', signal: AbortSignal.timeout(4_000) })
   const body: unknown = await response.json()
   return response.ok && typeof body === 'object' && body !== null && 'application' in body && body.application === 'marcador-futbolin-v3'
 }

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { runInNewContext } from 'node:vm'
 import { inflateSync } from 'node:zlib'
 import { renderServiceWorker, scoreboardIcon } from '../tooling/pwa'
-import { ConnectionMonitor } from '../src/system/ConnectionMonitor'
+import { ConnectionMonitor, probeConnection } from '../src/system/ConnectionMonitor'
 import { OfflineIdentityStore } from '../src/services/persistence/OfflineIdentityStore'
 import { SaveCoordinator } from '../src/services/persistence/SaveCoordinator'
 import type { MatchDocument } from '../src/services/persistence/models'
@@ -97,6 +97,31 @@ let resolve: (value: boolean) => void = () => {}
 const delayed = new ConnectionMonitor(() => new Promise<boolean>(done => { resolve = done }))
 const checking = delayed.check(); delayed.disconnected(); resolve(true); await checking
 assert.equal(delayed.getSnapshot(), 'offline', 'Una respuesta antigua no invierte un evento offline posterior')
+
+// The web probe needs the Preview's own access cookie, never a Supabase token.
+const originalFetch = globalThis.fetch
+try {
+  globalThis.fetch = async (input, init) => {
+    assert.equal(input, '/connection.json')
+    assert.equal(init?.credentials, 'same-origin')
+    assert.equal(init?.cache, 'no-store')
+    assert.equal(init?.redirect, 'error')
+    assert.ok(init?.signal instanceof AbortSignal)
+    assert.equal(new Headers(init?.headers).has('Authorization'), false)
+    return new Response(JSON.stringify({ application: 'marcador-futbolin-v3' }))
+  }
+  assert.equal(await probeConnection(), true, 'Sonda usa cookies únicamente del propio origen')
+  for (const response of [new Response(JSON.stringify({ application: 'other' })), new Response(JSON.stringify({ application: 'marcador-futbolin-v3' }), { status: 401 })]) {
+    globalThis.fetch = async () => response
+    assert.equal(await probeConnection(), false, 'Respuesta ajena/no autorizada no equivale a conexión')
+  }
+  for (const response of [new Response('<h1>Login required</h1>'), null]) {
+    globalThis.fetch = async () => { if (!response) throw new TypeError('Redirect blocked'); return response }
+    const rejected = new ConnectionMonitor(probeConnection)
+    await rejected.check()
+    assert.equal(rejected.getSnapshot(), 'offline', 'HTML/redirect/error no habilita acceso')
+  }
+} finally { globalThis.fetch = originalFetch }
 
 const values = new Map<string, string>()
 const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => { values.set(key, value) } }

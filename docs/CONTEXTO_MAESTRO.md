@@ -937,6 +937,8 @@ No activar servicios de pago.
 
 Decisión del 2026-10-01: el propietario autoriza publicar una vista previa de desarrollo para verla desde el móvil sin depender del PC. La integración GitHub del proyecto existente ya genera estas vistas; reutilizar la publicación correcta antes de crear despliegues redundantes. Mantener protección de acceso y no promover a producción/main mientras siga pendiente la validación autenticada de la fase B. Una vista previa publicada no demuestra que la persistencia esté configurada ni probada. Enlaces y estado comprobado en ESTADO_ACTUAL.md.
 
+Corrección del 2026-10-01 para Preview protegido: la sonda `/connection.json` envía cookies únicamente del mismo origen; omitirlas causaba falsa desconexión y bloqueo de ENTRAR/CREAR CUENTA tras protección Vercel. Conserva protección, no-store, timeout y rechazo de redirecciones, sin tokens Supabase ni credenciales entre orígenes. Interfaz con causa visible del bloqueo. No equivale a registro/despliegue remoto verificados; detalles en VERIFICACION_VERCEL_DATOS.md.
+
 ## 55. GITHUB
 
 GitHub es la fuente principal/versionada.
@@ -1276,6 +1278,8 @@ Revisión cloud del 2026-10-01: `npm run test:browser` añade cinco recorridos r
 Bloque posterior de estadísticas: `npm test` añade test:statistics (siete grupos); test:browser amplía a ocho recorridos. Probar más de 20 partidos, 1v1/2v2, reintentos, anulaciones, gol de oro/penaltis, jugadores inactivos/renombrados, errores y cancelación. Comprobar navegación, historial filtrado y controles visibles en web/800×480. No confundir pruebas SDK con transporte aislado con una consulta autenticada del proyecto real.
 
 Ampliación de análisis: test:statistics suma 41 casos; test:browser, diez recorridos. Añade rachas/empates, filtros combinados, límites inclusivos, días de 23/25 horas, precisión temporal, evolución sobre 200 resultados, gráfico acotado, rango inválido, filtro vacío, vuelta del historial y pérdida/reconexión conservando filtro. Verificar formularios, tablas y gráfico con scroll interno en móvil y referencia física. Las cifras actuales de comprobación están en ESTADO_ACTUAL.md.
+
+Corrección posterior de conexión Preview: once recorridos de navegador. Reproducir antes del arreglo una sonda protegida por cookie y comprobar después acceso habilitado con ella, bloqueado sin ella. Tests del probe verifican mismo origen, no-store, rechazo de redirects/HTML/401 y ausencia de Authorization. No registrar cuentas reales como fixtures.
 
 ## 77. VERIFICACIÓN VISUAL
 
