@@ -20,6 +20,9 @@ const saveMode = new URLSearchParams(window.location.search).get('save')
 const realNetwork = new URLSearchParams(window.location.search).get('network') === 'real'
 const statisticsMode = new URLSearchParams(window.location.search).get('statistics')
 const guest = new URLSearchParams(window.location.search).get('auth') === 'guest'
+// Counts only; never expose or retain the entered email/password.
+const authCalls = { login: 0, register: 0 }
+Object.defineProperty(window, 'fixtureAuthCalls', { value: authCalls })
 // Built, isolated profile/pagination fixtures. No database writes.
 if (statisticsMode === 'seed' || statisticsMode === 'analysis') {
   const analysis = statisticsMode === 'analysis'
@@ -54,7 +57,7 @@ const services: ApplicationServices = {
   namespace: 'marcador-ui-fixture',
   auth: {
     async getIdentity() { await requireNetwork(); return guest ? null : { id: 'fixture', email: 'PRUEBA UI LOCAL · SIN SUPABASE' } },
-    subscribe() { return () => {} }, async signIn() {}, async signUp() { return 'Prueba local' }, async signOut() {},
+    subscribe() { return () => {} }, async signIn() { authCalls.login += 1 }, async signUp() { authCalls.register += 1; return 'Prueba local' }, async signOut() {},
   },
   players: {
     async getPlayers() { await requireNetwork(); return players.map(p => ({ ...p })) },

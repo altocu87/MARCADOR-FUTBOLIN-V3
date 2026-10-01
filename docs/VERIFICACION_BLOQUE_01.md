@@ -73,13 +73,21 @@ Verificación de esta continuación: npm test, siete grupos correctos (estadíst
 | 4 · AMBAS final en primera | Simulación automatizada correcta; no pedir repetirla manualmente por rutina |
 | 5 · Prórroga/penaltis | Simulación automatizada correcta para TIME/AMBAS; no pedir repetirla manualmente por rutina |
 | 6 · Guardado/historial/perfiles | Confirmada OK por el propietario; no repetir |
-| 7 · Recuperación tras recarga | Incidencia reportada: vuelve al inicio sin ofrecer copia; pendiente aclarar modo al iniciar, partido sin finalizar, origen y avisos |
+| 7 · Recuperación tras recarga | Aclarada: se hizo con PRUEBA ON, volver al inicio es lo esperado. Sigue pendiente recuperación real con OFF desde el inicio |
 | 8 · Pendiente offline/reconexión | Falta recorrido desde el origen real; mismo ID, un solo resultado |
 | 9 · Prueba ON sin incremento | Falta contraste de historial/perfiles reales antes/después |
 | 10 · Alias/baja lógica | Falta comprobación desde UI real; no borrar jugadores |
 | 11 · PWA física | Falta instalación y reapertura offline en el teléfono real |
 
 Seguimiento posterior del propietario: **6 OK**. En **7**, recargó y volvió a la página principal sin partido por recuperar. Se registra la incidencia; no se afirma todavía pérdida de una copia existente ni causa confirmada. La recuperación está prevista únicamente para partidos iniciados con PRUEBA OFF, sin finalizar, en el mismo navegador/origen/cuenta. Cambiar a OFF después de iniciar no cambia ese partido. Con PRUEBA ON no se escribe copia y volver al inicio tras recarga es el comportamiento aprobado. No borrar almacenamiento ni crear otra cuenta para diagnosticar.
+
+Aclaración posterior: el propietario confirma **PRUEBA ON** en 7. Queda explicada la vuelta al inicio; no se declara aprobada la recuperación OFF. El modo queda fijado al iniciar: para esa comprobación, OFF debe seleccionarse antes del nuevo partido.
+
+## Registro separado del inicio de sesión
+
+El propietario pide separar CREAR CUENTA de ENTRAR tras cuatro pulsaciones accidentales con su correo existente. INICIAR SESIÓN queda como vista predeterminada y ENTRAR como único submit. Registro secundario independiente, separado por espacio/borde, abre CREAR CUENTA NUEVA; abrir o volver no envía Auth y limpia la contraseña. Registro mantiene validación nativa y confirmación por correo. No se cambia el SDK, políticas, sesión ni datos del operador, ni se infiere la creación de cuatro cuentas.
+
+npm test correcto y Chromium 21/21 con TypeScript/builds normal y aislado. Regresión de navegador con contadores de fixture: dos accesos (botón/Intro) y cero registros; abrir registro sigue sin enviar; submit explícito registra únicamente en fixture; volver no envía. Cookie de origen protegido sigue necesaria para habilitar acceso/registro; sin ella ambos submits bloqueados. Revisión visual de login a 390×844/800×480 y registro en referencia física; capturas /tmp/futbolin-login-separated-*.png y /tmp/futbolin-registration-separated-physical.png. Datos Auth aislados; cero cuentas/correos/llamadas Auth reales.
 
 El agente asume las simulaciones 3–5. Una simulación local no cierra la dependencia de Preview autenticada/PWA física, pero no requiere repetir esos guiones completos por rutina.
 
@@ -91,7 +99,7 @@ En la [Preview estable de esta rama](https://marcador-futbolin-v3-git-codex-8b42
 
 1. Cuando Vercel muestre la actualización, cerrar/reabrir sin borrar almacenamiento. Con prueba ON, confirmar únicamente el arreglo de la prueba 2: al acabar la segunda parte con marcador desigual aparece directamente FINAL DEL PARTIDO y ganador, sin VER RESULTADO. GOALS ya confirmado; simulaciones 3–5 a cargo del agente, no repetirlas por rutina.
 2. Guardado/historial/perfiles (prueba 6) ya confirmados; no repetirlos. Pendiente solo prueba 10 de edición de alias/desactivar/reactivar, conservando identidad e historial. No intentar borrar jugadores reales para probar protección.
-3. Resolver primero la incidencia de prueba 7: confirmar PRUEBA OFF desde el inicio, partido todavía en marcador, mismo origen/navegador/cuenta y cualquier aviso. Si requiere reproducción humana, POR GOLES objetivo 5, un gol (1–0), recargar la misma pestaña sin finalizar y comprobar recuperación en pausa. Después, terminar sin conexión, consultar pendiente, recargar y reconectar. Debe quedar un único resultado y la cola vacía. Ese resultado también se conserva como dato real.
+3. Prueba 7 estaba ON, no guardaba copia: comportamiento esperado. Para verificar recuperación real cuando se retomen las pruebas: seleccionar OFF antes de iniciar un partido nuevo, POR GOLES objetivo 5, un gol (1–0), recargar la misma pestaña/origen sin finalizar y comprobar recuperación en pausa. Después, terminar sin conexión, consultar pendiente, recargar y reconectar. Debe quedar un único resultado y la cola vacía. Ese resultado también se conserva como dato real.
 4. Repetir un partido con prueba ON: no aumenta historial/perfiles/partidos/eventos ni crea pendientes/checkpoint. Comparar antes/después; comunicar solo resultados o errores, sin credenciales.
 5. En el teléfono real, preparar OFFLINE DISPONIBLE e instalar/abrir la PWA, comprobar reapertura offline y actualización detrás de la protección Vercel. La emulación local no cierra esta comprobación física.
 

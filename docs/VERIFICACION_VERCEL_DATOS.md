@@ -1,5 +1,7 @@
 # Conexión de datos y registro en Preview — 2026-10-01
 
+Actualización del bloque 01: operador ya registrado, login y prueba 6 confirmados. Usar ENTRAR con su cuenta existente. Por petición expresa, CREAR CUENTA queda en un formulario independiente abierto por IR AL REGISTRO DE CUENTA NUEVA, sin solicitud al abrirlo. No repetir registro; los pasos de primera puesta en marcha siguientes son históricos. Evidencia vigente en [VERIFICACION_BLOQUE_01.md](VERIFICACION_BLOQUE_01.md).
+
 ## Alcance
 
 Vercel: marcador-futbolin-v3, equipo altocuvlc-9686s-projects, repositorio altocu87/MARCADOR-FUTBOLIN-V3. Solo Preview de codex/reliability-offline-v1, sin producción/main ni retirada de protección. Supabase: unemjyfhzljcdjcbiiwh, organización gratuita Altocu. No hay migraciones nuevas ni cuentas creadas por el agente.

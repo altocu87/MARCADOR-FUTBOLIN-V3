@@ -313,7 +313,10 @@ test('vista protegida: cookie del mismo origen habilita acceso, sin cookie sigue
   await page.getByLabel('Contraseña', { exact: true }).fill('fixture-password-123')
   await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SIN CONEXIÓN'))
   assert.equal(await page.getByRole('button', { name: 'ENTRAR', exact: true }).isDisabled(), true)
+  assert.equal(await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).count(), 0)
+  await page.getByRole('button', { name: 'IR AL REGISTRO DE CUENTA NUEVA' }).click()
   assert.equal(await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).isDisabled(), true)
+  await page.getByRole('button', { name: 'VOLVER A INICIAR SESIÓN' }).click()
   await page.getByText(/El acceso está bloqueado porque/).waitFor()
   for (const [width, height] of [[320, 568], [390, 844], [800, 480]]) {
     await page.setViewportSize({ width, height })
@@ -322,7 +325,7 @@ test('vista protegida: cookie del mismo origen habilita acceso, sin cookie sigue
   }
   await page.getByRole('button', { name: 'PANTALLA 800×480' }).click()
   await noOverflow(page)
-  const register = page.getByRole('button', { name: 'CREAR CUENTA', exact: true })
+  const register = page.getByRole('button', { name: 'IR AL REGISTRO DE CUENTA NUEVA' })
   await register.scrollIntoViewIfNeeded()
   assert.equal(await register.evaluate(el => {
     const box = el.getBoundingClientRect()
@@ -332,9 +335,48 @@ test('vista protegida: cookie del mismo origen habilita acceso, sin cookie sigue
   await page.getByRole('button', { name: 'COMPROBAR CONEXIÓN', exact: true }).click()
   await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SISTEMA ONLINE'))
   assert.equal(await page.getByRole('button', { name: 'ENTRAR', exact: true }).isDisabled(), false)
+  await register.click()
   assert.equal(await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).isDisabled(), false)
   assert.ok(probeRequests.includes(false) && probeRequests.includes(true))
   // No Auth submission or real account creation; test only the UI prerequisite.
+}))
+
+test('acceso: entrar por botón o teclado no registra; registro separado requiere envío explícito', async () => withPage(async page => {
+  await page.goto(fixture + '?auth=guest'); await settings(page)
+  await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SISTEMA ONLINE'))
+  await page.getByRole('heading', { name: 'INICIAR SESIÓN', exact: true }).waitFor()
+  assert.equal(await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).count(), 0)
+  await page.getByRole('textbox', { name: 'Correo' }).fill('operator@example.invalid')
+  const password = page.getByLabel('Contraseña', { exact: true })
+  await password.fill('fixture-password-123')
+  await page.getByRole('button', { name: 'ENTRAR', exact: true }).click()
+  await page.waitForFunction(() => window.fixtureAuthCalls.login === 1)
+  await password.fill('fixture-password-123'); await password.press('Enter')
+  await page.waitForFunction(() => window.fixtureAuthCalls.login === 2)
+  assert.deepEqual(await page.evaluate(() => window.fixtureAuthCalls), { login: 2, register: 0 })
+  await password.fill('fixture-password-123')
+  for (const [width, height] of [[390, 844], [800, 480]]) {
+    await page.setViewportSize({ width, height }); await noOverflow(page)
+    await page.getByRole('button', { name: 'IR AL REGISTRO DE CUENTA NUEVA' }).scrollIntoViewIfNeeded()
+    await page.screenshot({ path: `/tmp/futbolin-login-separated-${width}.png` })
+  }
+  await page.getByRole('button', { name: 'IR AL REGISTRO DE CUENTA NUEVA' }).click()
+  await page.getByRole('heading', { name: 'CREAR CUENTA NUEVA', exact: true }).waitFor()
+  assert.equal(await password.inputValue(), '', 'El paso al registro no reutiliza la contraseña de acceso')
+  assert.equal(await page.getByRole('button', { name: 'ENTRAR', exact: true }).count(), 0)
+  assert.deepEqual(await page.evaluate(() => window.fixtureAuthCalls), { login: 2, register: 0 }, 'Abrir el registro no envía Auth')
+  await password.fill('fixture-password-123')
+  await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).click()
+  await visible(page, 'Prueba local')
+  assert.deepEqual(await page.evaluate(() => window.fixtureAuthCalls), { login: 2, register: 1 })
+  await page.getByRole('button', { name: 'PANTALLA 800×480' }).click()
+  await noOverflow(page)
+  await page.getByRole('button', { name: 'VOLVER A INICIAR SESIÓN' }).scrollIntoViewIfNeeded()
+  await page.screenshot({ path: '/tmp/futbolin-registration-separated-physical.png' })
+  await page.getByRole('button', { name: 'VOLVER A INICIAR SESIÓN' }).click()
+  await page.getByRole('heading', { name: 'INICIAR SESIÓN', exact: true }).waitFor()
+  assert.equal(await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).count(), 0)
+  assert.deepEqual(await page.evaluate(() => window.fixtureAuthCalls), { login: 2, register: 1 })
 }))
 
 test('2v2: selección exacta, bloqueo, recarga en pausa y misma identidad del partido', async () => withPage(async page => {

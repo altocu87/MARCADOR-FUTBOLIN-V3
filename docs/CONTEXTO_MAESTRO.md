@@ -803,6 +803,8 @@ Usar:
 
 Consultar documentación Supabase actual antes de tomar decisiones sensibles. Supabase cambia con frecuencia.
 
+Decisión expresa durante el bloque 01, 2026-10-01: separar registro de inicio de sesión para evitar pulsar CREAR CUENTA accidentalmente. AJUSTES abre INICIAR SESIÓN con ENTRAR como único envío. IR AL REGISTRO DE CUENTA NUEVA es un botón secundario separado, sin llamada Auth; abre otro formulario con CREAR CUENTA y VOLVER A INICIAR SESIÓN. Cambiar de formulario limpia la contraseña. La tecla Intro en acceso solo inicia sesión; no cambia Auth, confirmación ni RLS.
+
 Acceso web V1: cuenta de operador por correo/contraseña, con confirmación; los jugadores son registros gestionados por esa cuenta, no usuarios Auth obligatorios. Los datos se mantienen privados por owner_id/RLS. El registro solicita retornar al origen actual y debe tener esa URL exacta autorizada en Supabase. No compartir sesiones/tokens entre dominios ni desactivar confirmación para facilitar pruebas. El SMTP predeterminado es para pruebas con correos del equipo y tiene límites; abrir registro a otros correos requiere configurar envío autorizado, sin asumir costes ni contratar servicios automáticamente.
 
 ## 46. MODELO DE DATOS V1 PREVISTO

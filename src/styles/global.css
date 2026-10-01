@@ -64,7 +64,9 @@
 .data-panel button { width: 100%; }
 .test-toggle.selected { border-color: #6ae7ce; background: #15584c; }
 .account-form { display: flex; flex-direction: column; gap: 12px; }
-.account-form > div { display: flex; gap: 7px; }
+.account-alternative { margin-top: 16px; padding-top: 16px; border-top: 1px solid #334f70; }
+.account-alternative p { margin: 0 0 12px; }
+.account-alternative button { background: transparent; color: #adbed6; }
 .scroll-panel { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-color: #396492 #112440; }
 .player-list-row { display: flex; align-items: center; gap: 7px; padding: 8px; margin-bottom: 5px; background: #10233b; border-radius: 7px; }
 .player-list-row > span { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 13px; }
