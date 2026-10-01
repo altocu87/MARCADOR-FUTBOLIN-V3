@@ -75,3 +75,13 @@ export type MatchEvent =
   | 'PENALTI_AZUL_GOL' | 'PENALTI_AZUL_FALLO'
 
 export type MatchStateListener = (state: Readonly<MatchState>) => void
+
+/** Serializable engine state; storage and account ownership live outside the engine. */
+export interface MatchCheckpoint {
+  version: 1
+  state: MatchState
+  completedTimeSeconds: number
+  goalSequence: number
+  capturedAtMs: number
+  goalLockRemainingMs: number
+}

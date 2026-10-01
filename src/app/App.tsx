@@ -8,15 +8,18 @@ import { MatchConfigurationScreen, MatchFlow, PlayerSelectionScreen } from '../u
 import { TopMenu, type MenuItem } from '../ui/components/TopMenu'
 import { SettingsScreen } from '../ui/screens/SettingsScreen'
 import { HistoryScreen } from '../ui/screens/HistoryScreen'
+import { RecoveryScreen } from '../ui/screens/RecoveryScreen'
 import type { ApplicationServices } from './services'
 import { errorMessage, useData } from './useData'
-import { SaveCoordinator } from '../services/persistence/SaveCoordinator'
+import { SaveCoordinator, type KeyValueStorage } from '../services/persistence/SaveCoordinator'
+import { ActiveMatchStore, type ActiveMatchCopy } from '../services/persistence/ActiveMatchStore'
+import { useActiveMatch, type RunContext } from './useActiveMatch'
 import { activePlayers, type MatchDocument, type Player } from '../services/persistence/models'
 import { mapMatch, participantsFor } from '../services/persistence/mapMatch'
 
 const menuItems: MenuItem[] = [{ id: 'new-match', label: 'NUEVO PARTIDO' }, { id: 'tournament', label: 'TORNEO' }, { id: 'ranking', label: 'RANKING' }, { id: 'settings', label: 'AJUSTES' }]
-type Screen = 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'placeholder'
-interface RunContext { id: string; players: Player[]; testMode: boolean; coordinator: SaveCoordinator | null }
+type Screen = 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'placeholder' | 'recovery'
+const browserStorage: KeyValueStorage = { getItem: key => localStorage.getItem(key), setItem: (key, value) => localStorage.setItem(key, value) }
 const practicePlayers: Player[] = ['PRUEBA BLANCO', 'PRUEBA AZUL'].map((name, i) => ({ id: 'practice-' + i, name, nickname: null, photoUrl: null, active: true, level: 0 }))
 
 export function App({ services }: { services: ApplicationServices | null }) {
@@ -35,8 +38,10 @@ export function App({ services }: { services: ApplicationServices | null }) {
       },
       getMatches: offset => services.matches.getMatches(offset),
       getMatchById: id => services.matches.getMatchById(id),
-    }, localStorage, services.namespace + ':pending:v1:' + userId)
+    }, browserStorage, services.namespace + ':pending:v1:' + userId)
   }, [services, userId])
+  const activeStore = useMemo(() => services && userId ? new ActiveMatchStore(browserStorage, services.namespace, userId) : null, [services, userId])
+  const [recovery, setRecovery] = useState<ActiveMatchCopy | null>(null)
   const [activeMenu, setActiveMenu] = useState('new-match')
   const [screen, setScreen] = useState<Screen>('new')
   const [mode, setMode] = useState<MatchMode>('QUICK')
@@ -51,13 +56,23 @@ export function App({ services }: { services: ApplicationServices | null }) {
   const [canLeave, setCanLeave] = useState(true)
   const [notice, setNotice] = useState('')
   const run = useRef<RunContext | null>(null)
+  const recoveryWarning = useActiveMatch(engine, run)
   const finalDocument = useRef<MatchDocument | null>(null)
   const handledId = useRef<string | null>(null)
   const matchOpen = run.current !== null
   const protectedIds = useMemo(() => {
-    try { return [...players.map(p => p.id), ...(coordinator?.getPending() ?? []).flatMap(doc => doc.participants.map(p => p.player_id))] }
+    try { return [...players.map(p => p.id), ...(recovery?.players ?? []).map(p => p.id), ...(coordinator?.getPending() ?? []).flatMap(doc => doc.participants.map(p => p.player_id))] }
     catch { return data.players.map(p => p.id) }
-  }, [players, coordinator, pendingCount, saveMessage, data.players])
+  }, [players, recovery, coordinator, pendingCount, saveMessage, data.players])
+
+  useEffect(() => {
+    if (run.current) return
+    try {
+      const copy = activeStore?.load() ?? null
+      setRecovery(copy)
+      setScreen(current => copy ? 'recovery' : current === 'recovery' ? 'new' : current)
+    } catch (error) { setRecovery(null); setScreen(current => current === 'recovery' ? 'new' : current); setNotice(errorMessage(error)) }
+  }, [activeStore])
 
   useEffect(() => { const timer = window.setInterval(() => engine.tick(), 100); return () => window.clearInterval(timer) }, [engine])
   useEffect(() => {
@@ -69,6 +84,9 @@ export function App({ services }: { services: ApplicationServices | null }) {
     try {
       const result = document.match.test_mode ? 'test' : await context.coordinator?.save(document)
       if (!result) throw new Error('No hay cuenta para guardar. Mantén esta pantalla abierta.')
+      // Only release recovery after a durable final queue or remote acknowledgement.
+      context.checkpointReleased = true
+      try { context.activeStore?.clear(context.id) } catch { setNotice('Resultado conservado; no se pudo limpiar la copia de recuperación.') }
       setSaveMessage(result === 'saved' ? 'PARTIDO GUARDADO EN SUPABASE' : result === 'test' ? 'MODO PRUEBA · NO SE HA GUARDADO NADA' : 'PENDIENTE EN ESTE DISPOSITIVO · Reintenta en Ajustes')
       setCanLeave(true)
     } catch (error) { setSaveMessage(errorMessage(error) + ' · No cierres el resultado; reintenta.') }
@@ -95,23 +113,47 @@ export function App({ services }: { services: ApplicationServices | null }) {
     if (state.status === 'MATCH_END' && (!canLeave || saving)) { setNotice('Espera al guardado o reintenta en el resultado.'); return }
     if (state.status === 'PLAYING') input.emit('PAUSA')
     setActiveMenu(id); setNotice('')
-    setScreen(id === 'settings' ? 'settings' : id === 'ranking' ? 'history' : id === 'new-match' ? matchOpen ? 'match' : 'new' : 'placeholder')
+    setScreen(id === 'settings' ? 'settings' : id === 'ranking' ? 'history' : id === 'new-match' ? matchOpen ? 'match' : recovery ? 'recovery' : 'new' : 'placeholder')
   }
   function start(selected: Player[]) {
     if (!configuration) return
     try {
       participantsFor(selected)
       if (!testMode && !coordinator) throw new Error('Inicia sesión en Ajustes o activa MODO PRUEBA.')
-      run.current = { id: crypto.randomUUID(), players: selected.map(p => ({ ...p })), testMode, coordinator }
+      if (!testMode) {
+        const copy = activeStore?.load()
+        if (copy) { setRecovery(copy); setScreen('recovery'); return }
+      }
+      run.current = { id: crypto.randomUUID(), ownerId: userId, players: selected.map(p => ({ ...p })), testMode, coordinator,
+        activeStore: testMode ? null : activeStore, checkpointReleased: false }
       handledId.current = null; finalDocument.current = null
       setPlayers(selected); setNotice(''); setSaveMessage(''); setCanLeave(false)
       engine.createMatch(configuration); setScreen('match')
     } catch (error) { setNotice(errorMessage(error)) }
   }
+  function recoverMatch() {
+    if (!recovery || !coordinator || !activeStore || recovery.ownerId !== userId) return
+    try {
+      const copy = activeStore.load()
+      if (!copy) { setRecovery(null); setScreen('new'); return }
+      run.current = { id: copy.id, ownerId: copy.ownerId, players: copy.players, testMode: false, coordinator,
+        activeStore, checkpointReleased: false }
+      handledId.current = null; finalDocument.current = null
+      setPlayers(copy.players); setConfiguration(copy.checkpoint.state.config); setMode(copy.checkpoint.state.config!.mode)
+      setNotice(''); setSaveMessage(''); setCanLeave(false); setRecovery(null)
+      engine.restoreCheckpoint(copy.checkpoint)
+      setActiveMenu('new-match'); setScreen('match')
+    } catch (error) { run.current = null; setNotice(errorMessage(error)) }
+  }
   function newMatch() {
     if (!canLeave || saving) return
     run.current = null; finalDocument.current = null; setPlayers([])
     setActiveMenu('new-match'); setScreen('new'); setNotice('')
+    try {
+      const copy = activeStore?.load() ?? null
+      setRecovery(copy)
+      if (copy) setScreen('recovery')
+    } catch (error) { setNotice(errorMessage(error)) }
   }
   const selectable = activePlayers(data.players)
   const availablePlayers = selectable.length ? selectable : testMode ? practicePlayers : []
@@ -119,6 +161,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
     <TopMenu items={menuItems} activeItem={activeMenu} onSelect={selectMenu} />
     <section className="app-content">
       {screen === 'new' && <NewMatchScreen onSelect={nextMode => { setMode(nextMode); setScreen('configuration') }} />}
+      {screen === 'recovery' && recovery && <RecoveryScreen copy={recovery} onRecover={recoverMatch} />}
       {screen === 'configuration' && <MatchConfigurationScreen mode={mode} onContinue={next => { setConfiguration(next); setScreen('players') }} onBack={() => setScreen('new')} />}
       {screen === 'players' && <PlayerSelectionScreen key={userId ?? 'practice'} availablePlayers={availablePlayers} testMode={testMode} onStart={start} onBack={() => setScreen('configuration')} />}
       {screen === 'match' && <MatchFlow state={state} engine={engine} input={input} players={players} onNewMatch={newMatch} saveMessage={saveMessage} canLeave={canLeave && !saving} onRetry={() => { if (!saving && run.current && finalDocument.current) void persist(run.current, finalDocument.current) }} />}
@@ -126,6 +169,6 @@ export function App({ services }: { services: ApplicationServices | null }) {
       {screen === 'history' && <HistoryScreen key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} />}
       {screen === 'placeholder' && <div className="placeholder-screen"><span>PRÓXIMAMENTE</span><p>Torneos se implementará en otra fase.</p></div>}
     </section>
-    <footer className="system-status"><span className="status-dot" />{notice && screen !== 'settings' ? notice : 'SISTEMA ONLINE · ' + (testMode ? 'PRUEBA ON' : 'PRUEBA OFF') + ' · ' + (data.user ? 'SESIÓN ACTIVA' : 'SIN SESIÓN')}{matchOpen && screen !== 'match' && <button type="button" onClick={() => { setActiveMenu('new-match'); setScreen('match') }}>VOLVER AL PARTIDO</button>}</footer>
+    <footer className="system-status"><span className="status-dot" />{recoveryWarning || (notice && screen !== 'settings' ? notice : 'SISTEMA ONLINE · ' + ((run.current?.testMode ?? testMode) ? 'PRUEBA ON' : 'PRUEBA OFF') + ' · ' + (data.user ? 'SESIÓN ACTIVA' : 'SIN SESIÓN'))}{matchOpen && screen !== 'match' && <button type="button" onClick={() => { setActiveMenu('new-match'); setScreen('match') }}>VOLVER AL PARTIDO</button>}</footer>
   </main></FixedCanvas>
 }

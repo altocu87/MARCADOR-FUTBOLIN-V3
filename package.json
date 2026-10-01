@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test:engine": "tsx tests/matchEngine.test.ts",
     "test:persistence": "tsx tests/persistence.test.ts",
-    "test": "npm run test:engine && npm run test:persistence"
+    "test:recovery": "tsx tests/recovery.test.ts",
+    "test": "npm run test:engine && npm run test:persistence && npm run test:recovery"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2",

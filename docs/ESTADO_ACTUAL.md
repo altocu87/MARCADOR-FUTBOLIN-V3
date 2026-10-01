@@ -35,12 +35,16 @@
 - Panel de simulación solo en desarrollo. No hay comunicaciones físicas ni firmware.
 - Corregido el desbloqueo prematuro al deshacer/cambiar de parte o prórroga: el motor conserva los tres segundos del último gol aceptado. Ocho regresiones verifican pantalla/adaptador directo, límite exacto, simulación de transiciones y rechazo sin eventos adicionales. Al deshacer desde un final, el reloj no incorpora el tiempo de descanso.
 - Guardado con límite de diez segundos: una petición colgada deja el resultado pendiente y libera el resumen. Pruebas de recarga, varios resultados, confirmaciones desordenadas/tardías y fallo de limpieza local.
+- Recuperación de partidos en curso con prueba OFF: checkpoint versionado, validación, misma cuenta/proyecto, mismo ID y participantes. Juego activo recuperado en pausa, sin tiempo de cierre; cuenta atrás reiniciada, descanso/penaltis preservados. Copia retirada solo al entregar el resultado a cola durable/guardado. Modo prueba ON no escribe checkpoints.
 
 ### Módulos principales
 
 - `src/app/App.tsx`, `services.ts`, `useData.ts`: composición, sesión, caché, navegación y guardado.
+- `src/app/useActiveMatch.ts`: copia síncrona tras acciones y por segundo, con aviso ante almacenamiento no disponible.
 - `src/match-engine/MatchEngine.ts`, `types.ts`: motor y eventos independientes.
+- `src/match-engine/checkpoint.ts`: validación completa antes de restaurar el motor.
 - `src/services/persistence/`: modelos, contratos, mapMatch y SaveCoordinator.
+- `src/services/persistence/ActiveMatchStore.ts`, `src/ui/screens/RecoveryScreen.tsx`: copia activa por cuenta/proyecto y pantalla de recuperación explícita.
 - `src/services/supabase/`: cliente, Auth, adaptadores y database.types.ts.
 - `src/ui/screens/SettingsScreen.tsx`, `HistoryScreen.tsx`, `MatchFlow.tsx`: jugadores, historial y flujo del partido.
 - `src/main.tsx`, `src/styles/global.css`, package.json/lockfile y variables de ejemplo: integración y presentación.
@@ -48,6 +52,7 @@
 - `supabase/migrations/`, `supabase/tests/persistence_v1.sql`: migraciones y pruebas de integridad.
 - `docs/VERIFICACION_PERSISTENCIA_V1.md`: evidencia de la fase B y recorrido autenticado pendiente.
 - `docs/VERIFICACION_FIABILIDAD.md`: reproducción del fallo, correcciones, pruebas y recorrido visual de recuperación sin servicios externos.
+- `tests/recovery.test.ts`, `docs/VERIFICACION_RECUPERACION.md`: regresiones y evidencia de recuperación del partido activo.
 
 ## Supabase ya aplicado — no repetir a ciegas
 
@@ -78,6 +83,7 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 
 - npm run test:engine: correcto.
 - npm run test:persistence y npm test: correctos.
+- npm run test:recovery: reloj, bloqueo, IDs anulados, estados, penaltis, corrupción, aislamiento, modo prueba y entrega del resultado sin duplicados.
 - npm run build: TypeScript y Vite correctos.
 - npm audit: cero vulnerabilidades en la última ejecución.
 - Pruebas SQL en el proyecto real: RLS, cuentas, permisos, equipos/agregado, idempotencia, snapshot, restricciones de borrado, secuencia, modo prueba y rollback correctos. Fixtures íntegramente revertidos con ROLLBACK.
@@ -111,7 +117,8 @@ Después, el agente debe verificar con la capa Supabase real:
 - GOALS cuenta los goles totales del periodo; el marcador visible es acumulativo. TIME termina por reloj; BOTH por la primera condición. Cambiar a objetivo por equipo requeriría una decisión explícita.
 - Prórroga: 60 segundos y gol de oro; después penaltis alternos, cinco intentos y muerte súbita. No se atribuyen goles a jugadores.
 - Deshacer no retrocede el reloj; el journal conserva goles y anulaciones.
-- Historial depende de conexión. Todavía no hay PWA/arranque offline ni recuperación de una partida en curso tras cerrar/recargar; el resultado final pendiente sí se conserva si localStorage funciona.
+- Historial depende de conexión. Todavía no hay PWA/arranque offline. Sí hay recuperación de partida en curso en la rama de desarrollo: requiere app cargable, mismo origen/navegador/cuenta y prueba OFF. El resultado final pendiente también se conserva si localStorage funciona.
+- Usar una sola pestaña activa. La protección frente a journal antiguo no es un protocolo de coordinación simultánea entre pestañas. Copias inválidas se conservan y bloquean su sobrescritura; no hay borrado automático ni botón de descarte de partidas. La precisión de recuperación del reloj es de segundos; una caída abrupta puede perder la fracción aún no escrita.
 - Pendientes locales no son backup ni se comparten entre PC/móvil; la desactivación es más segura que eliminar cuando otros dispositivos puedan tener resultados sin sincronizar.
 - Clave pública configurada localmente en .env.local ignorado; cloud/Vercel necesitan su propia configuración segura. No copiar credenciales a esta documentación.
 - No se modificó Vercel. No se implementaron XP/ELO, estadísticas avanzadas, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
@@ -131,3 +138,9 @@ Guardados los 84 apartados del propietario en CONTEXTO_MAESTRO.md, instrucciones
 Corregido el bloqueo central, ampliadas las regresiones y fijado timeout de guardado. Verificado en navegador integrado un partido 2–0 con petición colgada → pendiente → recarga → reintento → historial/detalle, mediante repositorios en memoria sin Supabase. Lienzo real 800×480 sin overflow; comprobados centrado 1280×720 y escalado 390×844. Modo prueba restaurado ON, cola de fixture vacía y consola sin errores/avisos en ese recorrido. Sin cambios de base de datos, Auth real ni despliegues solicitados. La rama de desarrollo conserva también la implementación local de persistencia previa para poder retomarla en la nube; la fase B y promoción a main permanecen pendientes de la prueba autenticada.
 
 Publicación comprobada: eeb23b8 en origin/codex/reliability-offline-v1; main continúa en 900e470. Árbol de trabajo limpio después del commit funcional. No se creó PR ni se solicitó despliegue. Las comprobaciones de pruebas/build pasaron inmediatamente antes del commit.
+
+### 2026-10-01 — Recuperación de partidos en curso
+
+Implementados checkpoint puro y validado, copia local por cuenta/proyecto, escritor síncrono y pantalla de recuperación. Conservados reglas, goles, participantes, journal, contador de IDs anulados y penaltis. Recuperación en pausa para juego activo; tiempo de cierre excluido. MODO PRUEBA no escribe copias. El resultado pasa a la cola final con el mismo ID antes de retirar el checkpoint.
+
+Pruebas automatizadas ampliadas. Navegador integrado con repositorios aislados en memoria: recarga tras 1–0 → pausa → continuación → descanso recuperado → cuenta atrás de segunda parte recuperada → final 4–0 sin red → recarga → un pendiente → reintento → un resultado y journal completo. Cierre/reapertura de pestaña y penaltis recuperados con turno azul, final 3–0. Modo prueba ON restaurado, cero pendientes de fixture y consola sin errores/avisos. Pantalla nueva comprobada a 800×480 y escala 390×844 sin scroll general. Esto NO valida Auth ni Supabase real. Sin migraciones, cuentas, servicios externos o cambios de Vercel. Main sigue pendiente de prueba autenticada y revisión de la rama; ver `git log` para el commit de este bloque.

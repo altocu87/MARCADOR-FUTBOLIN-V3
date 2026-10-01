@@ -633,6 +633,8 @@ Evitar dependencias innecesarias entre módulos.
 
 El MatchEngine es una pieza crítica. Debe ser independiente de React, Supabase, Vercel, hardware y componentes visuales.
 
+Ampliación implementada el 2026-10-01: exporta/restaura checkpoints versionados y validados sin acceder al almacenamiento. Conserva el contador de IDs, tiempo acumulado y bloqueo central; la capa de aplicación decide cuándo escribirlos. Recuperar juego activo lo deja en pausa, sin sumar el tiempo que estuvo cerrado. Cuenta atrás, descansos, penaltis y finales mantienen su flujo correspondiente.
+
 Debe gestionar reglas del partido. Actualmente controla o debe controlar:
 
 - puntuación;
@@ -727,6 +729,10 @@ La arquitectura actual debe permitir sensor → Input Adapter → Match Engine s
 REGLA CRÍTICA: UN FALLO DE INTERNET NUNCA PUEDE PARAR UN PARTIDO.
 
 Durante el partido: NO depender de Supabase para cada gol. Mantener el estado localmente.
+
+Recuperación web implementada el 2026-10-01: solo con MODO PRUEBA OFF, copia en localStorage aislada por proyecto/cuenta, tras acciones y cada segundo de reloj. Conserva partido, participantes y journal completos con el mismo ID. La app ofrece recuperación explícita al volver a cargar. No cambia el reloj por tiempo de cierre; el plazo real de bloqueo de gol sí puede expirar. MODO PRUEBA ON no escribe estas copias ni colas de partidos.
+
+La copia activa se libera únicamente tras entregar el resultado a la cola durable o confirmar guardado. Fallos de almacenamiento avisan y no detienen el motor. Copias dañadas/incompatibles o de otro partido no se sobrescriben silenciosamente. Usar una sola pestaña activa; no es sincronización entre dispositivos, backup ni arranque offline/PWA. Requiere mismo navegador, origen y cuenta. Consultar `VERIFICACION_RECUPERACION.md` y el estado real de la rama.
 
 Al terminar: persistir/sincronizar.
 
@@ -1204,7 +1210,7 @@ Si falla: mostrar aviso, mantener copia pendiente si es viable, permitir reinten
 
 No perder el resultado silenciosamente.
 
-Refuerzo del coordinador web, 2026-10-01: cada intento de guardado tiene un límite de diez segundos. Si la petición no responde, conserva el agregado local y permite continuar/reintentar. Las respuestas tardías se recuperan con el mismo ID mediante guardado idempotente, sin retirar otros partidos pendientes. No sustituye un backup ni la futura recuperación de partidas en curso.
+Refuerzo del coordinador web, 2026-10-01: cada intento de guardado tiene un límite de diez segundos. Si la petición no responde, conserva el agregado local y permite continuar/reintentar. Las respuestas tardías se recuperan con el mismo ID mediante guardado idempotente, sin retirar otros partidos pendientes. La recuperación de partidas en curso es una copia independiente, descrita en el apartado 43; ninguna de estas copias sustituye un backup.
 
 ## 75. TYPESCRIPT
 

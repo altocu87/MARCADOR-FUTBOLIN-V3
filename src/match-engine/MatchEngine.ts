@@ -1,4 +1,5 @@
-import type { GoalEffect, GoalEvent, MatchConfiguration, MatchEvent, MatchPeriod, MatchState, MatchStateListener, PenaltyState, Team, TimelineEventType } from './types'
+import type { GoalEffect, GoalEvent, MatchCheckpoint, MatchConfiguration, MatchEvent, MatchPeriod, MatchState, MatchStateListener, PenaltyState, Team, TimelineEventType } from './types'
+import { validateCheckpoint } from './checkpoint'
 
 const GOAL_LOCK_MS = 3_000
 const COUNTDOWN_MS = 3_000
@@ -22,6 +23,29 @@ export class MatchEngine {
   ) {}
 
   getState = (): Readonly<MatchState> => this.state
+
+  getCheckpoint(): MatchCheckpoint {
+    return { version: 1, state: structuredClone(this.state), completedTimeSeconds: this.completedTimeSeconds,
+      goalSequence: this.sequence, capturedAtMs: this.now(), goalLockRemainingMs: Math.max(0, this.goalLockUntil - this.now()) }
+  }
+
+  restoreCheckpoint(checkpoint: unknown): void {
+    validateCheckpoint(checkpoint)
+    const copy = structuredClone(checkpoint)
+    const now = this.now()
+    this.completedTimeSeconds = copy.completedTimeSeconds
+    this.sequence = copy.goalSequence
+    // Wall time only expires the anti-bounce lock, never advances match time.
+    this.goalLockUntil = now + Math.max(0, copy.goalLockRemainingMs - Math.max(0, now - copy.capturedAtMs))
+    this.clockStartedAt = now - copy.state.elapsedSeconds * 1_000
+    this.countdownUntil = now + COUNTDOWN_MS
+    this.state = { ...copy.state, ...this.goalLockState(['PLAYING', 'PAUSED', 'PERIOD_END', 'MATCH_END'].includes(copy.state.status)) }
+    if (copy.state.status === 'PLAYING') {
+      this.state = { ...this.state, status: 'PAUSED' }
+      this.record('pause', null, { recovered: true })
+    } else if (copy.state.status === 'COUNTDOWN') this.state = { ...this.state, countdownValue: 3 }
+    this.emit()
+  }
 
   createMatch(config: MatchConfiguration): void {
     this.completedTimeSeconds = 0
@@ -99,9 +123,9 @@ export class MatchEngine {
     this.goalLockUntil = now + GOAL_LOCK_MS
     this.state = { ...this.state, whiteGoals, blueGoals, goals: [...this.state.goals, goal], lastGoal: goal, goalInputLocked: true, goalLockRemainingMs: GOAL_LOCK_MS }
     this.record('goal', team, { goalId: goal.id, effect: goal.effect })
-    this.emit()
     if (this.state.period === 'EXTRA_TIME') this.finishMatch()
     else if (this.hasReachedGoalLimit()) this.endPeriod()
+    else this.emit() // Subscribers only checkpoint the settled state of an action.
   }
 
   private hasReachedGoalLimit(): boolean {
@@ -169,8 +193,8 @@ export class MatchEngine {
     if (penalty.whiteAttempts >= 5 && penalty.blueAttempts >= 5 && penalty.whiteGoals === penalty.blueGoals) penalty.suddenDeath = true
     this.state = { ...this.state, penalty }
     this.record('penalty', white ? 'WHITE' : 'BLUE', { whiteAttempts: penalty.whiteAttempts, blueAttempts: penalty.blueAttempts, whiteGoals: penalty.whiteGoals, blueGoals: penalty.blueGoals }, isGoal)
-    this.emit()
     if (this.penaltyIsDecided(penalty)) this.finishMatch()
+    else this.emit()
   }
 
   private penaltyIsDecided(penalty: PenaltyState): boolean {

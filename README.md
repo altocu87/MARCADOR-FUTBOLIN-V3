@@ -26,6 +26,7 @@ Las variables VITE son públicas y se incluyen en el build. La seguridad depende
 ```bash
 npm run test:engine
 npm run test:persistence
+npm run test:recovery
 npm test
 npm run build
 npm run preview
@@ -56,9 +57,9 @@ El espacio lógico es siempre 800×480, sin aspect-ratio. Se centra a tamaño re
 
 - `src/match-engine/`: estado, reglas, reloj y cronología; sin React, DOM ni Supabase.
 - `src/inputs/`: contrato de entradas y adaptador táctil/ratón.
-- `src/app/`: navegación, sesión, caché de jugadores y coordinación del guardado final.
+- `src/app/`: navegación, sesión, caché de jugadores, recuperación del partido activo y coordinación del guardado final.
 - `src/ui/`: pantallas y presentación.
-- `src/services/persistence/`: modelos, contratos PlayerRepository/MatchRepository, mapeo y cola offline.
+- `src/services/persistence/`: modelos, contratos PlayerRepository/MatchRepository, mapeo, copia activa versionada y cola offline.
 - `src/services/supabase/`: cliente oficial, adaptadores Auth/repositorios y tipos generados de la base.
 - `supabase/migrations/`: esquema, RLS, RPC transaccional e integridad.
 - `tests/`: pruebas del motor, persistencia y fixture visual aislada.
@@ -83,11 +84,17 @@ Un jugador con historial no puede eliminarse; se desactiva. La interfaz también
 
 ### Modo prueba y offline
 
-MODO PRUEBA está ON por defecto, se recuerda localmente y se fija al empezar cada partido. No guarda partidos, participantes ni eventos, ni los escribe en la cola local. Sin jugadores reales hay dos plazas de práctica únicamente en este modo. La gestión de jugadores sigue siendo real si se inicia sesión.
+MODO PRUEBA está ON por defecto, se recuerda localmente y se fija al empezar cada partido. No guarda partidos, participantes ni eventos, ni los escribe en la cola local o en copias de recuperación. Sin jugadores reales hay dos plazas de práctica únicamente en este modo. La gestión de jugadores sigue siendo real si se inicia sesión.
 
-No se envían goles a la nube durante el juego. La lista de jugadores se conserva por proyecto/cuenta para empezar partidos sin red tras un primer acceso. La app debe estar ya cargada; no es todavía una PWA con arranque offline ni guarda partidos en curso tras cerrar/recargar.
+No se envían goles a la nube durante el juego. La lista de jugadores se conserva por proyecto/cuenta para empezar partidos sin red tras un primer acceso. La app debe poder cargarse; no es todavía una PWA con arranque offline.
+
+Con prueba OFF y sesión de operador, cada acción aceptada y cada segundo de reloj actualizan una copia local del partido activo. Después de recargar o cerrar y volver a abrir, aparece PARTIDO POR RECUPERAR: conserva ID, configuración, jugadores, marcador, tiempos, eventos, goles anulados y penaltis. Pulsa RECUPERAR PARTIDO; si estaba jugando, reaparece en pausa y requiere CONTINUAR. El tiempo de cierre no cuenta como juego. Una cuenta atrás se reinicia en 3, los descansos y los turnos de penaltis se conservan. Un resultado final aún no entregado conserva su ID para reintentar sin duplicarlo.
+
+La recuperación requiere la misma cuenta, navegador y dirección del marcador. No se transfiere entre PC y móvil. Usa una sola pestaña activa; una copia incompatible o con eventos más recientes se protege frente a sobrescritura. Si falla el almacenamiento, se muestra un aviso de no cerrar/recargar y el partido sigue en memoria. No borres los datos del navegador. Una caída abrupta puede perder la fracción de segundo no registrada; no es un backup ni una garantía si falla el disco. Detalles y pruebas en `docs/VERIFICACION_RECUPERACION.md`.
 
 Con prueba OFF, el resultado se escribe primero en localStorage y después se envía a Supabase. Si falla, queda pendiente en ese navegador/dispositivo; AJUSTES permite reintentar. No se sincroniza una cola desde otra cuenta. No borres los datos del navegador mientras haya pendientes. Si falla incluso el almacenamiento local, el resumen permanece en memoria y pide no cerrar y reintentar. Pendientes no son copias de seguridad y no se comparten entre móvil/PC.
+
+La copia del partido activo solo se retira después de conservar el resultado final en la cola durable o confirmar el guardado. Si falla esa entrega, la copia de recuperación no se descarta.
 
 El coordinador limita cada intento a diez segundos para no bloquear indefinidamente el resumen. Una confirmación tardía no elimina la copia local: el reintento idempotente con el mismo ID recupera la operación sin duplicarla. Cada confirmación retira solo su partido, conservando los demás pendientes.
 
