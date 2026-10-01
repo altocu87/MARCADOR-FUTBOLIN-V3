@@ -797,6 +797,8 @@ Usar:
 
 Consultar documentación Supabase actual antes de tomar decisiones sensibles. Supabase cambia con frecuencia.
 
+Acceso web V1: cuenta de operador por correo/contraseña, con confirmación; los jugadores son registros gestionados por esa cuenta, no usuarios Auth obligatorios. Los datos se mantienen privados por owner_id/RLS. El registro solicita retornar al origen actual y debe tener esa URL exacta autorizada en Supabase. No compartir sesiones/tokens entre dominios ni desactivar confirmación para facilitar pruebas. El SMTP predeterminado es para pruebas con correos del equipo y tiene límites; abrir registro a otros correos requiere configurar envío autorizado, sin asumir costes ni contratar servicios automáticamente.
+
 ## 46. MODELO DE DATOS V1 PREVISTO
 
 Primera persistencia debería centrarse en players, matches, match_participants y match_events.

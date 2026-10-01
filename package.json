@@ -12,9 +12,10 @@
     "test:recovery": "tsx tests/recovery.test.ts",
     "test:offline": "tsx tests/offline.test.ts",
     "test:layout": "tsx tests/layout.test.tsx",
+    "test:auth": "tsx tests/auth.test.ts",
     "build:test-offline": "vite build --mode offline-test",
     "preview:test-offline": "vite preview --outDir tmp/pwa-test --host 127.0.0.1 --port 5188 --strictPort",
-    "test": "npm run test:engine && npm run test:persistence && npm run test:recovery && npm run test:offline && npm run test:layout"
+    "test": "npm run test:engine && npm run test:persistence && npm run test:recovery && npm run test:offline && npm run test:layout && npm run test:auth"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2",

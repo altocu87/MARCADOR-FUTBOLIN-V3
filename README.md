@@ -14,7 +14,7 @@ Persistencia V1 está en revisión en `codex/reliability-offline-v1`: tests loca
 
 Se puede abrir desde el móvil sin tener el PC encendido. Es una vista previa protegida: si Vercel pide acceso, iniciar sesión con la cuenta propietaria autorizada. No es la cuenta del marcador. Mantener MODO PRUEBA ON para probar partidos sin guardar datos.
 
-El 2026-10-01 se comprobó que la integración GitHub ya la había publicado automáticamente. Todavía no hay variables de conexión configuradas en este proyecto Vercel: la creación de cuenta del marcador, jugadores reales e historial remoto requieren esa configuración y un nuevo build. Estado operativo y límites en `docs/ESTADO_ACTUAL.md`.
+El 2026-10-01 se configuraron las variables públicas de conexión solo para Preview en la rama `codex/reliability-offline-v1`. El registro de operador es por correo/contraseña; los jugadores no necesitan cuentas. Antes de confirmar correos, añadir la URL exacta de la vista previa (con `/` final) a las Redirect URLs de Supabase Auth, conservando las existentes. No se ha podido modificar esa configuración desde el acceso de gestión disponible. Estado operativo y límites en `docs/ESTADO_ACTUAL.md` y pasos en `docs/VERIFICACION_VERCEL_DATOS.md`.
 
 ## Instalación
 
@@ -37,6 +37,7 @@ npm run test:persistence
 npm run test:recovery
 npm run test:offline
 npm run test:layout
+npm run test:auth
 npm test
 npm run build
 npm run preview
@@ -58,6 +59,8 @@ Para reproducir fallos de guardado en esa fixture: `?save=offline` simula un rec
 6. Jugar, completar todas las partes y consultar el resultado. RANKING contiene el HISTORIAL V1, no cálculos de clasificación.
 
 No es la contraseña de la cuenta del panel Supabase: es un acceso propio al marcador. Si el correo de confirmación redirige a una URL no disponible, regresar al marcador e intentar iniciar sesión después de confirmar. Para un dominio definitivo, configurar Site URL y URLs de redirección en Supabase Auth; no desactivar la confirmación ni RLS.
+
+El registro valida correo y contraseña antes del envío y solicita volver al origen actual, sin copiar tokens ni parámetros de la dirección. CREAR CUENTA y ENTRAR pasan por la validación del formulario. Los errores de acceso se muestran en español sin detalles internos. Con el correo predeterminado de Supabase, solo se admiten direcciones del equipo y hay límites de envío; para otros destinatarios hace falta configurar SMTP propio con autorización y sin asumir costes. No crear cuentas de prueba reales ni omitir la confirmación para cerrar la fase.
 
 ## Pantallas adaptables y referencia 800×480
 
@@ -133,4 +136,4 @@ No hay primera carga offline, sincronización con la app cerrada, backup, histor
 
 ESP32-S3: futura interfaz física a 800×480 (el firmware no ejecutará React directamente). ESP32-C3: futuro adaptador de pulsadores/sensores que genere eventos equivalentes. La separación motor/entradas/repositorios prepara esa integración, pero aún no existe firmware.
 
-Vercel: aplicación estática Vite, build `npm run build`, salida `dist`. GitHub genera vistas previas de la rama de desarrollo. Configurar las dos variables públicas en Preview antes de un nuevo build para habilitar la conexión de datos. No se ha promovido esta rama a producción ni activado servicios de pago.
+Vercel: aplicación estática Vite, build `npm run build`, salida `dist`. GitHub genera vistas previas de la rama de desarrollo. URL y clave publishable configuradas únicamente para Preview de esta rama; producción y otras ramas no reciben esa configuración. No se ha promovido esta rama a producción ni activado servicios de pago. El registro y guardado autenticados siguen pendientes de la confirmación de correo y prueba del operador.
