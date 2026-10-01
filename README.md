@@ -6,7 +6,7 @@ Simulador táctil del marcador físico de futbolín. React + Vite + TypeScript +
 
 Antes de modificar código, leer `AGENTS.md`, `docs/CONTEXTO_MAESTRO.md` y `docs/ESTADO_ACTUAL.md`. Mantenerlos actualizados después de cada bloque.
 
-Persistencia V1 está en revisión en `codex/reliability-offline-v1`: el operador ha comunicado login y prueba satisfactorios; el agente no ha comprobado las filas/RPC remotas ni todos los casos de cierre de fase B. No considerar esta fase cerrada ni promoverla a main hasta completar esa validación. Las migraciones del proyecto existente ya están aplicadas; no repetirlas.
+Persistencia V1 está en revisión en `codex/reliability-offline-v1`: el operador ha comunicado login y prueba satisfactorios; en el bloque 01 el agente comprobó datos/RPC/perfiles derivados reales con ROLLBACK, sin otra cuenta; faltan Preview autenticada vigente y PWA física. Evidencia y pasos restantes en [VERIFICACION_BLOQUE_01.md](docs/VERIFICACION_BLOQUE_01.md). No considerar esta fase cerrada ni promoverla a main hasta completar esa validación. Las migraciones del proyecto existente ya están aplicadas; no repetirlas.
 
 Por autorización posterior del propietario, se añade el primer bloque de fase C: estadísticas básicas, perfiles y análisis de resultados con filtros, desarrollado/verificado con datos aislados mientras sigue pendiente el recorrido real de fase B. No incluye XP, niveles calculados, ELO ni una clasificación competitiva.
 
@@ -14,7 +14,7 @@ Por autorización posterior del propietario, se añade el primer bloque de fase 
 
 El [resumen y guía de traspaso](docs/TRASPASO_NUBE.md) reúne los avances, los módulos, las comprobaciones y un mensaje listo para la primera tarea cloud. El [estado actual](docs/ESTADO_ACTUAL.md) mantiene los datos operativos posteriores.
 
-Para una conversación por entrega, usar [Bloques de desarrollo y prompts](docs/BLOQUES_DESARROLLO.md). Registra el punto alcanzado, diez bloques propuestos, dependencias, criterios de cierre y un prompt completo por bloque. El siguiente recomendado es el 01: consolidación y comprobación real de la versión actual. Leer el plan no autoriza ejecutar todas las fases; las reglas propuestas se concretan antes de activarlas.
+Para una conversación por entrega, usar [Bloques de desarrollo y prompts](docs/BLOQUES_DESARROLLO.md). Registra el punto alcanzado, diez bloques propuestos, dependencias, criterios de cierre y un prompt completo por bloque. El bloque 01 tiene código/pruebas/RPC completos y verificaciones remotas/físicas pendientes. El siguiente propuesto es 02, XP/niveles, condicionado a ese cierre y parámetros aprobados. Leer el plan no autoriza ejecutar todas las fases; las reglas propuestas se concretan antes de activarlas.
 
 La configuración cloud inicial utilizó `main`, que todavía no contiene persistencia, recuperación, PWA ni la adaptación responsive. Antes de modificar, sincronizar de forma segura **origin/codex/reliability-offline-v1** y leer el contexto de esa rama. No fusionar a main para resolver el traspaso.
 
@@ -26,7 +26,7 @@ En el entorno cloud, usar Node 24 y `npm ci --cache /tmp/codex-npm-cache`, despu
 
 Se puede abrir desde el móvil sin tener el PC encendido. Es una vista previa protegida: si Vercel pide acceso, iniciar sesión con la cuenta propietaria autorizada. No es la cuenta del marcador. Mantener MODO PRUEBA ON para probar partidos sin guardar datos.
 
-El 2026-10-01 se configuraron las variables públicas de conexión solo para Preview en la rama `codex/reliability-offline-v1`. El registro de operador es por correo/contraseña; los jugadores no necesitan cuentas. Antes de confirmar correos, añadir la URL exacta de la vista previa (con `/` final) a las Redirect URLs de Supabase Auth, conservando las existentes. No se ha podido modificar esa configuración desde el acceso de gestión disponible. Estado operativo y límites en `docs/ESTADO_ACTUAL.md` y pasos en `docs/VERIFICACION_VERCEL_DATOS.md`.
+El 2026-10-01 se configuraron las variables públicas de conexión solo para Preview en la rama `codex/reliability-offline-v1`. El registro de operador es por correo/contraseña; los jugadores no necesitan cuentas. Para un primer registro, el origen debe estar autorizado en las Redirect URLs de Supabase Auth. El operador actual ya tiene login confirmado: usar su cuenta existente, sin repetir registro ni configuración por rutina. Estado operativo y límites en `docs/ESTADO_ACTUAL.md` y pasos en `docs/VERIFICACION_VERCEL_DATOS.md`.
 
 ## Instalación
 
@@ -56,6 +56,8 @@ npm test
 npm run build
 npm run preview
 ```
+
+El bloque 01 añade `node --import tsx supabase/tests/block01.ts > /tmp/futbolin-block01.sql`: genera comprobaciones de la RPC real desde el motor. Ejecutar siempre el SQL completo en una única transacción terminada en ROLLBACK, usando una cuenta confirmada existente; no crea cuentas ni conserva fixtures.
 
 El build comprueba TypeScript y genera `dist/`. Las pruebas SQL reproducibles están en `supabase/tests/persistence_v1.sql`: ejecutar completas como administrador, con su ROLLBACK final. Usan fixtures temporales y no dejan cuentas ni partidos.
 

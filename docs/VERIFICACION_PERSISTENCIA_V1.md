@@ -15,7 +15,11 @@
 - Build de producción servido mediante Vite preview: interfaz visible, navegación a Ajustes y consola sin errores/advertencias. Durante reinicios de desarrollo el panel integrado mostró avisos del WebSocket de recarga de Vite; no aparecen en producción.
 - .env.local, node_modules, dist y caché de Supabase ignorados. .env.example contiene solo nombres vacíos. Búsqueda de claves privadas/tokens en fuentes versionables sin coincidencias.
 
-## Pendiente: acceso humano
+## Nota vigente del bloque 01
+
+El operador ya tiene cuenta confirmada, login y prueba satisfactorios. El agente comprobó el agregado real 2–0 y la RPC actual con ROLLBACK; no se necesita otra cuenta. Pendientes concretos y evidencia actual en [VERIFICACION_BLOQUE_01.md](VERIFICACION_BLOQUE_01.md). Las instrucciones de registro y la afirmación de ausencia de cuentas que siguen son históricas, sustituidas por ese estado.
+
+## Pendiente histórico: acceso humano
 
 No existe aún una cuenta de operador. La prueba UI con repositorios en memoria NO demuestra un guardado autenticado de navegador a Supabase. La prueba SQL sí valida la transacción y RLS, pero no sustituye este último recorrido:
 

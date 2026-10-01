@@ -26,8 +26,8 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 | Bloque | Entrega | Estado al preparar el plan | Condición para comenzar |
 | --- | --- | --- | --- |
-| 01 | Consolidación y comprobación real | Siguiente recomendado | Continuar desde la rama publicada |
-| 02 | XP y niveles | Propuesto | 01 cerrado y reglas de XP/curva aprobadas |
+| 01 | Consolidación y comprobación real | 2026-10-01: código/tests/RPC real completos; pendiente Preview autenticada vigente y PWA física | Evidencia y pasos restantes en VERIFICACION_BLOQUE_01.md |
+| 02 | XP y niveles | Siguiente propuesto, todavía condicionado | Cerrar pendientes concretos del 01 y aprobar XP/curva/históricos |
 | 03 | ELO, ranking y categorías | Propuesto | Base verificada; parámetros competitivos aprobados |
 | 04 | Análisis competitivo y predicción | Propuesto | 03 y reglas/muestra aprobadas |
 | 05 | Logros, récords y Hall of Fame | Propuesto | Progresión estable; catálogo/recompensas aprobados |
@@ -36,6 +36,8 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 | 08 | Backup y restauración | Propuesto | Modelos de datos de los bloques anteriores estables |
 | 09 | Firmware y entradas físicas | Propuesto | Modelos/protocolo y conexiones reales verificables |
 | 10 | OTA y administración local | Propuesto | 08 y firmware probado del 09 |
+
+Ejecución del bloque 01: sincronización final sobre f9ebe15, dos bugs corregidos; npm test siete grupos/estadísticas 41/41, Chromium 15/15 y builds correctos. RPC real desde motor con ROLLBACK y cuenta existente; datos originales preservados. Preview denegada por alcance Vercel, sin sesión web del operador; no se declara cierre completo. Detalles en [VERIFICACION_BLOQUE_01.md](VERIFICACION_BLOQUE_01.md) y estado vivo. La publicación no promueve main ni activa XP/ELO.
 
 Cada fila pasa a en curso, completado o pendiente de verificación con evidencia fechada; no marcar todas completadas al copiar los prompts. El orden puede ajustarse expresamente: el pulido web no depende de disponer de hardware y el diseño del protocolo puede prepararse sin una placa conectada.
 
@@ -56,7 +58,7 @@ Continúa altocu87/MARCADOR-FUTBOLIN-V3 y ejecuta exclusivamente el bloque 01 de
 **Cierre:** reglas aprobadas, cálculos/fronteras probados, progresión por jugador/equipo definida para 1v1/2v2, integración transaccional/privada verificada y política explícita para históricos. No sumar automáticamente recompensas de logros/torneos aún inexistentes ni actualizar columnas protegidas desde el cliente.
 
 ```text
-Continúa altocu87/MARCADOR-FUTBOLIN-V3 y ejecuta exclusivamente el bloque 02 de docs/BLOQUES_DESARROLLO.md. Lee AGENTS.md y el contexto/estado vigentes; comprueba que el bloque 01 esté cerrado. Implementa XP y niveles con reglas centralizadas, perfil, guardado seguro e idempotencia frente a reintentos y offline. Los apartados 30–31 son propuestas: si faltan parámetros aprobados, prepara una tabla concreta, ejemplos y una política de históricos, y pide solo esa decisión mientras avanzas trabajo independiente. No actives concesiones reales con reglas sin aprobar. Prueba no da XP; no alteres el motor ni añadas ELO/logros/torneos. Inspecciona el esquema existente antes de proponer migraciones, conserva RLS y datos. Revisa, prueba, actualiza contexto/seguimiento, publica la rama de revisión y entrega el siguiente prompt.
+Continúa altocu87/MARCADOR-FUTBOLIN-V3 y ejecuta exclusivamente el bloque 02 de docs/BLOQUES_DESARROLLO.md. Lee AGENTS.md y el contexto/estado vigentes; comprueba el cierre del bloque 01 y sus pendientes concretos en docs/VERIFICACION_BLOQUE_01.md. Si sigue pendiente la Preview autenticada vigente o PWA física, mantén esa dependencia explícita y no actives concesiones de XP. No repitas cuentas, migraciones ni pruebas humanas ya acreditadas. Tras el cierre, implementa XP y niveles con reglas centralizadas, perfil, guardado seguro e idempotencia frente a reintentos y offline. Los apartados 30–31 son propuestas: si faltan parámetros aprobados, prepara una tabla concreta, ejemplos y una política de históricos, y pide solo esa decisión mientras avanzas trabajo independiente. No actives concesiones reales con reglas sin aprobar. Prueba no da XP; no alteres el motor ni añadas ELO/logros/torneos. Inspecciona el esquema existente antes de proponer migraciones, conserva RLS y datos. Revisa, prueba, actualiza contexto/seguimiento, publica la rama de revisión y entrega el siguiente prompt.
 ```
 
 ## Bloque 03 — ELO, ranking y categorías

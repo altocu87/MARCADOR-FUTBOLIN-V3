@@ -2,7 +2,7 @@
 
 Última actualización: **2026-10-01**. Leer junto con `CONTEXTO_MAESTRO.md` y contrastar con el código real.
 
-**Último cambio funcional:** corregida la interpretación errónea del agente en AMBAS: el objetivo por equipo corresponde al partido completo y no se reinicia al cambiar de parte. Final directo cuando se alcanza el objetivo total; si no, gana el total acumulado al terminar las dos partes por reloj. AMBAS nuevo V4; copias anteriores preservadas. GOALS/TIME mantienen V2. El propietario comunica login y prueba satisfactorios; evidencia humana, no una inspección remota del agente. Detalles en el registro y [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md).
+**Último cambio funcional anterior al bloque 01:** corregida la interpretación errónea del agente en AMBAS: el objetivo por equipo corresponde al partido completo y no se reinicia al cambiar de parte. Final directo cuando se alcanza el objetivo total; si no, gana el total acumulado al terminar las dos partes por reloj. AMBAS nuevo V4; copias anteriores preservadas. GOALS/TIME mantienen V2. El propietario comunica login y prueba satisfactorios; evidencia humana, no una inspección remota del agente. Detalles en el registro y [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md).
 
 ## Punto de continuidad para conversaciones nuevas
 
@@ -10,7 +10,7 @@ Petición del propietario: guardar el estado/cambios al terminar y organizar una
 
 Base comprobada al preparar ese plan: **871c363** en `codex/reliability-offline-v1`, código funcional **b9dfc7b**, referencias locales/remotas coincidentes y árbol limpio. `main` permanece en **900e470**. Estos hashes son una fotografía: futuras conversaciones deben obtener la punta de desarrollo vigente, no volver a ellos automáticamente. Implementados persistencia/fiabilidad/recuperación/PWA/responsive, perfiles/estadísticas/análisis y las tres condiciones de victoria; la corrección posterior de AMBAS parte de **472f945** y usa V4. No hay XP/ELO, logros, torneos completos, backup o firmware/OTA implementados por este plan.
 
-**Siguiente bloque recomendado: 01 — Consolidación y comprobación real.** Detallar lo que cubrió la prueba satisfactoria comunicada por el operador, verificar nueva Preview/reglas/guardado/perfil/recuperación/PWA donde haya acceso y corregir bugs. No recrear cuentas ni migraciones. Después: XP/niveles → ELO/ranking/categorías → análisis competitivo → logros/récords → torneos → sonido/pulido → backup → firmware/entradas físicas → OTA/administración local. Son entregas propuestas, con dependencias y decisiones pendientes explícitas; no una orden de implementarlas ahora ni promoción a main.
+**Bloque 01: programación y pruebas independientes completas; pendiente comprobación autenticada de la Preview vigente y PWA física.** Dos bugs corregidos (conflictos de pendientes y coherencia gol/journal); RPC y datos Supabase reales comprobados sin conservar fixtures. Evidencia y únicos pasos humanos restantes en [VERIFICACION_BLOQUE_01.md](VERIFICACION_BLOQUE_01.md). El siguiente bloque propuesto es 02, XP/niveles, condicionado a ese cierre y a aprobar parámetros; no se inicia ahora. No recrear cuentas ni migraciones. Después: XP/niveles → ELO/ranking/categorías → análisis competitivo → logros/récords → torneos → sonido/pulido → backup → firmware/entradas físicas → OTA/administración local. Son entregas propuestas, con dependencias y decisiones pendientes explícitas; no una orden de implementarlas ahora ni promoción a main.
 
 ## Referencias y alcance de esta ficha
 
@@ -29,8 +29,8 @@ Base comprobada al preparar ese plan: **871c363** en `codex/reliability-offline-
 | Fase | Estado real |
 | --- | --- |
 | A. Simulador funcional | Publicado en b10b1df |
-| B. Persistencia Supabase V1 | Implementada/probada localmente; operador comunica login y prueba correctos; falta detallar/comprobar casos remotos de cierre y revisión para main |
-| C. Estadísticas, perfil y análisis de resultados | Implementados por autorización explícita del propietario; pruebas aisladas correctas; pendiente comprobación con Supabase real |
+| B. Persistencia Supabase V1 | Login/prueba comunicados; datos y RPC reales comprobados en bloque 01; falta recorrido Preview vigente/recuperación/PWA física. Sin promoción a main |
+| C. Estadísticas, perfil y análisis de resultados | Pruebas independientes correctas; perfiles contrastados con SQL/RPC real; falta pantalla autenticada de la Preview vigente |
 | C–J. XP/ELO, otros análisis competitivos, logros, torneos, audiovisual avanzado, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
 
 ## Código local implementado en la fase B
@@ -103,7 +103,7 @@ Migraciones **ya aplicadas remotamente**, cuyos archivos forman parte de la rama
 
 No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar primero el esquema real y recuperar/sincronizar los archivos de la implementación local si faltan en un checkout cloud.
 
-Última comprobación de datos tras tests SQL: cero cuentas Auth y cero filas de negocio. Es una observación del 2026-10-01, no una garantía sobre el estado futuro; volver a comprobar si es relevante, sin borrar datos.
+Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida por la inspección real del bloque 01:** una cuenta confirmada, dos jugadores, un partido, dos participantes y siete eventos, iguales antes/después del ROLLBACK. Resultado GOALS V1 2–0 conservado; no reinterpretar bajo V2. Registro remoto de migraciones y límites actuales en VERIFICACION_BLOQUE_01.md.
 
 ## Verificación realizada
 
@@ -129,29 +129,17 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 
 ## Bloqueo y siguiente acción exacta
 
-Revisión cloud: implementación recuperada de `origin/codex/reliability-offline-v1`, no reconstruida desde main. La rama anterior `codex/local-players-match-recovery` permanece publicada en `f554cdb`; no se ha fusionado su repositorio local alternativo ni migrado datos de navegadores. La rama Supabase ya incluye recuperación, pendientes, historial y responsive; se trasladó la cobertura de navegador útil y se corrigió un fallo nuevo del reloj. Resultados y guía humana en [VERIFICACION_NUBE.md](VERIFICACION_NUBE.md).
+Bloque 01 sobre la rama real `codex/reliability-offline-v1`: primera sincronización por objetos GitHub verificados desde 472f945; fetch posterior integró los commits 0cb5dec/4e840b5/0a6f993/f9ebe15 que fijan AMBAS V4 y GOALS sin partes. Main permanece 900e470. Commit funcional de correcciones **eb0f098**, inicialmente local; publicación y documentación se comprueban con las referencias al entregar. La rama alternativa local de jugadores no se fusiona ni migra datos del navegador.
 
-En la máquina cloud actual están ausentes las tres variables públicas admitidas de Supabase. No hay conector/sesión de gestión Supabase disponible ni sesión del operador compartida. El acceso HTTP sin credenciales al endpoint Auth fue rechazado por el proxy con CONNECT 403, también al reintentar con escalación. No acredita caída de Supabase. Se guardó y se leyó de vuelta un borrador con instalación/arranque actualizados, requisitos directos VITE_SUPABASE_URL/VITE_SUPABASE_PUBLISHABLE_KEY y dominios github.com/proyecto Supabase, conservando el preset de paquetes. No se aplicó a la máquina ni publicó el entorno. No repetir el bucle de publicación de la interfaz como si fuera un fallo de la aplicación.
+Supabase está accesible mediante el conector en esta sesión. Comprobados proyecto autorizado, cuenta confirmada, resultado real/historial y perfiles derivados; RLS en cuatro tablas y RPC SECURITY INVOKER. Prueba RPC real reproducible GOALS/TIME/BOTH V4/penaltis con jugadores temporales y cuenta existente, todo en ROLLBACK: sin cuentas/correos nuevos ni datos conservados. No hay variables ni sesión Auth del operador compartidas en el navegador cloud; ese conector administrativo no representa una sesión web autenticada.
 
-La conexión pública está configurada solo en Preview de codex/reliability-offline-v1; ver el registro de este bloque y VERIFICACION_VERCEL_DATOS.md. Falta autorizar el retorno de confirmación en Supabase Auth: añadir https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app/ en Redirect URLs, sin eliminar las existentes. El navegador de gestión requiere login y la CLI/conector disponibles no ofrecen acceso directo a esa configuración; no se extrajeron tokens del almacén de credenciales. No afirmar que crear/confirmar cuenta o guardar un partido real ya está verificado. La autenticación de Vercel para abrir la vista previa es distinta de la cuenta del marcador.
+Vercel deniega el alcance al equipo/proyecto (403), incluida lectura de la Preview protegida. No se retira protección. El login y prueba del operador ya son válidos: no crear otra cuenta ni rehacer Redirect URLs por rutina. **No está comprobado el despliegue final ni el recorrido web autenticado de las reglas nuevas.**
 
-El propietario ya comunica login correcto y prueba satisfactoria en el marcador. No volver a pedir crear otra cuenta ni solicitar contraseñas por chat. Falta precisar/comprobar los casos de la prueba remota para el cierre completo; no usar la cuenta administrativa del panel Supabase como si fuera Auth de la app.
+Únicos pasos humanos pendientes, detallados en [VERIFICACION_BLOQUE_01.md](VERIFICACION_BLOQUE_01.md): abrir la Preview actualizada con la cuenta existente, cotejar reglas/resultado/historial/perfiles; recuperar una partida tras recarga; terminar offline y sincronizar un pendiente una sola vez; verificar prueba ON sin incremento de datos; instalar/reabrir offline la PWA en el teléfono real detrás de protección. Los resultados OFF de ese recorrido son reales y deben querer conservarse. No pedir borrar datos ni probar borrado de jugadores reales.
 
-La creación/confirmación/login corresponde personalmente al operador. El login ya está comunicado como conseguido; las instrucciones iniciales de registro anteriores son históricas, no el siguiente paso actual.
+Pruebas finales del bloque: siete grupos de npm test (estadísticas/análisis 41/41), Chromium 15/15, TypeScript/builds normal y aislado, auditoría de producción 0 vulnerabilidades, diff/conectividad Git correctos. Verificación visual local sin scroll general ni pageerror; servidor PWA realmente apagado en prueba independiente. Advisor remoto actual WARN por protección de contraseñas filtradas deshabilitada: registrado con enlace oficial en la verificación; no se activa una opción de pago ni cambia Auth por rutina.
 
-Después, el agente debe verificar con la capa Supabase real:
-
-1. Crear/editar/activar/desactivar jugadores.
-2. MODO PRUEBA OFF; completar un partido y comprobar filas de partido, participantes y eventos.
-3. Consultar historial/detalle y comprobar protección del jugador con historial.
-4. Repetir en modo prueba ON y comprobar que no aumentan partidos ni eventos.
-5. Reejecutar pruebas/build, revisar secretos y publicar el bloque funcional cuando esté estable.
-
-**No dar la fase B por cerrada ni avanzar a XP/ELO/logros mientras falte esta comprobación.** Para continuar en la nube, usar la rama `codex/reliability-offline-v1` una vez confirmado su push. Si el checkout solo contiene main, sincronizar la rama de desarrollo, no recrear la integración ni tocar el esquema ya existente. La publicación de una rama de revisión no requiere dar por pasada la validación autenticada; la promoción a main sí queda pendiente de esa validación.
-
-Excepción de alcance autorizada posteriormente por el propietario: desarrollar íntegramente estadísticas básicas, perfil e historial filtrado mientras sigue pendiente el acceso externo. Este bloque ya está implementado y probado de forma aislada; no cierra la fase B ni autoriza XP/ELO, cambios de esquema o promoción a main. En la prueba autenticada añadir la comprobación del perfil frente a los resultados reales guardados.
-
-Ampliación autorizada después: últimos resultados, rachas, rendimiento por formato, filtros y evolución. También implementada con datos aislados; añadir esos filtros/valores a la comprobación real. El siguiente cierre pendiente sigue siendo el recorrido autenticado; no es necesario rehacer la configuración del entorno para programar este análisis.
+**Bloque 01/fase B siguen pendientes exclusivamente de esas comprobaciones remotas/físicas.** Siguiente propuesto: bloque 02, XP/niveles, solo tras cerrar lo pendiente y aprobar parámetros/curva/históricos. No se implementan XP/ELO ni se promueve main. Publicar la entrega estable de revisión no equivale a cerrar esos recorridos.
 
 ## Límites conocidos y decisiones a preservar
 
@@ -166,6 +154,15 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, predicción/forma competitiva, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Bloque 01, consolidación y Supabase real
+
+Base final f9ebe15, tras detectar e integrar cuatro commits remotos posteriores a 472f945 sin sustituir las reglas del propietario. GOALS/TIME V2 y BOTH V4 conservados; V1/V2/V3 anteriores compatibles. Dos fallos reproducidos antes del arreglo: UUID pendiente divergente reemplazaba el agregado original; gol activo con parte/tiempo/marcador incoherentes con su journal se restauraba. Corregidos SaveCoordinator y checkpoint; nuevas regresiones en persistence/recovery. Commit funcional local eb0f098; la publicación de la rama se confirma al entregar.
+
+Nuevo generador supabase/tests/block01.ts desde motor/mapMatch/playerStatistics: RPC real para GOALS 3–1, TIME 1–2, BOTH V4 5–2 y penaltis 0–0/Azul; agregado/eventos/participantes íntegros, idempotencia, conflictos, modo prueba, perfiles 1v1/2v2, snapshots/protección e aislamiento correctos. Una transacción con cuenta existente y ROLLBACK; sin cuentas/correos nuevos. Primer intento SQL detectó precedencia de JSON en la aserción, corregida; ejecución final PASS. Antes/después: una cuenta confirmada, dos jugadores, un partido histórico 2–0, dos participantes y siete eventos; cero filas fixture y reservas XP/ELO intactas. Sin migraciones/DDL, cambios de permisos/Auth/planes o datos permanentes.
+
+npm test siete grupos correctos, estadísticas/análisis 41/41; npm run test:browser 15/15 sin omitidos/pageerror, TypeScript y builds normal/aislado correctos. Auditoría de producción 0 vulnerabilidades; revisión visual local y PWA con servidor apagado. Los primeros intentos sin permiso de red fallaron por proxy/socket; con permiso del comando pasaron. No se cambia el lockfile ni se instalan nuevas dependencias. Vercel 403 de alcance y sin sesión web del operador: despliegue/recorrido Preview y PWA física siguen pendientes, sin convertir SQL/fixtures en verificación web. Documentación operativa/maestra/seguimiento y README actualizados; pasos concretos en VERIFICACION_BLOQUE_01.md. Bloque 02 condicionado al cierre y reglas de XP aprobadas, sin iniciarlo.
+
 
 ### 2026-10-01 — Formulación definitiva: GOALS sin partes
 

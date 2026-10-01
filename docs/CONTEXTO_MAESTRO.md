@@ -1147,6 +1147,8 @@ Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
 
+Ejecución del bloque 01, 2026-10-01: reglas vigentes GOALS/TIME V2 y BOTH V4 consolidadas después de sincronizar las correcciones posteriores del propietario. RPC y datos reales comprobados con ROLLBACK, sin nueva cuenta ni migraciones. Corregidos conflictos de pendientes y coherencia de recuperación, sin reinterpretar históricos. Preview autenticada vigente/PWA física aún pendientes por falta de alcance Vercel y sesión web; evidencia en VERIFICACION_BLOQUE_01.md y seguimiento en ESTADO_ACTUAL. El siguiente propuesto es 02, condicionado a ese cierre y parámetros de XP aprobados; no se inicia por leerlo.
+
 Organización solicitada posteriormente por el propietario, 2026-10-01: una conversación por bloque, con contexto registrado y prompt listo para continuar. [BLOQUES_DESARROLLO.md](BLOQUES_DESARROLLO.md) define diez entregas propuestas y sus dependencias. Siguiente recomendado: bloque 01, consolidar las tres condiciones ya corregidas y detallar/comprobar el recorrido real; el operador ya comunica login y prueba satisfactorios. Los bloques futuros no se ejecutan por leer ese plan, ni convierten parámetros de XP/ELO, formato de torneos o conexiones de hardware propuestos en decisiones aprobadas. ESTADO_ACTUAL mantiene el seguimiento operativo real.
 
 Actualización posterior, 2026-10-01: el propietario autoriza avanzar a estadísticas básicas/perfiles (primer bloque C), sin cerrar artificialmente B ni promover a main. Lecturas privadas desde resultados existentes, sin nuevas tablas ni contadores. Se excluyen prueba/pendientes, se deduplican IDs y se recorre el historial completo con cursor. Los penaltis deciden el ganador sin añadirse a goles del partido. XP/ELO y el resto de fases permanecen fuera del bloque. Ver ESTADO_ACTUAL.md y VERIFICACION_ESTADISTICAS.md.
@@ -1238,6 +1240,8 @@ Detalle:
 Optimizar para 800×480.
 
 ## 74. ERRORES DE NUBE
+
+Consolidación del bloque 01: un mismo UUID no permite sustituir un pendiente por otro contenido. El coordinador compara contenido JSON, preserva el agregado durable y rechaza conflictos incluso ante confirmaciones tardías; no altera el hash SQL. La recuperación contrasta equipo/parte/tiempo/marcador de cada gol activo con su journal antes de modificar el motor. Copias inválidas se conservan. Estas protecciones no son coordinación de juego entre pestañas ni backup; sigue correspondiendo usar una sola pestaña.
 
 Si Supabase falla: NO romper la partida.
 
