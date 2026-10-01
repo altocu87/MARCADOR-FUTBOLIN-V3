@@ -46,12 +46,15 @@ npm run test:recovery
 npm run test:offline
 npm run test:layout
 npm run test:auth
+npm run test:browser
 npm test
 npm run build
 npm run preview
 ```
 
 El build comprueba TypeScript y genera `dist/`. Las pruebas SQL reproducibles están en `supabase/tests/persistence_v1.sql`: ejecutar completas como administrador, con su ROLLBACK final. Usan fixtures temporales y no dejan cuentas ni partidos.
+
+`npm run test:browser` genera ambos builds y ejecuta cinco regresiones Chromium con Playwright 1.63.0: vistas, prueba sin guardado, recuperación 2v2, pendientes/historial sin duplicados y reapertura PWA con servidor apagado. Usa `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, Chromium del sistema en `/usr/bin/chromium` o el navegador de Playwright (`npx playwright install chromium`). Preview aislado en 5197, contextos temporales y tráfico Supabase bloqueado; no verifica Auth ni datos reales. `npm test` conserva los seis grupos independientes del navegador. Resultados cloud y pasos para cerrar la fase en [VERIFICACION_NUBE.md](docs/VERIFICACION_NUBE.md).
 
 La página `/tests/ui-fixture.html` inyecta repositorios en memoria para verificar formularios, partido e historial sin usar credenciales ni modificar Supabase. Está disponible en desarrollo y en el build aislado `npm run build:test-offline` → `npm run preview:test-offline` (puerto 5188, salida ignorada `tmp/pwa-test`). No valida Supabase real ni forma parte de `dist/` de producción. `?network=real` exige respuesta del servidor local para simular identidad, jugadores y guardado; permite apagar ese servidor y verificar el arranque desde la caché PWA.
 

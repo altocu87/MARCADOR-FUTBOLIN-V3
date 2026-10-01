@@ -1263,6 +1263,8 @@ La rama de desarrollo incorpora npm run test:offline junto a motor, persistencia
 
 Desde el bloque responsive, npm run test:layout verifica preferencia/escala física y marcado accesible del menú, selector y modalidades. Tras el bloque de registro, npm test ejecuta seis grupos: motor, persistencia, recuperación, offline, layout y Auth. El test:auth usa transporte aislado, no valida cuentas reales. Verificar ambas vistas, móvil vertical/horizontal, tablet y escritorio, continuidad del estado al redimensionar, navegación real y ausencia de solapamientos. Evidencia en VERIFICACION_RESPONSIVE.md y VERIFICACION_VERCEL_DATOS.md.
 
+Revisión cloud del 2026-10-01: `npm run test:browser` añade cinco recorridos reproducibles sobre builds y fixture aislada, incluido servidor realmente apagado. No sustituye la cuenta/RPC reales. Al vencer el reloj se publica únicamente el estado definitivo de fin de parte; un tick retrasado no suma tiempo después del límite. Se mantienen los tiempos de journals/copias V1 anteriores para no retrocederlos. No cambia la condición GOALS por periodo, los tres segundos de bloqueo ni las reglas de penaltis. Evidencia en VERIFICACION_NUBE.md y estado operativo en ESTADO_ACTUAL.md.
+
 ## 77. VERIFICACIÓN VISUAL
 
 Probar:

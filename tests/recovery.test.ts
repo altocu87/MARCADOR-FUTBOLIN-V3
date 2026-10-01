@@ -11,6 +11,40 @@ import type { MatchRepository } from '../src/services/persistence/MatchRepositor
 const config = { mode: 'QUICK' as const, victoryCondition: 'GOALS' as const, goalLimit: 3, halfDurationMinutes: 1 }
 const players: Player[] = [1, 2].map(i => ({ id: `00000000-0000-4000-8000-00000000000${i}`, name: `Jugador ${i}`, nickname: null, photoUrl: null, active: true, level: 0 }))
 const id = '00000000-0000-4000-8000-000000000010'
+
+// A timer expiry must publish only a settled period, never a recoverable
+// PLAYING snapshot at 00:00. A delayed browser tick cannot add overtime.
+for (const victoryCondition of ['TIME', 'BOTH'] as const) {
+  let clock = 0
+  const timed = new MatchEngine(() => clock)
+  timed.createMatch({ ...config, victoryCondition }); timed.skipCountdown()
+  const published: MatchCheckpoint[] = []
+  timed.subscribe(() => published.push(timed.getCheckpoint()))
+  clock = 90_000; timed.tick()
+  assert.deepEqual(published.map(c => c.state.status), ['PERIOD_END'], 'El reloj solo publica el estado de cierre definitivo')
+  assert.equal(timed.getState().elapsedSeconds, 60, 'Un tick tardío no añade tiempo después del límite')
+  assert.equal(timed.getState().events.at(-1)?.matchTimeSeconds, 60)
+  for (const copy of published) {
+    validateCheckpoint(copy)
+    new MatchEngine(() => clock).restoreCheckpoint(copy)
+  }
+}
+
+// Legacy v1 copies could contain an expired PLAYING period after a delayed tick.
+// Preserve their journal timestamps instead of retroactively shortening them.
+{
+  let clock = 0
+  const legacy = new MatchEngine(() => clock)
+  legacy.createMatch({ ...config, victoryCondition: 'TIME' }); legacy.skipCountdown()
+  const copy = legacy.getCheckpoint()
+  copy.state.elapsedSeconds = 90; copy.state.remainingSeconds = 0
+  clock = 90_000; legacy.restoreCheckpoint(copy)
+  legacy.dispatch('CONTINUAR'); legacy.tick()
+  assert.equal(legacy.getState().status, 'PERIOD_END')
+  assert.equal(legacy.getState().elapsedSeconds, 90)
+  validateCheckpoint(legacy.getCheckpoint())
+}
+
 let now = 0
 const engine = new MatchEngine(() => now, () => 'flash')
 engine.createMatch(config); engine.skipCountdown()

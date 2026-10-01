@@ -90,13 +90,22 @@ export class MatchEngine {
     if (this.state.status !== 'PLAYING') return
     const goalLockRemainingMs = Math.max(0, this.goalLockUntil - now)
     const goalInputLocked = goalLockRemainingMs > 0
-    const elapsedSeconds = Math.max(0, Math.floor((now - this.clockStartedAt) / 1_000))
+    const timedPeriod = this.state.period === 'EXTRA_TIME' || this.state.config?.victoryCondition !== 'GOALS'
+    const playedSeconds = Math.max(0, Math.floor((now - this.clockStartedAt) / 1_000))
+    // Preserve monotonic journal time, including legacy copies captured after
+    // a delayed tick and a system clock adjusted backwards during play.
+    const elapsedSeconds = Math.max(this.state.elapsedSeconds, timedPeriod ? Math.min(playedSeconds, this.state.periodInitialSeconds) : playedSeconds)
     const remainingSeconds = Math.max(0, this.state.periodInitialSeconds - elapsedSeconds)
+    if (remainingSeconds === 0 && timedPeriod) {
+      // Checkpoint subscribers must never see an expired period still playing.
+      this.state = { ...this.state, elapsedSeconds, remainingSeconds }
+      this.endPeriod()
+      return
+    }
     if (elapsedSeconds !== this.state.elapsedSeconds || remainingSeconds !== this.state.remainingSeconds || goalInputLocked !== this.state.goalInputLocked || Math.ceil(goalLockRemainingMs / 100) !== Math.ceil(this.state.goalLockRemainingMs / 100)) {
       this.state = { ...this.state, elapsedSeconds, remainingSeconds, goalInputLocked, goalLockRemainingMs }
       this.emit()
     }
-    if (remainingSeconds === 0 && (this.state.period === 'EXTRA_TIME' || this.state.config?.victoryCondition !== 'GOALS')) this.endPeriod()
   }
 
   skipCountdown(): void { if (this.state.status === 'COUNTDOWN') this.beginPeriod(this.now()) }

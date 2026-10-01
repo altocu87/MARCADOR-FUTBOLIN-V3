@@ -9,7 +9,7 @@
 - Rama principal: main.
 - Último commit de código funcional en main comprobado: **b10b1df — Initial functional match simulator**; main contiene además el contexto documental 900e470.
 - Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**, persistencia/fiabilidad **eeb23b8**, recuperación activa **176d470** y PWA **917de97**, con push comprobado. Las actualizaciones documentales posteriores tienen sus propios commits; contrastar `git log`/referencias al retomar. No equivale a promoverla a main ni completar la fase B.
-- Entorno de esta implementación: **PC local Windows**, no Codex Cloud. Las instrucciones de nube del apartado 79 se aplican cuando se trabaje realmente allí.
+- Entorno de la implementación inicial: **PC local Windows**. Revisión posterior del 2026-10-01 realizada en **Codex Cloud**, `/workspace/MARCADOR-FUTBOLIN-V3`, base remota `a449df2`; consultar la entrada de revisión cloud para las comprobaciones actuales.
 - Esta ficha describe persistencia/fiabilidad/recuperación, PWA y adaptación responsive de la rama de desarrollo. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
 - Base comprobada al preparar el traspaso cloud: HEAD **f8ee98c — Record verified data-enabled preview deployment**, código funcional **9537c79**, en **codex/reliability-offline-v1**; origin/main sigue en **900e470**. Fetch y comparación remota: rama de desarrollo 0/0, árbol limpio al iniciar. Esta actualización documental se versiona después; obtener su hash con `git log`, no tratar f8ee98c como un pin para las futuras tareas.
 - Entrada para un agente nuevo: [TRASPASO_NUBE.md](TRASPASO_NUBE.md), resumen fechado y guía de arranque. Esta ficha sigue siendo el estado operativo de referencia.
@@ -114,6 +114,10 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 
 ## Bloqueo y siguiente acción exacta
 
+Revisión cloud: implementación recuperada de `origin/codex/reliability-offline-v1`, no reconstruida desde main. La rama anterior `codex/local-players-match-recovery` permanece publicada en `f554cdb`; no se ha fusionado su repositorio local alternativo ni migrado datos de navegadores. La rama Supabase ya incluye recuperación, pendientes, historial y responsive; se trasladó la cobertura de navegador útil y se corrigió un fallo nuevo del reloj. Resultados y guía humana en [VERIFICACION_NUBE.md](VERIFICACION_NUBE.md).
+
+En la máquina cloud actual están ausentes las tres variables públicas admitidas de Supabase. No hay conector/sesión de gestión Supabase disponible ni sesión del operador compartida. El acceso HTTP sin credenciales al endpoint Auth fue rechazado por el proxy con CONNECT 403, también al reintentar con escalación. No acredita caída de Supabase. Se guardó y se leyó de vuelta un borrador con instalación/arranque actualizados, requisitos directos VITE_SUPABASE_URL/VITE_SUPABASE_PUBLISHABLE_KEY y dominios github.com/proyecto Supabase, conservando el preset de paquetes. No se aplicó a la máquina ni publicó el entorno. No repetir el bucle de publicación de la interfaz como si fuera un fallo de la aplicación.
+
 La conexión pública está configurada solo en Preview de codex/reliability-offline-v1; ver el registro de este bloque y VERIFICACION_VERCEL_DATOS.md. Falta autorizar el retorno de confirmación en Supabase Auth: añadir https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app/ en Redirect URLs, sin eliminar las existentes. El navegador de gestión requiere login y la CLI/conector disponibles no ofrecen acceso directo a esa configuración; no se extrajeron tokens del almacén de credenciales. No afirmar que crear/confirmar cuenta o guardar un partido real ya está verificado. La autenticación de Vercel para abrir la vista previa es distinta de la cuenta del marcador.
 
 Falta una cuenta de operador del marcador para la prueba real autenticada. No solicitar contraseñas por chat ni inventar credenciales; no usar la cuenta administrativa del panel Supabase como si fuera Auth de la app.
@@ -143,6 +147,20 @@ Después, el agente debe verificar con la capa Supabase real:
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, estadísticas avanzadas, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Continuidad cloud y regresiones de recuperación
+
+Sincronizada de forma segura la rama publicada `codex/reliability-offline-v1` desde `a449df2`, preservando la rama local anterior. Leídos contexto completo de 84 apartados, estado, README, instrucciones, traspaso y verificaciones pertinentes. `main` comprobada en `900e470`, sin integración automática. No se duplican cliente/Auth, tablas, migraciones ni sistemas de guardado.
+
+Reproducido antes del arreglo: el tick de expiración emitía PLAYING a 00:00 antes de PERIOD_END, permitiendo una copia intermedia recuperable; un tick 30 segundos tardío añadía esos segundos al tiempo jugado. MatchEngine publica ahora solo el fin definitivo y limita el tiempo de periodos TIME/BOTH/prórroga. Conserva monotonía y journals de copias V1 anteriores. GOALS continúa sin límite de reloj; bloqueo, partes y penaltis no cambian. Regresiones en recovery.test.ts.
+
+Añadidos `tests/browser.test.mjs`, script test:browser y Playwright 1.63.0 fijado; ninguna dependencia previa actualizada ni metadatos libc eliminados. Cinco recorridos Chromium reales con contextos locales aislados, builds normal/fixture y preview propio 5197: vistas adaptables/física, prueba sin persistencia, selección exacta/recuperación 2v2, cola/reintento/historial y PWA con servidor realmente detenido. Tráfico Supabase bloqueado en estas pruebas; no representan persistencia real. El servidor temporal se cierra al terminar; servidores preexistentes conservados.
+
+Verificado en nube: npm ci con caché temporal, npm test (seis grupos), npm run test:browser (5/5, sin omitidas), TypeScript y builds normal/aislado, auditoría de producción (0 vulnerabilidades), diff sin errores. El servidor preexistente 5173 devolvía HTML pero sus dependencias optimizadas fallaban con 504; no se detuvo. Servidor propio nuevo en 5198 comprobado por HTTP y navegador: menú y Ajustes cargados sin errores pageerror. Instrucciones de arranque actualizadas con diagnóstico de puerto/caché obsoletos. Resultados concretos en VERIFICACION_NUBE.md. Los checks de SQL/RLS/advisors y despliegue de entradas anteriores no se han repetido remotamente en este bloque.
+
+Habilidad cloud-environment-onboarding:setup utilizada para actualizar y guardar instalación/arranque/requisitos de conexión. Borrador confirmado; publicación y propagación no confirmadas. Sin cuentas creadas, correos enviados, escrituras de datos, migraciones, coste, cambio de Auth/RLS, producción o retirada de protección Vercel. El push a la rama conectada puede generar Preview automática; no equivale a comprobar su nuevo despliegue.
+
+Siguiente acción humana: conservar/redirigir la URL autorizada en Supabase y crear/confirmar la cuenta del marcador en la Preview existente. Para operar desde cloud, configurar valores públicos en ajustes seguros y aplicar permisos de red; no compartir contraseña ni token en chat. Fase B queda abierta hasta probar el recorrido autenticado completo; no avanzar a XP/ELO. El commit/push de este bloque debe comprobarse con Git, no inferirse del borrador del entorno.
 
 ### 2026-10-01 — Resumen completo y traspaso documentado a Codex Cloud
 
