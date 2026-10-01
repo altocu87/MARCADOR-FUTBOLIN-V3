@@ -155,6 +155,12 @@ Pruebas finales tras el feedback humano: siete grupos de npm test (estadísticas
 
 ## Registro de cambios
 
+### 2026-10-01 — Consulta por jugadores que no aparecen
+
+El propietario comunica que dos jugadores creados anteriormente en «producción» ya no se muestran. Lectura real del proyecto autorizado, sin escrituras: siguen existiendo dos jugadores activos, cada uno con participación en el único partido guardado; una sola cuenta de operador, confirmada. Nombres comprobados comunicados solo al propietario, no incorporados a esta documentación. No se acredita todavía que sean exactamente los dos registros mencionados: se solicita URL de origen sin parámetros y sus nombres. No afirmar pérdida, borrado ni causa de UI sin esa identificación.
+
+Código vigente: la gestión autenticada de jugadores persiste aunque PRUEBA esté ON; ese modo afecta a partidos/copias, no borra jugadores. RLS limita lecturas a la cuenta actual; la sesión web depende del origen. Producción/main y Preview son despliegues distintos: main 900e470 aún tiene simulador/demos sin la gestión persistente; configuración documentada de datos solo en Preview de revisión. No se inspecciona la configuración remota actual: Vercel list_projects sigue devolviendo 403 de alcance; get_project tiene error de validación de argumentos del conector, sin cambio de configuración. La URL real del operador queda pendiente, sin asumir que «producción» signifique el modo OFF. Sin cuentas nuevas, llamadas Auth, borrados, migraciones, XP/ELO ni promoción. Revisión de fuentes y consulta SQL read-only; no se repiten tests/build por ser solo seguimiento documental.
+
 ### 2026-10-01 — Registro separado de login y aclaración de prueba 7
 
 Publicación funcional comprobada: **3d14d84 — Separate account registration from login to prevent accidental signup**. Push fast-forward desde 1197c5c y `git ls-remote` confirma `3d14d848b112d5b77f5a287083877352dc82722f` en codex/reliability-offline-v1; main permanece 900e470, árbol limpio. Esta anotación documental se publica después; no acredita despliegue ni recorrido Auth remoto nuevo.

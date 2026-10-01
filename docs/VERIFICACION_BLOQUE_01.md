@@ -91,6 +91,10 @@ npm test correcto y Chromium 21/21 con TypeScript/builds normal y aislado. Regre
 
 El agente asume las simulaciones 3–5. Una simulación local no cierra la dependencia de Preview autenticada/PWA física, pero no requiere repetir esos guiones completos por rutina.
 
+## Consulta posterior sobre visibilidad de jugadores
+
+El propietario comunica dos jugadores que ya no aparecen en «producción». Consulta real read-only: dos jugadores activos y con historial siguen guardados; una cuenta de operador confirmada, un partido. Falta identificar URL y nombres para vincular esa consulta con los registros mencionados. No se recrean jugadores ni se borran cuentas/datos. PRUEBA ON no elimina ni vuelve temporal la gestión autenticada de jugadores. La sesión por origen y las diferencias main/Preview pueden afectar a lo que se ve, pero aún no son una causa confirmada. Vercel sigue rechazando el alcance con 403; no se alteran variables o despliegues para diagnosticar. No incorporar nombres/correos/IDs del operador al repositorio.
+
 ## Preview y pasos humanos que aún faltan
 
 El conector Vercel deniega el equipo `altocuvlc-9686s-projects` con 403 de autorización. La lectura protegida de `/connection.json` también es denegada. No hay sesión Auth del operador en este navegador cloud; no se extraen tokens ni se retira protección. No se ha comprobado el despliegue remoto del commit final. GitHub informó primero pending y después **success** para el check Vercel de `e164b5b`, con enlace al despliegue FiFcv5wQvD77zoo3a26yvHqsrjcA. Es evidencia del check remoto de la entrega funcional; el conector Vercel sigue denegado y no se ha inspeccionado READY ni el recorrido web autenticado. El push a la rama conectada puede generar Preview automáticamente.
