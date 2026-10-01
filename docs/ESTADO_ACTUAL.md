@@ -8,7 +8,7 @@
 - Remoto: origin = https://github.com/altocu87/MARCADOR-FUTBOLIN-V3.git
 - Rama principal: main.
 - Último commit de código funcional en main comprobado: **b10b1df — Initial functional match simulator**; main contiene además el contexto documental 900e470.
-- Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**, persistencia/fiabilidad **eeb23b8** y recuperación activa **176d470**, con push comprobado. El bloque PWA descrito abajo está preparado localmente para publicar; contrastar `git log`/referencias y la entrada de publicación al retomar. No equivale a promoverla a main ni completar la fase B.
+- Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**, persistencia/fiabilidad **eeb23b8**, recuperación activa **176d470** y PWA **917de97**, con push comprobado. Las actualizaciones documentales posteriores tienen sus propios commits; contrastar `git log`/referencias al retomar. No equivale a promoverla a main ni completar la fase B.
 - Entorno de esta implementación: **PC local Windows**, no Codex Cloud. Las instrucciones de nube del apartado 79 se aplican cuando se trabaje realmente allí.
 - Esta ficha describe persistencia/fiabilidad/recuperación de la rama de desarrollo y la ampliación PWA. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
 
@@ -162,4 +162,6 @@ Implementados precaché estática solo en build, manifest/iconos e instalación/
 
 Cuatro grupos de tests, TypeScript/build y build aislado correctos. Verificado navegador con servidor realmente apagado: cierre/reapertura, recuperación y final 4–0 pendiente, reconexión automática con un único resultado simulado. Arranque offline también verificado en el build real sin sesión; 800×480 y 390×844 íntegros. Consola de aplicación sin avisos/errores capturados; modo prueba ON restaurado, cero pendientes de fixture, previews propios cerrados. Nuevos módulos y detalles en `VERIFICACION_PWA.md`.
 
-Sin migraciones, costes, cuentas Auth, Vercel, firmware o competición nueva. Fase B sigue pendiente del recorrido autenticado real y promoción a main. Build normal dist excluye fixture; offline-test separado bajo tmp ignorado. Instalación física en móvil pendiente. Bloque preparado localmente, pendiente de registrar publicación comprobada.
+Sin migraciones, costes, cuentas Auth, Vercel, firmware o competición nueva. Fase B sigue pendiente del recorrido autenticado real y promoción a main. Build normal dist excluye fixture; offline-test separado bajo tmp ignorado. Instalación física en móvil pendiente.
+
+Publicación comprobada: **917de97 — Add offline PWA shell and pending result synchronization** en origin/codex/reliability-offline-v1, rama sincronizada y árbol limpio tras el commit funcional. Referencia remota main permanece en 900e470. Pruebas/build/auditoría/secretos/diff revisados inmediatamente antes de publicar. No se abrió PR ni se desplegó. Esta anotación de publicación es documental y se versiona después del commit funcional.
