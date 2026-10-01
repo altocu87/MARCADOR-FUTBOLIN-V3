@@ -157,6 +157,8 @@ Pruebas finales tras el feedback humano: siete grupos de npm test (estadísticas
 
 ### 2026-10-01 — Registro separado de login y aclaración de prueba 7
 
+Publicación funcional comprobada: **3d14d84 — Separate account registration from login to prevent accidental signup**. Push fast-forward desde 1197c5c y `git ls-remote` confirma `3d14d848b112d5b77f5a287083877352dc82722f` en codex/reliability-offline-v1; main permanece 900e470, árbol limpio. Esta anotación documental se publica después; no acredita despliegue ni recorrido Auth remoto nuevo.
+
 Base 1197c5c, rama codex/reliability-offline-v1 sincronizada 0/0 y árbol limpio. El propietario comunica cuatro pulsaciones accidentales en CREAR CUENTA al intentar entrar con un correo existente y pide separar los controles. No se infiere que haya cuatro cuentas creadas ni se intenta registrar, borrar o modificar su cuenta para comprobarlo. SettingsScreen abre por defecto INICIAR SESIÓN, con ENTRAR como único submit. Un acceso secundario separado por espacio/borde abre CREAR CUENTA NUEVA sin enviar Auth; registro tiene su propio submit y retorno al login. Al cambiar se limpia la contraseña y cambia autocomplete; correo conservado, bloqueo de solicitudes y validación nativa vigentes. Se elige signIn/signUp por el formulario abierto, evitando que otro submitter determine una acción distinta.
 
 El propietario aclara que la prueba 7 estaba en PRUEBA ON: ausencia de copia tras recarga es el comportamiento aprobado, no un bug demostrado. Incidencia resuelta como aclaración; verificación de recuperación real con OFF desde el inicio sigue pendiente. Pruebas 1/6 ya confirmadas, 3–5 automatizadas; no pedir cuentas nuevas ni repetir resultados acreditados.
