@@ -8,6 +8,14 @@ Antes de modificar código, leer `AGENTS.md`, `docs/CONTEXTO_MAESTRO.md` y `docs
 
 Persistencia V1 está en revisión en `codex/reliability-offline-v1`: tests locales y simulaciones correctos, pero falta el recorrido autenticado navegador → Supabase con la cuenta del operador. No considerar esta fase cerrada ni promoverla a main hasta completar esa validación. Las migraciones del proyecto existente ya están aplicadas; no repetirlas.
 
+## Vista previa online
+
+[Abrir la versión responsive de desarrollo](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app).
+
+Se puede abrir desde el móvil sin tener el PC encendido. Es una vista previa protegida: si Vercel pide acceso, iniciar sesión con la cuenta propietaria autorizada. No es la cuenta del marcador. Mantener MODO PRUEBA ON para probar partidos sin guardar datos.
+
+El 2026-10-01 se comprobó que la integración GitHub ya la había publicado automáticamente. Todavía no hay variables de conexión configuradas en este proyecto Vercel: la creación de cuenta del marcador, jugadores reales e historial remoto requieren esa configuración y un nuevo build. Estado operativo y límites en `docs/ESTADO_ACTUAL.md`.
+
 ## Instalación
 
 Node.js 22.12 o superior (validado con Node 24), npm y un proyecto Supabase existente.
@@ -119,10 +127,10 @@ El service worker solo conserva HTML, JS, CSS, manifest e iconos del build. No a
 
 El punto verde significa que responde el servidor web (sonda no cacheada, máximo cuatro segundos; revisión cada treinta segundos mientras la app está visible). No demuestra que Supabase o la sesión funcionen. Sin servidor se muestra **SIN CONEXIÓN** con punto ámbar; AJUSTES permite COMPROBAR CONEXIÓN.
 
-No hay primera carga offline, sincronización con la app cerrada, backup, historial remoto offline ni garantía frente a eliminación de datos/cuota del navegador. Detalles y pruebas reales de servidor apagado en `docs/VERIFICACION_PWA.md`. La instalación en un teléfono físico y el recorrido autenticado Supabase siguen pendientes; no se ha desplegado este bloque en Vercel.
+No hay primera carga offline, sincronización con la app cerrada, backup, historial remoto offline ni garantía frente a eliminación de datos/cuota del navegador. Detalles y pruebas reales de servidor apagado en `docs/VERIFICACION_PWA.md`. La instalación en un teléfono físico y el recorrido autenticado Supabase siguen pendientes. La vista previa Vercel está publicada, pero el comportamiento PWA detrás de su protección debe verificarse en el dispositivo; las pruebas offline anteriores fueron locales.
 
 ## Próximas fases
 
 ESP32-S3: futura interfaz física a 800×480 (el firmware no ejecutará React directamente). ESP32-C3: futuro adaptador de pulsadores/sensores que genere eventos equivalentes. La separación motor/entradas/repositorios prepara esa integración, pero aún no existe firmware.
 
-Vercel: aplicación estática Vite, build `npm run build`, salida `dist`. Configurar las dos variables públicas en el entorno antes del build y desplegar cuando se autorice. Este bloque no modifica Vercel ni activa servicios de pago.
+Vercel: aplicación estática Vite, build `npm run build`, salida `dist`. GitHub genera vistas previas de la rama de desarrollo. Configurar las dos variables públicas en Preview antes de un nuevo build para habilitar la conexión de datos. No se ha promovido esta rama a producción ni activado servicios de pago.

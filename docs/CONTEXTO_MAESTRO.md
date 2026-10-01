@@ -929,6 +929,8 @@ Stack Vite: Build command normalmente npm run build. Output: dist.
 
 No activar servicios de pago.
 
+Decisión del 2026-10-01: el propietario autoriza publicar una vista previa de desarrollo para verla desde el móvil sin depender del PC. La integración GitHub del proyecto existente ya genera estas vistas; reutilizar la publicación correcta antes de crear despliegues redundantes. Mantener protección de acceso y no promover a producción/main mientras siga pendiente la validación autenticada de la fase B. Una vista previa publicada no demuestra que la persistencia esté configurada ni probada. Enlaces y estado comprobado en ESTADO_ACTUAL.md.
+
 ## 55. GITHUB
 
 GitHub es la fuente principal/versionada.

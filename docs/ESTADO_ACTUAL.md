@@ -110,9 +110,11 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 
 ## Bloqueo y siguiente acción exacta
 
+La vista previa online está lista para probar diseño y partidos con MODO PRUEBA ON; ver el registro Vercel al final. No tiene variables de conexión configuradas, por lo que primero habrá que preparar ese entorno y reconstruir para habilitar la cuenta y persistencia. No pedir al usuario que cree una cuenta en esa vista previa antes de completar ese paso. La autenticación de Vercel para abrir la vista previa es distinta de la cuenta del marcador.
+
 Falta una cuenta de operador del marcador para la prueba real autenticada. No solicitar contraseñas por chat ni inventar credenciales; no usar la cuenta administrativa del panel Supabase como si fuera Auth de la app.
 
-El usuario debe abrir la app real → AJUSTES → GENERAL, introducir personalmente correo y contraseña (al menos 8 caracteres), pulsar CREAR CUENTA, confirmar el correo si se solicita e iniciar sesión con ENTRAR.
+Una vez configurada la conexión en el entorno utilizado, el usuario debe abrir la app real → AJUSTES → GENERAL, introducir personalmente correo y contraseña (al menos 8 caracteres), pulsar CREAR CUENTA, confirmar el correo si se solicita e iniciar sesión con ENTRAR.
 
 Después, el agente debe verificar con la capa Supabase real:
 
@@ -130,11 +132,11 @@ Después, el agente debe verificar con la capa Supabase real:
 - GOALS cuenta los goles totales del periodo; el marcador visible es acumulativo. TIME termina por reloj; BOTH por la primera condición. Cambiar a objetivo por equipo requeriría una decisión explícita.
 - Prórroga: 60 segundos y gol de oro; después penaltis alternos, cinco intentos y muerte súbita. No se atribuyen goles a jugadores.
 - Deshacer no retrocede el reloj; el journal conserva goles y anulaciones.
-- Historial remoto depende de conexión; panel de pendientes local disponible sin red. PWA/arranque offline en build tras primera carga completa, HTTPS o localhost y navegador compatible. No habilitado en npm run dev. Recuperación requiere mismo origen/navegador/cuenta y prueba OFF; no garantiza primera carga sin red ni almacenamiento no borrado. Instalación en móvil físico pendiente, no se ha desplegado este bloque.
+- Historial remoto depende de conexión; panel de pendientes local disponible sin red. PWA/arranque offline en build tras primera carga completa, HTTPS o localhost y navegador compatible. No habilitado en npm run dev. Recuperación requiere mismo origen/navegador/cuenta y prueba OFF; no garantiza primera carga sin red ni almacenamiento no borrado. Vista previa Vercel publicada; instalación/PWA detrás de protección en móvil físico pendientes.
 - Usar una sola pestaña activa. La protección frente a journal antiguo no es un protocolo de coordinación simultánea entre pestañas. Copias inválidas se conservan y bloquean su sobrescritura; no hay borrado automático ni botón de descarte de partidas. La precisión de recuperación del reloj es de segundos; una caída abrupta puede perder la fracción aún no escrita.
 - Pendientes locales no son backup ni se comparten entre PC/móvil; la desactivación es más segura que eliminar cuando otros dispositivos puedan tener resultados sin sincronizar.
 - Clave pública configurada localmente en .env.local ignorado; cloud/Vercel necesitan su propia configuración segura. No copiar credenciales a esta documentación.
-- No se modificó Vercel. No se implementaron XP/ELO, estadísticas avanzadas, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
+- Vercel tiene una vista previa automática comprobada y el checkout quedó vinculado al proyecto existente; sin promoción a producción, cambios de variables ni retirada de protección. No se implementaron XP/ELO, estadísticas avanzadas, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
 
@@ -179,3 +181,13 @@ Cinco grupos de pruebas y builds normal/aislado correctos. TypeScript sin errore
 Build real sin sesión: formularios medidos, navegación y reapertura desde caché tras apagar el servidor. Estos recorridos no validan Auth ni escritura real en Supabase. No se modificaron MatchEngine, servicios de datos, migraciones, Vercel ni hardware. Fase B/prueba autenticada y promoción a main siguen pendientes. Evidencia y límites en VERIFICACION_RESPONSIVE.md.
 
 Publicación comprobada: **8e84e26 — Adapt simulator for mobile tablet and desktop displays**, en origin/codex/reliability-offline-v1, divergencia 0/0 y árbol limpio tras el commit funcional. git ls-remote confirma mismo hash; main permanece en 900e470. Esta anotación documental se versiona después. No hubo PR ni despliegue; servidores/pestañas propios cerrados y viewport restaurado.
+
+### 2026-10-01 — Vista previa Vercel localizada y comprobada
+
+El propietario pidió verla online desde el móvil y autorizó el acceso CLI. Cuenta autorizada altocuvlc-9686, equipo altocuvlc-9686s-projects, plan Hobby. Se reutilizó el proyecto existente marcador-futbolin-v3, enlazado al repositorio correcto y con producción en main. Vinculación local guardada únicamente bajo .vercel/ ignorado. No se crearon proyectos ni recursos de pago, ni se promocionó o fusionó la rama.
+
+La integración GitHub ya había desplegado automáticamente el commit documental **0a24499**, que contiene el código responsive **8e84e26**, desde codex/reliability-offline-v1. Despliegue **dpl_G5pmFWPv9Y6tPN45mRo6uBWBEYF9**, estado READY: https://marcador-futbolin-v3-9dtbkgnfq-altocuvlc-9686s-projects.vercel.app. Alias estable de la rama para el móvil: https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app. Los siguientes pushes pueden actualizar ese alias automáticamente.
+
+Corrección de las anotaciones anteriores: no se había solicitado un despliegue manual, pero eso no significaba ausencia de publicación automática por GitHub. Los logs reales confirman npm run build, TypeScript y Vite correctos; HTML y CSS remotos comprobados con la CLI oficial, incluidas reglas responsive, container queries y vista física. Un aviso de instalación sobre allowScripts/esbuild no impidió el build. No se ha verificado todavía el recorrido visual completo en ese origen remoto: navegador sin sesión redirige al login de Vercel, como exige la protección vigente. No desactivar protección ni publicar tokens de bypass.
+
+No existen variables de entorno configuradas en este proyecto Vercel. Esta vista sirve para probar interfaz y partidos con MODO PRUEBA ON, no para validar cuentas/guardado remoto. Siguiente bloque: configurar las variables públicas autorizadas en Preview, reconstruir y completar el recorrido autenticado con el operador. No se cambió el código, el motor, el diseño, la base de datos ni las variables remotas en este bloque. README, contexto maestro y estado actual actualizados. Reejecutados npm test (cinco grupos) y npm run build, ambos correctos, sin errores TypeScript; publicación documental consultable en el historial Git.
