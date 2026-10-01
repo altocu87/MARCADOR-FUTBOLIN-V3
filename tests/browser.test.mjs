@@ -112,13 +112,13 @@ test('modo prueba: partido completo sin cola ni checkpoint', async () => withPag
   await visible(page, 'No hay partidos guardados.')
 }))
 
-test('por goles: objetivo por equipo, sin límite, única parte y detalle guardado', async () => withPage(async page => {
+test('por goles: objetivo por equipo, cronómetro sin límite, sin partes y detalle guardado', async () => withPage(async page => {
   await page.clock.install()
   await page.goto(fixture)
   await realMode(page); await selection(page)
   await start(page)
   await page.clock.fastForward(600_000)
-  await visible(page, 'ÚNICA PARTE · PRIMERO A 2 GOLES')
+  await visible(page, 'POR GOLES · PRIMERO A 2 GOLES')
   await visible(page, 'TIEMPO JUGADO')
   assert.equal(await page.locator('.clock-panel strong').textContent(), '10:00')
   await whiteGoal(page); await page.clock.runFor(3_100)
@@ -134,7 +134,7 @@ test('por goles: objetivo por equipo, sin límite, única parte y detalle guarda
   await page.getByRole('button', { name: 'RANKING', exact: true }).click()
   await page.locator('.history-list button').click()
   await visible(page, 'DETALLE DEL PARTIDO')
-  assert.match(await page.locator('.history-summary').textContent(), /Primero a 2 · Única parte · Sin límite de tiempo/)
+  assert.match(await page.locator('.history-summary').textContent(), /Primero a 2 · Sin partes · Sin límite de tiempo/)
   assert.equal(await page.locator('.event-list > div').count(), 5)
   assert.doesNotMatch(await page.locator('.event-list').textContent(), /SECOND_HALF|FINAL DE PARTE|PRÓRROGA|PENALTI/)
 }))
@@ -280,7 +280,7 @@ test('2v2: selección exacta, bloqueo, recarga en pausa y misma identidad del pa
   assert.equal(original.checkpoint.version, 2)
   await page.reload()
   await visible(page, 'PARTIDO POR RECUPERAR')
-  assert.match(await page.locator('.recovery-meta').textContent(), /ÚNICA PARTE · PRIMERO A 3 GOLES/)
+  assert.match(await page.locator('.recovery-meta').textContent(), /POR GOLES · PRIMERO A 3 GOLES/)
   await page.getByRole('button', { name: 'RECUPERAR PARTIDO', exact: true }).click()
   await page.locator('.pause-overlay').waitFor()
   assert.equal(await page.locator('.white-score strong').textContent(), '1')

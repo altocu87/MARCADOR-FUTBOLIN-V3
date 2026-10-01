@@ -245,4 +245,32 @@ for (const winner of ['WHITE', 'BLUE'] as const) {
   assert.equal(match.getState().whiteGoals, 0, 'Un gol al vencer el tiempo ya no entra en esa parte')
 }
 
+// Ties after the two timed halves lead to extra time, then penalties if needed.
+for (const victoryCondition of ['TIME', 'BOTH'] as const) {
+  for (const goldenGoal of [false, true]) {
+    let time = 0
+    const match = new MatchEngine(() => time)
+    match.createMatch({ ...config, victoryCondition, halfDurationMinutes: 1 }); match.skipCountdown()
+    for (let half = 1; half <= 2; half++) {
+      match.dispatch('GOL_BLANCO'); time += 3_000; match.dispatch('GOL_AZUL')
+      time = half * 60_000; match.tick(); match.continueToNextPeriod(); match.skipCountdown()
+    }
+    assert.equal(match.getState().period, 'EXTRA_TIME')
+    assert.deepEqual([match.getState().whiteGoals, match.getState().blueGoals], [2, 2])
+    if (goldenGoal) {
+      match.dispatch('GOL_AZUL')
+      assert.equal(match.getState().status, 'MATCH_END')
+      assert.deepEqual([match.getState().whiteGoals, match.getState().blueGoals], [2, 3])
+    } else {
+      time += 60_000; match.tick(); match.continueToNextPeriod()
+      assert.equal(match.getState().status, 'PENALTIES')
+      for (let i = 0; i < 3; i++) { match.dispatch('PENALTI_BLANCO_GOL'); match.dispatch('PENALTI_AZUL_FALLO') }
+      assert.equal(match.getState().status, 'MATCH_END')
+      assert.deepEqual([match.getState().whiteGoals, match.getState().blueGoals], [2, 2])
+      assert.equal(match.getState().penalty?.whiteGoals, 3)
+      assert.equal(match.getState().penalty?.blueGoals, 0)
+    }
+  }
+}
+
 console.log('MatchEngine: modalidades actuales, bloqueo, correcciones, reloj y compatibilidad superados.')

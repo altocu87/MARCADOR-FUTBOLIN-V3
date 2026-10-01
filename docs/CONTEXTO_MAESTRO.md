@@ -182,7 +182,7 @@ Idealmente:
 
 **Decisiones explícitas posteriores del propietario, 2026-10-01:** POR GOLES y POR TIEMPO conservan las reglas aclaradas; la aclaración siguiente mantiene también AMBAS. Reemplazan el criterio anterior de goles sumados por periodo del apartado 59 y la retirada temporal de AMBAS.
 
-- POR GOLES: una única parte, sin límite de tiempo. Gana el primer equipo que alcanza el objetivo configurado (1–20). Ejemplo: objetivo 5; un 3–2 continúa y un 5–2 termina. El reloj muestra tiempo jugado y excluye pausas.
+- POR GOLES: sin partes, con cronómetro ascendente sin límite de tiempo. Gana el primer equipo que alcanza el objetivo configurado (1–20). Ejemplo: objetivo 5; un 3–2 continúa y un 5–2 termina. El reloj muestra tiempo jugado y excluye pausas.
 - POR TIEMPO: dos partes con marcador acumulado; gana quien tiene más goles tras las dos partes. La duración configurada sigue correspondiendo a cada parte (1–30 minutos).
 - AMBAS: un único partido dividido en dos partes por reloj. El objetivo de goles pertenece al total de cada equipo en todo el partido y no se reinicia entre partes. Si un equipo alcanza ese total, el partido finaliza directamente; si no, al agotar ambas partes gana quien tenga más goles acumulados. Ejemplo objetivo 5: primera 3–2, dos goles blancos en la segunda → Blanco 5–2. No hay objetivo ni ganador independiente de cada parte.
 
@@ -190,7 +190,7 @@ La UI ofrece las tres condiciones. AMBAS nuevo usa reglas/checkpoint V4. Las cop
 
 ## 9. ESTRUCTURA DEL PARTIDO
 
-POR TIEMPO: 1ª PARTE → 2ª PARTE → FINAL con marcador acumulado. AMBAS sigue ese recorrido por reloj, pero alcanzar el objetivo total en cualquiera de las dos partes finaliza el partido directamente. POR GOLES: ÚNICA PARTE → FINAL al alcanzar un equipo el objetivo, sin descanso, segunda parte, prórroga ni penaltis.
+POR TIEMPO: 1ª PARTE → 2ª PARTE → FINAL con marcador acumulado. AMBAS sigue ese recorrido por reloj, pero alcanzar el objetivo total en cualquiera de las dos partes finaliza el partido directamente. POR GOLES: PARTIDO SIN PARTES → FINAL al alcanzar un equipo el objetivo, sin descanso, segunda parte, prórroga ni penaltis.
 
 Si hay empate tras las dos partes por tiempo o AMBAS: PRÓRROGA. Se conserva el desempate existente; no se ha solicitado modificarlo.
 
@@ -1022,7 +1022,7 @@ Nunca romper estos comportamientos sin motivo explícito.
 
 En la V1 se tomó la decisión: la condición de goles se evalúa POR PERIODO, mientras el marcador total permanece visible durante todo el partido.
 
-**Reemplazada por autorización explícita del propietario el 2026-10-01:** para nuevos partidos GOALS, objetivo por equipo en una sola parte sin límite de tiempo (apartados 8–9). Checkpoint V2 y `config.rulesVersion=2` fijan esa semántica. Copias V1 sin marcador de versión mantienen sus reglas al recuperar y se vuelven a exportar V1; no se reinterpreta una partida empezada. Los resultados históricos y colas pendientes no se reescriben.
+**Reemplazada por autorización explícita del propietario el 2026-10-01:** para nuevos partidos GOALS, objetivo por equipo sin partes y con cronómetro ascendente sin límite de tiempo (apartados 8–9). Checkpoint V2 y `config.rulesVersion=2` fijan esa semántica. Copias V1 sin marcador de versión mantienen sus reglas al recuperar y se vuelven a exportar V1; no se reinterpreta una partida empezada. Los resultados históricos y colas pendientes no se reescriben.
 
 **Corrección expresa del propietario:** AMBAS es un partido completo dividido en dos partes; goles y objetivo son del total, nunca de cada parte. El agente interpretó mal la aclaración anterior al implementar V3. Los partidos AMBAS nuevos usan `rulesVersion=4`/checkpoint V4 y terminan al alcanzar un equipo el objetivo acumulado o por total después de las dos partes por reloj. GOALS/TIME permanecen V2. UI muestra OBJETIVO TOTAL; historial distingue V4 mediante los metadatos del inicio. Copias AMBAS V1/V2/V3 conservan sus reglas históricas; no se reescriben datos ni pendientes.
 

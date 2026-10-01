@@ -156,7 +156,7 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 ## Límites conocidos y decisiones a preservar
 
 - Discrepancia del bloqueo de gol corregida el 2026-10-01 en la rama de desarrollo: reproducida con una prueba fallida antes del arreglo y ocho casos correctos después. El motor conserva el plazo al deshacer/corregir/cambiar parte o prórroga. Main aún no contiene esta corrección mientras no se integre la rama.
-- Decisiones explícitas posteriores: GOALS objetivo por equipo/única parte/sin límite; TIME dos partes por reloj; AMBAS objetivo por equipo para todo el partido, sin reinicio entre partes; final al alcanzarlo o por reloj tras dos partes. TIME/AMBAS deciden por total acumulado y conservan desempate. Copias anteriores mantienen sus reglas, resultados históricos intactos; no volver a retirar AMBAS.
+- Decisiones explícitas posteriores: GOALS objetivo por equipo/sin partes/cronómetro ascendente sin límite; TIME dos partes por reloj; AMBAS objetivo por equipo para todo el partido, sin reinicio entre partes; final al alcanzarlo o por reloj tras dos partes. TIME/AMBAS deciden por total acumulado y conservan desempate. Copias anteriores mantienen sus reglas, resultados históricos intactos; no volver a retirar AMBAS.
 - Prórroga: 60 segundos y gol de oro; después penaltis alternos, cinco intentos y muerte súbita. No se atribuyen goles a jugadores.
 - Deshacer no retrocede el reloj; el journal conserva goles y anulaciones.
 - Historial remoto depende de conexión; panel de pendientes local disponible sin red. PWA/arranque offline en build tras primera carga completa, HTTPS o localhost y navegador compatible. No habilitado en npm run dev. Recuperación requiere mismo origen/navegador/cuenta y prueba OFF; no garantiza primera carga sin red ni almacenamiento no borrado. Vista previa Vercel publicada; instalación/PWA detrás de protección en móvil físico pendientes.
@@ -166,6 +166,14 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, predicción/forma competitiva, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Formulación definitiva: GOALS sin partes
+
+Base **4e840b5**, rama `codex/reliability-offline-v1`. El propietario vuelve a fijar las tres reglas: GOALS sin partes, cronómetro ascendente sin límite y final al alcanzar un equipo el objetivo; TIME dos partes de minutos configurados, ganador por total, empate con prórroga y después penaltis; BOTH el mismo tiempo en dos partes o final cuando un equipo llega al objetivo total en cualquier momento.
+
+El motor vigente ya cumple esas reglas (GOALS/TIME V2, BOTH V4). Se corrige la presentación de GOALS: configuración indica SIN PARTES/CRONÓMETRO SIN LÍMITE, marcador y recuperación POR GOLES/PRIMERO A; historial SIN PARTES y eventos PARTIDO. Se conserva FIRST_HALF como identificador interno del contrato de almacenamiento GOALS V2, sin convertirlo en una parte de juego ni introducir cambios de esquema, versión o datos. Documentos vigentes y plan actualizados; historial de etiquetas anteriores conservado como registro.
+
+Verificación: npm run test:engine correcto, con recorrido natural de empate tras dos partes para TIME/BOTH, gol de oro y prórroga agotada seguida de penaltis, sin forzar transiciones. npm run test:browser: TypeScript/builds normal y aislado correctos; Chromium 15/15, sin fallos ni omitidos. GOALS continúa a 10:00, presenta objetivo sin partes y termina al alcanzarlo; recarga/detalle correctos. Captura de marcador GOALS revisada en /tmp, fuera de Git. Publicación se registra al comprobar el push. Siguiente bloque recomendado sigue siendo 01, comprobación real; Vercel/Supabase reales no verificados por este ajuste.
 
 ### 2026-10-01 — Corrección AMBAS V4: objetivo total del partido
 

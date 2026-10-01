@@ -103,7 +103,7 @@ Usa un navegador moderno con soporte de container queries. Verificación de tama
 
 ### Motor
 
-Tres condiciones aclaradas por el propietario el 2026-10-01: **POR GOLES**, una única parte sin límite de tiempo y gana el primer equipo en alcanzar el objetivo; **POR TIEMPO**, dos partes con marcador acumulado y gana quien marque más en total; **AMBAS**, objetivo de goles por equipo para el partido completo, sin reiniciarlo entre partes. El partido termina cuando un equipo alcanza ese total o al finalizar el tiempo de las dos partes; en este último caso gana quien tenga más goles acumulados. Ejemplo objetivo 5: primera parte 3–2, dos goles blancos en la segunda → final Blanco 5–2. También puede alcanzarse el objetivo en la primera parte y finalizar directamente.
+Tres condiciones aclaradas por el propietario el 2026-10-01: **POR GOLES**, sin partes, con cronómetro ascendente sin límite de tiempo y gana el primer equipo en alcanzar el objetivo; **POR TIEMPO**, dos partes con marcador acumulado y gana quien marque más en total; **AMBAS**, objetivo de goles por equipo para el partido completo, sin reiniciarlo entre partes. El partido termina cuando un equipo alcanza ese total o al finalizar el tiempo de las dos partes; en este último caso gana quien tenga más goles acumulados. Ejemplo objetivo 5: primera parte 3–2, dos goles blancos en la segunda → final Blanco 5–2. También puede alcanzarse el objetivo en la primera parte y finalizar directamente.
 
 La UI muestra tiempo jugado en GOALS y tiempo restante de cada parte en TIME/AMBAS. AMBAS muestra OBJETIVO TOTAL junto al reloj y el marcador acumulado. La duración configurada corresponde a cada parte. En empate tras dos partes se conserva prórroga de 60 segundos/gol de oro y después penaltis.
 
