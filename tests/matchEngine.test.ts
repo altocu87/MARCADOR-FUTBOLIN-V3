@@ -273,4 +273,28 @@ for (const victoryCondition of ['TIME', 'BOTH'] as const) {
   }
 }
 
+// The second-half clock must publish the final result directly when not tied.
+for (const victoryCondition of ['TIME', 'BOTH'] as const) {
+  for (const winner of ['WHITE', 'BLUE'] as const) {
+    let time = 0
+    const match = new MatchEngine(() => time)
+    match.createMatch({ ...config, victoryCondition, halfDurationMinutes: 1 }); match.skipCountdown()
+    match.dispatch(winner === 'WHITE' ? 'GOL_BLANCO' : 'GOL_AZUL')
+    time = 60_000; match.tick(); match.continueToNextPeriod(); match.skipCountdown()
+    const published: string[] = []
+    match.subscribe(state => published.push(state.status))
+    time = 120_000; match.tick()
+    assert.deepEqual(published, ['MATCH_END'], 'Sin pantalla intermedia ni copia de descanso al cerrar la segunda parte')
+    assert.deepEqual(match.getState().events.slice(-2).map(event => event.eventType), ['period_end', 'match_end'], 'El historial conserva ambos hechos')
+    assert.equal(match.getState().events.at(-1)?.matchTimeSeconds, 120)
+    const document = match.getCheckpoint()
+    const restored = new MatchEngine(() => time + 86_400_000)
+    restored.restoreCheckpoint(document)
+    assert.deepEqual(restored.getState(), document.state, 'Recuperar el final conserva el resultado y su fecha')
+    const events = match.getState().events.length
+    time += 60_000; match.tick(); match.continueToNextPeriod(); match.dispatch('GOL_AZUL')
+    assert.equal(match.getState().events.length, events, 'Ticks o entradas posteriores no duplican el final')
+  }
+}
+
 console.log('MatchEngine: modalidades actuales, bloqueo, correcciones, reloj y compatibilidad superados.')

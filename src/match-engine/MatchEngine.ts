@@ -179,6 +179,10 @@ export class MatchEngine {
     this.state = { ...this.state, status: 'PERIOD_END', ...this.goalLockState(true),
       periodResult: { whiteGoals: this.state.whiteGoals, blueGoals: this.state.blueGoals } }
     this.record('period_end')
+    if (this.state.period === 'SECOND_HALF' && this.state.whiteGoals !== this.state.blueGoals) {
+      this.finishMatch()
+      return
+    }
     this.emit()
   }
 

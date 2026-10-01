@@ -55,13 +55,39 @@ El generador usa MatchEngine/mapMatch y playerStatistics reales. RPC comprobada 
 
 Advisor actual: WARN de protección de contraseñas filtradas deshabilitada, no una regresión de RLS. [Referencia oficial](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). Se registra sin activar opciones de pago ni cambiar políticas. No afirmar «sin avisos» por el resultado histórico anterior.
 
+## Seguimiento del checklist humano y corrección del cierre
+
+El propietario confirma **prueba 1 OK** (GOALS). En la prueba 2 detecta una pantalla innecesaria de FINAL DE LA 2ª PARTE seguida de VER RESULTADO; solicita mostrar directamente el ganador. Confirmación parcial: no registrar toda la prueba 2 como aprobada.
+
+Reproducido antes del arreglo por una regresión de motor: publicaba PERIOD_END en vez de MATCH_END. Ahora el fin de segunda parte con marcador desigual publica únicamente MATCH_END, conservando period_end y match_end consecutivos en el journal. TIME y AMBAS, ganador Blanco/Azul; fecha, 120 segundos, recuperación del final y entradas posteriores sin duplicar eventos comprobados. No cambia el objetivo, las reglas históricas, el desempate ni el contrato de checkpoint/RPC; copias antiguas de descanso siguen recuperándose con su transición original.
+
+Checklist 3 y 4 automatizados en Chromium: AMBAS objetivo total 5, primera 3–2, dos goles blancos en segunda → 5–2 (incluye recarga); objetivo 2 en primera → final 2–1 directamente. Checklist 5 ampliado en navegador para TIME y AMBAS: dos partes empatadas → prórroga de 60 segundos → primer gol Azul finaliza; otra partida agota la prórroga → penaltis con turnos alternos habilitados/bloqueados → ganador Blanco 3–0 sobre marcador de campo 0–0. Prueba ON no crea cola/checkpoint. También AMBAS por reloj sin llegar al objetivo → ganador Azul directamente.
+
+Verificación de esta continuación: npm test, siete grupos correctos (estadísticas/análisis 41/41); npm run test:browser, TypeScript/builds normal y aislado y Chromium 20/20 sin omitidos/pageerror. Revisión visual del final directo, gol de oro y penaltis a 800×480, capturas temporales /tmp/futbolin-direct-final.png y /tmp/futbolin-{time,both}-{golden-goal,penalties}.png. Estas simulaciones usan el build aislado, reloj controlado y repositorios en memoria, bloqueando Supabase; no son verificación de la Preview autenticada. No se repite SQL remoto, no hay migraciones ni escrituras remotas de datos.
+
+| Prueba del checklist entregado | Estado / siguiente paso |
+| --- | --- |
+| 1 · GOALS | Confirmada por el propietario; no repetir |
+| 2 · TIME | Bug corregido y verificado localmente; confirmar solo final directo en Preview actualizada, con prueba ON |
+| 3 · AMBAS entre partes | Simulación automatizada correcta; no pedir repetirla manualmente por rutina |
+| 4 · AMBAS final en primera | Simulación automatizada correcta; no pedir repetirla manualmente por rutina |
+| 5 · Prórroga/penaltis | Simulación automatizada correcta para TIME/AMBAS; no pedir repetirla manualmente por rutina |
+| 6 · Guardado/historial/perfiles | Falta evidencia desde la sesión real del operador |
+| 7 · Recuperación tras recarga | Falta recorrido desde el origen real |
+| 8 · Pendiente offline/reconexión | Falta recorrido desde el origen real; mismo ID, un solo resultado |
+| 9 · Prueba ON sin incremento | Falta contraste de historial/perfiles reales antes/después |
+| 10 · Alias/baja lógica | Falta comprobación desde UI real; no borrar jugadores |
+| 11 · PWA física | Falta instalación y reapertura offline en el teléfono real |
+
+El agente asume las simulaciones 3–5. Una simulación local no cierra la dependencia de Preview autenticada/PWA física, pero no requiere repetir esos guiones completos por rutina.
+
 ## Preview y pasos humanos que aún faltan
 
 El conector Vercel deniega el equipo `altocuvlc-9686s-projects` con 403 de autorización. La lectura protegida de `/connection.json` también es denegada. No hay sesión Auth del operador en este navegador cloud; no se extraen tokens ni se retira protección. No se ha comprobado el despliegue remoto del commit final. GitHub informó primero pending y después **success** para el check Vercel de `e164b5b`, con enlace al despliegue FiFcv5wQvD77zoo3a26yvHqsrjcA. Es evidencia del check remoto de la entrega funcional; el conector Vercel sigue denegado y no se ha inspeccionado READY ni el recorrido web autenticado. El push a la rama conectada puede generar Preview automáticamente.
 
 En la [Preview estable de esta rama](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app), usando la cuenta existente y una sola pestaña:
 
-1. Cuando Vercel muestre el nuevo commit, cerrar/reabrir sin borrar almacenamiento y comprobar las tres opciones/reglas. Prueba ON para ensayos sin datos: GOALS objetivo 3 continúa a 2–1 y termina a 3–1 sin partes; TIME completa dos partes; BOTH objetivo 5 conserva 3–2 entre partes y termina a 5–2. El motor ya tiene pruebas de empates/prórroga/penaltis; comprobar también ese flujo en el origen real si no formó parte de la prueba anterior.
+1. Cuando Vercel muestre la actualización, cerrar/reabrir sin borrar almacenamiento. Con prueba ON, confirmar únicamente el arreglo de la prueba 2: al acabar la segunda parte con marcador desigual aparece directamente FINAL DEL PARTIDO y ganador, sin VER RESULTADO. GOALS ya confirmado; simulaciones 3–5 a cargo del agente, no repetirlas por rutina.
 2. Con prueba OFF y jugadores existentes, completar un resultado que se quiera conservar: comprobar resumen, historial/detalle (participantes/eventos) y perfiles de ambos equipos; editar alias/desactivar/reactivar conserva la identidad e historial. No intentar borrar jugadores reales para probar protección.
 3. Mismo origen/cuenta: con prueba OFF, recargar una partida en curso, recuperar en pausa y conservar marcador/tiempo/ID; terminar sin conexión, consultar pendiente, recargar y reconectar. Debe quedar un único resultado y la cola vacía. Ese resultado también se conserva como dato real.
 4. Repetir un partido con prueba ON: no aumenta historial/perfiles/partidos/eventos ni crea pendientes/checkpoint. Comparar antes/después; comunicar solo resultados o errores, sin credenciales.

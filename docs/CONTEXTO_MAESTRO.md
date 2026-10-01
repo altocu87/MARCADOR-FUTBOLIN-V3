@@ -316,6 +316,8 @@ Después: cuenta atrás 3-2-1.
 
 Mostrar FINAL DEL PARTIDO, resultado y ganador.
 
+Aclaración expresa del propietario durante la prueba 2 del bloque 01, 2026-10-01: si al agotarse la segunda parte ya hay ganador, mostrar directamente ese resultado, sin pantalla de FINAL DE LA 2ª PARTE ni botón VER RESULTADO. Aplica a POR TIEMPO y AMBAS; se conservan ambos eventos en la cronología y el flujo de empate/prórroga. No reescribe resultados ni copias ya guardadas.
+
 Si empate: activar flujo de prórroga. Si continúa empate: penaltis.
 
 ## 19. PENALTIS
