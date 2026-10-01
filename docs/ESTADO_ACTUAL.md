@@ -157,6 +157,8 @@ Pruebas finales tras el feedback humano: siete grupos de npm test (estadísticas
 
 ### 2026-10-01 — Feedback humano: cierre directo y simulaciones 3–5
 
+Publicación funcional comprobada: **0336982 — Show winner directly after the second half and simulate tiebreakers**, push fast-forward desde f63af50; `git ls-remote` confirma `03369822147a1f36f8a87abebdd8b4e1a4f7c043` en la rama de revisión y main sin cambios en 900e470. Árbol limpio tras publicar. Esta anotación se versiona después; despliegue y recorrido autenticado nuevos no inspeccionados.
+
 Base f63af50 en codex/reliability-offline-v1, árbol limpio y fetch con referencias 0/0; main permanece 900e470. El propietario confirma prueba 1 GOALS y detecta en prueba 2 TIME un final de segunda parte con botón VER RESULTADO antes del ganador. Aprobado eliminar ese paso cuando el acumulado es desigual. MatchEngine.endPeriod termina directamente, emitiendo solo MATCH_END; conserva period_end/match_end en el journal. Empate sigue dando acceso a prórroga; GOALS, objetivos, bloqueo y reglas V1/V2/V3/V4 no se reinterpretan. Copias antiguas PERIOD_END y resultados/pendientes siguen compatibles e intactos.
 
 Regresión fallida antes del arreglo: publicado PERIOD_END, esperado MATCH_END. Tests de TIME/AMBAS y ambos ganadores comprueban fecha, 120 segundos, recuperación del final e idempotencia de entradas posteriores. Navegador TIME ahora exige final directo sin VER RESULTADO; caso adicional AMBAS con resultado 0–1 por reloj. Checklist 3/4 ya cubierto y repetido automáticamente (5–2 entre partes con recarga, 2–1 en primera); checklist 5 ampliado a cuatro recorridos TIME/AMBAS con prórroga natural, gol de oro Azul y prórroga agotada/penaltis alternos/Blanco 3–0. Prueba ON no crea copias/cola.
