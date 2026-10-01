@@ -97,6 +97,8 @@ El propietario comunica dos jugadores que ya no aparecen en «producción». Con
 
 ## Recuperación de contraseña y registro repetido
 
+Publicación funcional a2e32ac comprobada mediante push fast-forward y referencia remota; main sigue 900e470. Despliegue nuevo y correo/retorno Auth remoto no inspeccionados.
+
 Solicitud del propietario: respuesta de registro confusa con correo existente y falta de recuperación. Implementado formulario RECUPERAR CONTRASEÑA separado, envío explícito solo con correo; respuesta condicional sin enumerar cuentas. SDK resetPasswordForEmail retorna al mismo origen permitido. PASSWORD_RECOVERY validado por SDK abre nueva contraseña/confirmación; updateUser requiere la misma identidad. Marcador sessionStorage ID/expiración conserva la pantalla tras recarga y no añade tokens/contraseñas. Se limpia únicamente ese marcador al terminar, cerrar sesión o cambiar de cuenta. Enlace inválido/caducado ofrece nueva solicitud con mensaje seguro.
 
 npm test siete grupos correctos; SDK con transporte/eventos aislados prueba solicitud, límites, rechazo de contraseña, recarga y cambio de cuenta. Chromium 24/24 sin omitidos/pageerror; TypeScript/builds correctos. Tras añadir etiquetas visibles y menú AJUSTES en recuperación, cuatro casos focalizados correctos. Revisión visual móvil/800×480, capturas /tmp/futbolin-reset-request-*.png y /tmp/futbolin-password-recovery-*.png, sin scroll general. No se envían correos reales ni se crean cuentas ni se cambia la contraseña del operador. Esto no acredita entrega del correo/callback real.
