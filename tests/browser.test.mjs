@@ -55,10 +55,10 @@ async function realMode(page) {
   await page.getByRole('button', { name: 'ON · NO GUARDAR PARTIDOS', exact: true }).click()
   await page.getByRole('button', { name: 'NUEVO PARTIDO', exact: true }).click()
 }
-async function selection(page, count = 2, goalLimit = 1) {
+async function selection(page, count = 2, goalLimit = 2) {
   await page.getByRole('button', { name: /PARTIDO RÁPIDO/ }).click()
   await page.getByRole('button', { name: /POR GOLES/ }).click()
-  for (let i = 5; i > goalLimit; i--) await page.getByRole('button', { name: 'Reducir GOLES POR PARTE' }).click()
+  for (let i = 5; i > goalLimit; i--) await page.getByRole('button', { name: 'Reducir GOLES PARA GANAR' }).click()
   await page.getByRole('button', { name: 'SELECCIONAR JUGADORES ›' }).click()
   for (let i = 0; i < count; i++) await page.locator('.player-card').nth(i).click()
 }
@@ -73,10 +73,7 @@ async function whiteGoal(page) {
 }
 async function finish(page) {
   await whiteGoal(page)
-  await page.getByRole('button', { name: 'CONTINUAR 2ª PARTE ›' }).click()
-  await page.getByRole('button', { name: /PREPARADOS/ }).click()
   await whiteGoal(page)
-  await page.getByRole('button', { name: 'VER RESULTADO ›' }).click()
   await visible(page, 'FINAL DEL PARTIDO')
 }
 async function noOverflow(page) {
@@ -113,6 +110,63 @@ test('modo prueba: partido completo sin cola ni checkpoint', async () => withPag
   assert.deepEqual(await matchStorage(page), [])
   await page.getByRole('button', { name: 'RANKING', exact: true }).click()
   await visible(page, 'No hay partidos guardados.')
+}))
+
+test('por goles: objetivo por equipo, sin límite, única parte y detalle guardado', async () => withPage(async page => {
+  await page.clock.install()
+  await page.goto(fixture)
+  await realMode(page); await selection(page)
+  assert.equal(await page.getByRole('button', { name: /AMBAS/ }).count(), 0)
+  await start(page)
+  await page.clock.fastForward(600_000)
+  await visible(page, 'ÚNICA PARTE · PRIMERO A 2 GOLES')
+  await visible(page, 'TIEMPO JUGADO')
+  assert.equal(await page.locator('.clock-panel strong').textContent(), '10:00')
+  await whiteGoal(page); await page.clock.runFor(3_100)
+  await page.locator('.blue-score').click()
+  assert.equal(await page.locator('.match-board').count(), 1, '1–1 no termina con objetivo de dos')
+  for (const [width, height] of [[320, 568], [390, 844], [800, 480]]) {
+    await page.setViewportSize({ width, height }); await page.clock.runFor(100); await noOverflow(page)
+  }
+  await page.screenshot({ path: '/tmp/futbolin-single-goal-period.png' })
+  await page.clock.runFor(3_100); await whiteGoal(page)
+  await visible(page, 'FINAL DEL PARTIDO'); await visible(page, 'GANA BLANCO')
+  await page.getByText('PARTIDO GUARDADO EN SUPABASE', { exact: true }).waitFor()
+  await page.getByRole('button', { name: 'RANKING', exact: true }).click()
+  await page.locator('.history-list button').click()
+  await visible(page, 'DETALLE DEL PARTIDO')
+  assert.match(await page.locator('.history-summary').textContent(), /Primero a 2 · Única parte · Sin límite de tiempo/)
+  assert.equal(await page.locator('.event-list > div').count(), 5)
+  assert.doesNotMatch(await page.locator('.event-list').textContent(), /SECOND_HALF|FINAL DE PARTE|PRÓRROGA|PENALTI/)
+}))
+
+test('por tiempo: dos partes completas, marcador acumulado y victoria 2–1', async () => withPage(async page => {
+  await page.clock.install()
+  await page.goto(fixture); await realMode(page)
+  await page.getByRole('button', { name: /PARTIDO RÁPIDO/ }).click()
+  await page.getByRole('button', { name: /POR TIEMPO/ }).click()
+  assert.equal(await page.getByRole('button', { name: 'Reducir GOLES PARA GANAR' }).count(), 0)
+  for (let i = 5; i > 1; i--) await page.getByRole('button', { name: 'Reducir DURACIÓN DE CADA PARTE' }).click()
+  await page.screenshot({ path: '/tmp/futbolin-two-game-rules.png' })
+  await page.getByRole('button', { name: 'SELECCIONAR JUGADORES ›' }).click()
+  for (let i = 0; i < 2; i++) await page.locator('.player-card').nth(i).click()
+  await start(page); await whiteGoal(page); await page.clock.runFor(3_100); await whiteGoal(page)
+  await visible(page, '1ª PARTE')
+  await page.clock.fastForward(60_000)
+  await visible(page, 'FINAL DE LA 1ª PARTE')
+  await page.getByRole('button', { name: 'CONTINUAR 2ª PARTE ›' }).click()
+  await page.getByRole('button', { name: /PREPARADOS/ }).click()
+  await visible(page, '2ª PARTE')
+  assert.equal(await page.locator('.white-score strong').textContent(), '2')
+  await page.locator('.blue-score').click()
+  await page.clock.fastForward(60_000)
+  await visible(page, 'FINAL DE LA 2ª PARTE')
+  await page.getByRole('button', { name: 'VER RESULTADO ›' }).click()
+  await visible(page, 'FINAL DEL PARTIDO'); await visible(page, 'GANA BLANCO')
+  await page.getByText('PARTIDO GUARDADO EN SUPABASE', { exact: true }).waitFor()
+  await page.getByRole('button', { name: 'RANKING', exact: true }).click()
+  await page.locator('.history-list button').click()
+  assert.match(await page.locator('.history-summary').textContent(), /BLANCO 2 — 1 AZUL.*POR TIEMPO · Dos partes de 1:00/)
 }))
 
 test('vista protegida: cookie del mismo origen habilita acceso, sin cookie sigue bloqueado', async () => withPage(async (page, context) => {
@@ -164,13 +218,16 @@ test('2v2: selección exacta, bloqueo, recarga en pausa y misma identidad del pa
   await whiteGoal(page)
   assert.equal(await page.locator('.blue-score').isDisabled(), true)
   const original = await page.evaluate(() => JSON.parse(localStorage.getItem('marcador-ui-fixture:active-match:v1:fixture')))
+  assert.equal(original.checkpoint.version, 2)
   await page.reload()
   await visible(page, 'PARTIDO POR RECUPERAR')
+  assert.match(await page.locator('.recovery-meta').textContent(), /ÚNICA PARTE · PRIMERO A 3 GOLES/)
   await page.getByRole('button', { name: 'RECUPERAR PARTIDO', exact: true }).click()
   await page.locator('.pause-overlay').waitFor()
   assert.equal(await page.locator('.white-score strong').textContent(), '1')
   const recovered = await page.evaluate(() => JSON.parse(localStorage.getItem('marcador-ui-fixture:active-match:v1:fixture')))
   assert.equal(recovered.id, original.id)
+  assert.equal(recovered.checkpoint.version, 2)
   assert.equal(recovered.checkpoint.state.elapsedSeconds, original.checkpoint.state.elapsedSeconds)
   assert.equal(recovered.players.length, 4)
   for (const [width, height] of [[390, 844], [844, 390], [800, 480]]) {
@@ -196,7 +253,7 @@ test('resultado pendiente: recarga, reintento automático, historial sin duplica
   assert.equal(await page.locator('.history-list button').count(), 1)
   await page.locator('.history-list button').click()
   await visible(page, 'DETALLE DEL PARTIDO')
-  assert.equal(await page.locator('.event-list > div').count(), 7)
+  assert.equal(await page.locator('.event-list > div').count(), 4)
 }))
 
 function metric(page, label) { return page.locator('.statistics-grid > div').filter({ has: page.getByText(label, { exact: true }) }).locator('dd') }

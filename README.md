@@ -6,7 +6,7 @@ Simulador táctil del marcador físico de futbolín. React + Vite + TypeScript +
 
 Antes de modificar código, leer `AGENTS.md`, `docs/CONTEXTO_MAESTRO.md` y `docs/ESTADO_ACTUAL.md`. Mantenerlos actualizados después de cada bloque.
 
-Persistencia V1 está en revisión en `codex/reliability-offline-v1`: tests locales y simulaciones correctos, pero falta el recorrido autenticado navegador → Supabase con la cuenta del operador. No considerar esta fase cerrada ni promoverla a main hasta completar esa validación. Las migraciones del proyecto existente ya están aplicadas; no repetirlas.
+Persistencia V1 está en revisión en `codex/reliability-offline-v1`: el operador ha comunicado login y prueba satisfactorios; el agente no ha comprobado las filas/RPC remotas ni todos los casos de cierre de fase B. No considerar esta fase cerrada ni promoverla a main hasta completar esa validación. Las migraciones del proyecto existente ya están aplicadas; no repetirlas.
 
 Por autorización posterior del propietario, se añade el primer bloque de fase C: estadísticas básicas, perfiles y análisis de resultados con filtros, desarrollado/verificado con datos aislados mientras sigue pendiente el recorrido real de fase B. No incluye XP, niveles calculados, ELO ni una clasificación competitiva.
 
@@ -57,7 +57,7 @@ npm run preview
 
 El build comprueba TypeScript y genera `dist/`. Las pruebas SQL reproducibles están en `supabase/tests/persistence_v1.sql`: ejecutar completas como administrador, con su ROLLBACK final. Usan fixtures temporales y no dejan cuentas ni partidos.
 
-`npm run test:browser` genera ambos builds y ejecuta once regresiones Chromium con Playwright 1.63.0: vistas, acceso con cookie de vista protegida, prueba sin guardado, recuperación 2v2, pendientes/historial sin duplicados, perfiles/estadísticas, análisis/filtros y reapertura PWA con servidor apagado. Usa `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, Chromium del sistema en `/usr/bin/chromium` o el navegador de Playwright (`npx playwright install chromium`). Preview aislado en 5197, contextos temporales y tráfico Supabase bloqueado; no verifica Auth ni datos reales. `npm test` ejecuta siete grupos independientes del navegador; test:statistics incluye 41 casos de estadísticas/análisis. Resultados del bloque inicial cloud y pasos para cerrar fase B en [VERIFICACION_NUBE.md](docs/VERIFICACION_NUBE.md); estadísticas en [VERIFICACION_ESTADISTICAS.md](docs/VERIFICACION_ESTADISTICAS.md).
+`npm run test:browser` genera ambos builds y ejecuta trece regresiones Chromium con Playwright 1.63.0: vistas, ambas condiciones de victoria, acceso con cookie de vista protegida, prueba sin guardado, recuperación 2v2, pendientes/historial sin duplicados, perfiles/estadísticas, análisis/filtros y reapertura PWA con servidor apagado. Usa `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, Chromium del sistema en `/usr/bin/chromium` o el navegador de Playwright (`npx playwright install chromium`). Preview aislado en 5197, contextos temporales y tráfico Supabase bloqueado; no verifica Auth ni datos reales. `npm test` ejecuta siete grupos independientes del navegador; test:statistics incluye 41 casos de estadísticas/análisis. Resultados del bloque inicial cloud y pasos para cerrar fase B en [VERIFICACION_NUBE.md](docs/VERIFICACION_NUBE.md); estadísticas en [VERIFICACION_ESTADISTICAS.md](docs/VERIFICACION_ESTADISTICAS.md).
 
 La página `/tests/ui-fixture.html` inyecta repositorios en memoria para verificar formularios, partido e historial sin usar credenciales ni modificar Supabase. Está disponible en desarrollo y en el build aislado `npm run build:test-offline` → `npm run preview:test-offline` (puerto 5188, salida ignorada `tmp/pwa-test`). No valida Supabase real ni forma parte de `dist/` de producción. `?network=real` exige respuesta del servidor local para simular identidad, jugadores y guardado; permite apagar ese servidor y verificar el arranque desde la caché PWA.
 
@@ -70,7 +70,7 @@ Para reproducir fallos de guardado en esa fixture: `?save=offline` simula un rec
 3. Abrir JUGADORES para crear nombres y alias, editarlos o activarlos/desactivarlos.
 4. Desactivar MODO PRUEBA para guardar partidos reales.
 5. NUEVO PARTIDO → modo → configuración → elegir exactamente 2 o 4 jugadores activos. El orden de selección indica BLANCO 1, AZUL 1, BLANCO 2 y AZUL 2.
-6. Jugar, completar todas las partes y consultar el resultado. RANKING contiene el HISTORIAL V1, no cálculos de clasificación.
+6. Jugar: por goles, alcanzar el objetivo con un equipo; por tiempo, completar las dos partes. Consultar el resultado. RANKING contiene el HISTORIAL V1, no cálculos de clasificación.
 
 No es la contraseña de la cuenta del panel Supabase: es un acceso propio al marcador. Si el correo de confirmación redirige a una URL no disponible, regresar al marcador e intentar iniciar sesión después de confirmar. Para un dominio definitivo, configurar Site URL y URLs de redirección en Supabase Auth; no desactivar la confirmación ni RLS.
 
@@ -101,7 +101,9 @@ Usa un navegador moderno con soporte de container queries. Verificación de tama
 
 ### Motor
 
-Gestiona cuenta atrás, goles por equipo, pausa, bloqueo de tres segundos, correcciones, deshacer, partes, prórroga de 60 segundos con gol de oro y penaltis. En GOALS el tiempo no finaliza una parte. Se mantiene el criterio existente: goalLimit cuenta los goles totales de la parte, no el objetivo individual de un equipo. TIME usa el reloj y BOTH la primera condición.
+Dos condiciones aprobadas por el propietario el 2026-10-01: **POR GOLES**, una única parte sin límite de tiempo y gana el primer equipo en alcanzar el objetivo; **POR TIEMPO**, dos partes con marcador acumulado y gana quien marque más. Ejemplo: objetivo 5, un 3–2 continúa y un 5–2 termina. La UI muestra tiempo jugado en GOALS y tiempo restante de cada parte en TIME. La duración configurada corresponde a cada parte. En empate por tiempo se conserva prórroga de 60 segundos/gol de oro y después penaltis.
+
+Partidos nuevos usan checkpoint V2; las copias V1 recuperadas y resultados antiguos mantienen sus reglas. AMBAS ya no se ofrece al configurar, pero sigue siendo compatible con datos anteriores. El historial reconoce las reglas nuevas por metadatos del evento inicial; no hay migraciones ni reescritura de resultados/colas. Evidencia y límites en [VERIFICACION_MODALIDADES.md](docs/VERIFICACION_MODALIDADES.md).
 
 Cada acción aceptada genera un evento secuencial con periodo, tiempo acumulado de juego, marcador y fecha. Pausas y cuentas atrás no suman tiempo de juego. Deshacer conserva la cronología y no retrocede el reloj; los goles anulados quedan referenciados por ID. No se identifica al jugador goleador. Los penaltis alternan blanco/azul y resuelven la tanda reglamentaria o muerte súbita. El resumen y la persistencia usan el ganador de penaltis cuando corresponde.
 
@@ -170,4 +172,4 @@ No hay primera carga offline, sincronización con la app cerrada, backup, histor
 
 ESP32-S3: futura interfaz física a 800×480 (el firmware no ejecutará React directamente). ESP32-C3: futuro adaptador de pulsadores/sensores que genere eventos equivalentes. La separación motor/entradas/repositorios prepara esa integración, pero aún no existe firmware.
 
-Vercel: aplicación estática Vite, build `npm run build`, salida `dist`. GitHub genera vistas previas de la rama de desarrollo. URL y clave publishable configuradas únicamente para Preview de esta rama; producción y otras ramas no reciben esa configuración. No se ha promovido esta rama a producción ni activado servicios de pago. El registro y guardado autenticados siguen pendientes de la confirmación de correo y prueba del operador.
+Vercel: aplicación estática Vite, build `npm run build`, salida `dist`. GitHub genera vistas previas de la rama de desarrollo. URL y clave publishable configuradas únicamente para Preview de esta rama; producción y otras ramas no reciben esa configuración. No se ha promovido esta rama a producción ni activado servicios de pago. El operador comunica login y prueba satisfactorios; faltan las comprobaciones remotas detalladas para cerrar fase B y validar las nuevas reglas publicadas.

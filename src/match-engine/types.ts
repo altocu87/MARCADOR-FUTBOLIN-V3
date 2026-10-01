@@ -21,6 +21,8 @@ export interface TimelineEvent {
 }
 
 export interface MatchConfiguration {
+  /** Missing in historical copies: retain their per-period goal rules. */
+  rulesVersion?: 1 | 2
   mode: MatchMode
   victoryCondition: VictoryCondition
   goalLimit: number
@@ -78,7 +80,7 @@ export type MatchStateListener = (state: Readonly<MatchState>) => void
 
 /** Serializable engine state; storage and account ownership live outside the engine. */
 export interface MatchCheckpoint {
-  version: 1
+  version: 1 | 2
   state: MatchState
   completedTimeSeconds: number
   goalSequence: number

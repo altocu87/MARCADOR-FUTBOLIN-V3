@@ -1,5 +1,7 @@
 # Recuperación de partidos en curso — 2026-10-01
 
+Este documento conserva las pruebas del formato original. Decisión posterior del mismo día: nuevos partidos GOALS usan única parte y objetivo por equipo. Copias V1 conservan sus reglas; ver [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md) para versión V2 y comprobaciones vigentes.
+
 ## Alcance
 
 Rama `codex/reliability-offline-v1`, entorno local Windows. Función autorizada: recuperar una partida tras recargar o cerrar accidentalmente la aplicación. No cambia las reglas, el diseño del partido, Supabase, Vercel ni el hardware. La prueba autenticada de persistencia sigue pendiente; fase B no cerrada.

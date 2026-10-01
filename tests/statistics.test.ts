@@ -72,21 +72,21 @@ test('cálculo puro: no modifica resultados ni participantes', () => {
   assert.deepEqual(game, before)
 })
 
-for (const size of [2, 4]) test(`motor real ${size === 2 ? '1v1' : '2v2'}: partes y goles finales`, () => {
+for (const size of [2, 4]) test(`motor real ${size === 2 ? '1v1' : '2v2'}: objetivo por equipo y goles finales`, () => {
   let now = 0
   const engine = new MatchEngine(() => now)
-  engine.createMatch({ mode: 'QUICK', victoryCondition: 'GOALS', goalLimit: 1, halfDurationMinutes: 1 })
-  engine.skipCountdown(); engine.dispatch('GOL_BLANCO'); engine.continueToNextPeriod(); engine.skipCountdown()
-  now += 3_000; engine.dispatch('GOL_BLANCO'); engine.continueToNextPeriod()
+  engine.createMatch({ mode: 'QUICK', victoryCondition: 'GOALS', goalLimit: 2, halfDurationMinutes: 1 })
+  engine.skipCountdown(); engine.dispatch('GOL_BLANCO')
+  now += 3_000; engine.dispatch('GOL_BLANCO')
   const doc = mapMatch(engine.getState(), players.slice(0, size), uuid(100), false)
   assert.equal(playerStatistics([{ ...doc.match, participants: doc.participants }], uuid(1)).goalsFor, 2)
 })
 for (const shootout of [false, true]) test(`motor real: ${shootout ? 'penaltis anticipados' : 'prórroga y gol de oro'}`, () => {
   let now = 0
   const engine = new MatchEngine(() => now)
-  engine.createMatch({ mode: 'QUICK', victoryCondition: 'GOALS', goalLimit: 1, halfDurationMinutes: 1 })
-  engine.skipCountdown(); engine.dispatch('GOL_BLANCO'); engine.continueToNextPeriod(); engine.skipCountdown()
-  now += 3_000; engine.dispatch('GOL_AZUL'); engine.continueToNextPeriod(); engine.skipCountdown()
+  engine.createMatch({ mode: 'QUICK', victoryCondition: 'TIME', goalLimit: 1, halfDurationMinutes: 1 })
+  engine.skipCountdown(); engine.dispatch('GOL_BLANCO'); engine.dispatch('FINALIZAR_PARTE'); engine.continueToNextPeriod(); engine.skipCountdown()
+  now += 3_000; engine.dispatch('GOL_AZUL'); engine.dispatch('FINALIZAR_PARTE'); engine.continueToNextPeriod(); engine.skipCountdown()
   if (shootout) {
     now += 60_000; engine.tick(); engine.continueToNextPeriod()
     for (let i = 0; i < 3; i++) { engine.dispatch('PENALTI_BLANCO_FALLO'); engine.dispatch('PENALTI_AZUL_GOL') }
@@ -145,7 +145,7 @@ test('penaltis de muerte súbita: mismo tratamiento de resultado y goles', () =>
 test('corrección y deshacer: se calcula desde el marcador final, no suma el journal', () => {
   let now = 0
   const engine = new MatchEngine(() => now)
-  engine.createMatch({ mode: 'QUICK', victoryCondition: 'GOALS', goalLimit: 5, halfDurationMinutes: 1 })
+  engine.createMatch({ mode: 'QUICK', victoryCondition: 'TIME', goalLimit: 5, halfDurationMinutes: 1 })
   engine.skipCountdown(); engine.dispatch('GOL_BLANCO')
   now = 3_000; engine.dispatch('GOL_AZUL'); engine.dispatch('DESHACER')
   now = 6_000; engine.dispatch('GOL_BLANCO'); engine.dispatch('QUITAR_GOL_BLANCO')

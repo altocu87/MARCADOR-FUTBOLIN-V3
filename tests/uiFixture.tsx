@@ -27,10 +27,10 @@ if (statisticsMode === 'seed' || statisticsMode === 'analysis') {
     let now = Date.UTC(2026, 9, 1) + i * (analysis ? 86_400_000 : 180_000)
     const extra = analysis ? i % 3 !== 0 : i >= 23
     const engine = new MatchEngine(() => now)
-    engine.createMatch({ mode: analysis ? (['QUICK', 'CHAOS', 'RANKED'] as const)[i % 3] : 'QUICK', victoryCondition: 'GOALS', goalLimit: 1, halfDurationMinutes: 1 })
-    engine.skipCountdown(); engine.dispatch('GOL_BLANCO'); engine.continueToNextPeriod(); engine.skipCountdown()
+    engine.createMatch({ mode: analysis ? (['QUICK', 'CHAOS', 'RANKED'] as const)[i % 3] : 'QUICK', victoryCondition: 'TIME', goalLimit: 1, halfDurationMinutes: 1 })
+    engine.skipCountdown(); engine.dispatch('GOL_BLANCO'); engine.dispatch('FINALIZAR_PARTE'); engine.continueToNextPeriod(); engine.skipCountdown()
     now += 3_000
-    engine.dispatch(extra ? 'GOL_AZUL' : 'GOL_BLANCO'); engine.continueToNextPeriod()
+    engine.dispatch(extra ? 'GOL_AZUL' : 'GOL_BLANCO'); engine.dispatch('FINALIZAR_PARTE'); engine.continueToNextPeriod()
     if (extra) {
       engine.skipCountdown()
       if (analysis ? i % 3 === 1 : i === 23) { now += 3_000; engine.dispatch('GOL_AZUL') }

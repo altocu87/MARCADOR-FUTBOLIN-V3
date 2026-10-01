@@ -110,4 +110,56 @@ for (const golden of [false, true]) {
   assert.equal(resumed.getState().elapsedSeconds, 2, 'El reloj continúa sin retroceder ni saltar')
 }
 
-console.log('MatchEngine: pruebas funcionales, ocho regresiones de bloqueo y reloj al reanudar superadas.')
+// Current GOALS: target belongs to a team, a single untimed period.
+for (const winner of ['WHITE', 'BLUE'] as const) {
+  let time = 0
+  const match = new MatchEngine(() => time)
+  match.createMatch({ ...config, victoryCondition: 'GOALS', goalLimit: 3, halfDurationMinutes: 1 })
+  match.skipCountdown()
+  time = 600_000; match.tick()
+  assert.equal(match.getState().status, 'PLAYING', 'Diez minutos no terminan un partido por goles')
+  assert.equal(match.getState().elapsedSeconds, 600)
+  assert.equal(match.getState().periodInitialSeconds, 0, 'No hay duración límite oculta')
+  for (const event of ['FINALIZAR_PARTE', 'FORZAR_PRORROGA', 'FORZAR_PENALTIS'] as const) match.dispatch(event)
+  assert.equal(match.getState().period, 'FIRST_HALF')
+  assert.equal(match.getState().status, 'PLAYING')
+  const score = (team: 'WHITE' | 'BLUE') => { match.dispatch(team === 'WHITE' ? 'GOL_BLANCO' : 'GOL_AZUL'); time += 3_000 }
+  score('WHITE'); score('BLUE'); score('WHITE'); score('BLUE')
+  assert.equal(match.getState().status, 'PLAYING', '2–2 no alcanza el objetivo de tres por equipo')
+  match.dispatch('PAUSA'); const elapsed = match.getState().elapsedSeconds
+  time += 60_000; match.tick(); match.dispatch('CONTINUAR')
+  assert.equal(match.getState().elapsedSeconds, elapsed, 'Pausa excluida del tiempo jugado')
+  const published: string[] = []
+  match.subscribe(state => published.push(state.status))
+  score(winner)
+  assert.equal(published.at(-1), 'MATCH_END')
+  assert.equal(published.includes('PERIOD_END'), false)
+  assert.equal(Math.max(match.getState().whiteGoals, match.getState().blueGoals), 3)
+  const events = match.getState().events.length
+  match.continueToNextPeriod(); match.skipCountdown(); time += 60_000; match.dispatch('GOL_BLANCO')
+  assert.equal(match.getState().events.length, events, 'Un final no admite más goles ni otra parte')
+  match.dispatch('DESHACER'); match.tick()
+  assert.equal(match.getState().status, 'PLAYING', 'Anular el gol decisivo reabre la misma parte')
+  assert.equal(match.getState().elapsedSeconds, elapsed, 'El descanso del final no suma tiempo')
+  score(winner)
+  assert.equal(match.getState().status, 'MATCH_END')
+}
+
+{
+  let time = 0
+  const match = new MatchEngine(() => time)
+  match.createMatch({ ...config, victoryCondition: 'TIME', goalLimit: 1, halfDurationMinutes: 1 })
+  match.skipCountdown(); match.dispatch('GOL_BLANCO')
+  time = 3_000; match.dispatch('GOL_BLANCO')
+  assert.equal(match.getState().status, 'PLAYING', 'Por tiempo los goles no cierran la parte')
+  time = 60_000; match.tick(); match.continueToNextPeriod(); match.skipCountdown()
+  assert.equal(match.getState().period, 'SECOND_HALF')
+  assert.equal(match.getState().whiteGoals, 2, 'El marcador se acumula entre partes')
+  time = 63_000; match.dispatch('GOL_AZUL')
+  time = 120_000; match.tick(); match.continueToNextPeriod()
+  assert.equal(match.getState().status, 'MATCH_END')
+  assert.deepEqual([match.getState().whiteGoals, match.getState().blueGoals], [2, 1])
+  assert.equal(match.getState().events.at(-1)?.matchTimeSeconds, 120)
+}
+
+console.log('MatchEngine: modalidades actuales, bloqueo, correcciones, reloj y compatibilidad superados.')

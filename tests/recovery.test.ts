@@ -81,7 +81,7 @@ assert.deepEqual(recovered.getState().events, pausedCopy.state.events, 'Recupera
 
 // Recover count-down/half-time, extra time and alternating penalties.
 const phases = new MatchEngine(() => now, () => 'flash')
-phases.createMatch({ ...config, goalLimit: 1 })
+phases.createMatch({ ...config, victoryCondition: 'BOTH', goalLimit: 1 })
 phases.restoreCheckpoint(phases.getCheckpoint()); assert.equal(phases.getState().status, 'COUNTDOWN')
 const settledStatuses: string[] = []
 const stopSettled = phases.subscribe(() => settledStatuses.push(phases.getState().status))
@@ -108,6 +108,54 @@ phases.restoreCheckpoint(finalCopy)
 assert.deepEqual(mapMatch(phases.getState(), players, id, false), beforeDocument, 'Final recuperado conserva el agregado idempotente exacto')
 
 // Invalid copies cannot partially mutate a running engine.
+// Old v1 GOALS copies retain summed goals per period, even after another reload.
+{
+  let clock = 0
+  const old = new MatchEngine(() => clock)
+  old.createMatch({ ...config, victoryCondition: 'BOTH', goalLimit: 2 }); old.skipCountdown()
+  const copy = old.getCheckpoint()
+  copy.version = 1; delete copy.state.config!.rulesVersion
+  copy.state.config!.victoryCondition = 'GOALS'
+  for (const event of copy.state.events) delete event.metadata.rulesVersion
+  old.restoreCheckpoint(copy); old.dispatch('CONTINUAR')
+  old.dispatch('GOL_BLANCO'); clock += 3_000; old.dispatch('GOL_AZUL')
+  assert.equal(old.getState().status, 'PERIOD_END', 'Una partida antigua no cambia sus reglas al recuperar')
+  assert.equal(old.getCheckpoint().version, 1)
+  old.restoreCheckpoint(old.getCheckpoint()); old.continueToNextPeriod()
+  assert.equal(old.getState().period, 'SECOND_HALF')
+  old.createMatch(config)
+  assert.equal(old.getCheckpoint().version, 2, 'El siguiente partido sí usa las nuevas reglas')
+}
+// Current untimed goal matches survive closure and preserve their exact final document.
+{
+  let clock = 0
+  const match = new MatchEngine(() => clock)
+  match.createMatch({ ...config, goalLimit: 2 }); match.skipCountdown()
+  clock = 90_000; match.dispatch('GOL_AZUL')
+  const copy = match.getCheckpoint(); validateCheckpoint(copy)
+  clock += 86_400_000; match.restoreCheckpoint(copy)
+  assert.equal(match.getState().elapsedSeconds, 90)
+  match.dispatch('CONTINUAR'); clock += 3_000; match.dispatch('GOL_AZUL')
+  assert.equal(match.getState().status, 'MATCH_END')
+  const final = match.getCheckpoint(); validateCheckpoint(final)
+  const document = mapMatch(match.getState(), players, id, false)
+  match.restoreCheckpoint(final)
+  assert.deepEqual(mapMatch(match.getState(), players, id, false), document)
+  for (const mutate of [
+    (c: MatchCheckpoint) => { c.version = 1 },
+    (c: MatchCheckpoint) => { c.state.period = 'SECOND_HALF' },
+    (c: MatchCheckpoint) => { c.state.status = 'PERIOD_END' },
+    (c: MatchCheckpoint) => { c.state.config!.goalLimit = 3 },
+    (c: MatchCheckpoint) => { c.state.goals[0].period = 'SECOND_HALF'; c.state.lastGoal = c.state.goals.at(-1)! },
+    (c: MatchCheckpoint) => { delete c.state.events[0].metadata.rulesVersion },
+  ]) {
+    const broken = structuredClone(final); mutate(broken)
+    const before = match.getState()
+    assert.throws(() => match.restoreCheckpoint(broken), /dañada/)
+    assert.equal(match.getState(), before)
+  }
+}
+
 const mutations: ((copy: MatchCheckpoint) => void)[] = [
   c => { c.state.whiteGoals++ }, c => { c.goalSequence = 0 }, c => { c.state.elapsedSeconds = -1 },
   c => { c.state.goals[0].team = 'BLUE' }, c => { c.state.events[0].sequence = 99 },

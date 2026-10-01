@@ -2,7 +2,8 @@ import type { ActiveMatchCopy } from '../../services/persistence/ActiveMatchStor
 
 export function RecoveryScreen({ copy, onRecover }: { copy: ActiveMatchCopy; onRecover: () => void }) {
   const state = copy.checkpoint.state
-  const period = state.period === 'FIRST_HALF' ? '1ª PARTE' : state.period === 'SECOND_HALF' ? '2ª PARTE' : state.period === 'EXTRA_TIME' ? 'PRÓRROGA' : 'PENALTIS'
+  const singleGoalMatch = state.config?.rulesVersion === 2 && state.config.victoryCondition === 'GOALS'
+  const period = singleGoalMatch ? `ÚNICA PARTE · PRIMERO A ${state.config!.goalLimit} GOLES` : state.period === 'FIRST_HALF' ? '1ª PARTE' : state.period === 'SECOND_HALF' ? '2ª PARTE' : state.period === 'EXTRA_TIME' ? 'PRÓRROGA' : 'PENALTIS'
   return <section className="result-screen recovery-screen">
     <p className="eyebrow">COPIA LOCAL EN ESTE DISPOSITIVO</p>
     <h1>PARTIDO POR RECUPERAR</h1>

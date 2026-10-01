@@ -180,19 +180,18 @@ Idealmente:
 
 ## 8. CONFIGURACIÓN DE VICTORIA
 
-Antes de jugar se puede elegir POR GOLES, POR TIEMPO o AMBAS.
+**Decisión explícita posterior del propietario, 2026-10-01:** existen dos condiciones para partidos nuevos: POR GOLES y POR TIEMPO. Reemplaza la selección anterior de GOALS/TIME/BOTH y el criterio de goles sumados por periodo del apartado 59.
 
-Si se elige AMBAS: el periodo termina cuando ocurra PRIMERO una de las condiciones.
+- POR GOLES: una única parte, sin límite de tiempo. Gana el primer equipo que alcanza el objetivo configurado (1–20). Ejemplo: objetivo 5; un 3–2 continúa y un 5–2 termina. El reloj muestra tiempo jugado y excluye pausas.
+- POR TIEMPO: dos partes con marcador acumulado; gana quien tiene más goles tras las dos partes. La duración configurada sigue correspondiendo a cada parte (1–30 minutos).
 
-Ejemplo: 5 goles O 5 minutos.
-
-El tiempo configurado corresponde a cada parte/periodo. Los controles para cambiar valores deben ser grandes y táctiles.
+AMBAS permanece únicamente como compatibilidad del motor/datos anteriores; no se ofrece para partidos nuevos en la UI. Los controles siguen siendo grandes y táctiles.
 
 ## 9. ESTRUCTURA DEL PARTIDO
 
-Flujo normal: 1ª PARTE → 2ª PARTE → FINAL.
+POR TIEMPO: 1ª PARTE → 2ª PARTE → FINAL. POR GOLES: ÚNICA PARTE → FINAL al alcanzar un equipo el objetivo, sin descanso, segunda parte, prórroga ni penaltis.
 
-Si hay empate: PRÓRROGA.
+Si hay empate tras las dos partes por tiempo: PRÓRROGA. Se conserva el desempate existente; no se ha solicitado modificarlo.
 
 Duración prevista: 1 minuto. La prórroga utiliza GOL DE ORO. El primer gol gana inmediatamente.
 
@@ -1022,7 +1021,9 @@ Nunca romper estos comportamientos sin motivo explícito.
 
 En la V1 se tomó la decisión: la condición de goles se evalúa POR PERIODO, mientras el marcador total permanece visible durante todo el partido.
 
-Si al revisar código esta decisión genera inconsistencias con las reglas actuales, NO cambiarla silenciosamente. Documentar y consultar si supone un cambio funcional.
+**Reemplazada por autorización explícita del propietario el 2026-10-01:** para nuevos partidos GOALS, objetivo por equipo en una sola parte sin límite de tiempo (apartados 8–9). Checkpoint V2 y `config.rulesVersion=2` fijan esa semántica. Copias V1 sin marcador de versión mantienen sus reglas al recuperar y se vuelven a exportar V1; no se reinterpreta una partida empezada. Los resultados históricos y colas pendientes no se reescriben.
+
+El evento inicial registra `metadata.rulesVersion`, admitido por el esquema existente. El historial distingue las reglas nuevas de las anteriores y no presenta un límite de tiempo para GOALS. No se cambian tablas/RPC: `engine_version` de la base sigue siendo el valor original del contrato V1, distinto de la versión del checkpoint/reglas. El campo obligatorio `time_limit_seconds` conserva su valor compatible, sin intervenir en GOALS.
 
 ## 60. AJUSTES FUTUROS
 

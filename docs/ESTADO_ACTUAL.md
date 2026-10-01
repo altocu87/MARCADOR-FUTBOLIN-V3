@@ -2,6 +2,8 @@
 
 Última actualización: **2026-10-01**. Leer junto con `CONTEXTO_MAESTRO.md` y contrastar con el código real.
 
+**Último bloque:** corrección explícitamente autorizada de las dos condiciones de victoria: GOALS objetivo por equipo, única parte sin límite; TIME dos partes por reloj y resultado acumulado. Checkpoints V2 para nuevos partidos, V1 conservado para partidas anteriores. El propietario comunica login y prueba satisfactorios; es evidencia humana, no una inspección remota del agente. Detalles en el registro y [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md).
+
 ## Referencias y alcance de esta ficha
 
 - Repositorio: https://github.com/altocu87/MARCADOR-FUTBOLIN-V3
@@ -19,7 +21,7 @@
 | Fase | Estado real |
 | --- | --- |
 | A. Simulador funcional | Publicado en b10b1df |
-| B. Persistencia Supabase V1 | Implementada y probada localmente; rama de desarrollo para revisión; falta prueba autenticada de navegador y promoción a main |
+| B. Persistencia Supabase V1 | Implementada/probada localmente; operador comunica login y prueba correctos; falta detallar/comprobar casos remotos de cierre y revisión para main |
 | C. Estadísticas, perfil y análisis de resultados | Implementados por autorización explícita del propietario; pruebas aisladas correctas; pendiente comprobación con Supabase real |
 | C–J. XP/ELO, otros análisis competitivos, logros, torneos, audiovisual avanzado, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
 
@@ -125,9 +127,9 @@ En la máquina cloud actual están ausentes las tres variables públicas admitid
 
 La conexión pública está configurada solo en Preview de codex/reliability-offline-v1; ver el registro de este bloque y VERIFICACION_VERCEL_DATOS.md. Falta autorizar el retorno de confirmación en Supabase Auth: añadir https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app/ en Redirect URLs, sin eliminar las existentes. El navegador de gestión requiere login y la CLI/conector disponibles no ofrecen acceso directo a esa configuración; no se extrajeron tokens del almacén de credenciales. No afirmar que crear/confirmar cuenta o guardar un partido real ya está verificado. La autenticación de Vercel para abrir la vista previa es distinta de la cuenta del marcador.
 
-Falta una cuenta de operador del marcador para la prueba real autenticada. No solicitar contraseñas por chat ni inventar credenciales; no usar la cuenta administrativa del panel Supabase como si fuera Auth de la app.
+El propietario ya comunica login correcto y prueba satisfactoria en el marcador. No volver a pedir crear otra cuenta ni solicitar contraseñas por chat. Falta precisar/comprobar los casos de la prueba remota para el cierre completo; no usar la cuenta administrativa del panel Supabase como si fuera Auth de la app.
 
-Una vez configurada la conexión en el entorno utilizado, el usuario debe abrir la app real → AJUSTES → GENERAL, introducir personalmente correo y contraseña (al menos 8 caracteres), pulsar CREAR CUENTA, confirmar el correo si se solicita e iniciar sesión con ENTRAR.
+La creación/confirmación/login corresponde personalmente al operador. El login ya está comunicado como conseguido; las instrucciones iniciales de registro anteriores son históricas, no el siguiente paso actual.
 
 Después, el agente debe verificar con la capa Supabase real:
 
@@ -146,7 +148,7 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 ## Límites conocidos y decisiones a preservar
 
 - Discrepancia del bloqueo de gol corregida el 2026-10-01 en la rama de desarrollo: reproducida con una prueba fallida antes del arreglo y ocho casos correctos después. El motor conserva el plazo al deshacer/corregir/cambiar parte o prórroga. Main aún no contiene esta corrección mientras no se integre la rama.
-- GOALS cuenta los goles totales del periodo; el marcador visible es acumulativo. TIME termina por reloj; BOTH por la primera condición. Cambiar a objetivo por equipo requeriría una decisión explícita.
+- Decisión explícita posterior: GOALS nuevo termina cuando un equipo alcanza el objetivo, una sola parte sin límite temporal. TIME mantiene dos partes, goles acumulados y desempate existente. BOTH solo por compatibilidad; copias anteriores conservan goles sumados por periodo y resultados históricos intactos.
 - Prórroga: 60 segundos y gol de oro; después penaltis alternos, cinco intentos y muerte súbita. No se atribuyen goles a jugadores.
 - Deshacer no retrocede el reloj; el journal conserva goles y anulaciones.
 - Historial remoto depende de conexión; panel de pendientes local disponible sin red. PWA/arranque offline en build tras primera carga completa, HTTPS o localhost y navegador compatible. No habilitado en npm run dev. Recuperación requiere mismo origen/navegador/cuenta y prueba OFF; no garantiza primera carga sin red ni almacenamiento no borrado. Vista previa Vercel publicada; instalación/PWA detrás de protección en móvil físico pendientes.
@@ -156,6 +158,18 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, predicción/forma competitiva, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Dos condiciones de victoria corregidas por decisión del propietario
+
+Base **89e7981**, rama `codex/reliability-offline-v1`, árbol limpio al iniciar; main comprobada en **900e470**. El propietario aclara expresamente: tiempo en dos partes, gana quien marque más; goles en una única parte, sin límite de tiempo, gana quien alcance el objetivo. Reemplaza las reglas anteriores de GOALS sumado por periodo y la opción AMBAS para nuevos partidos.
+
+MatchEngine termina directamente GOALS en MATCH_END cuando un equipo llega al objetivo, mantiene reloj ascendente sin duración límite y rechaza fin de parte/prórroga/penaltis forzados en ese formato. No publica PERIOD_END para un gol decisivo. Anular ese gol reabre la misma parte sin sumar espera del final y conserva el bloqueo central. TIME mantiene acumulado y dos partes; empate conserva el desempate existente. Configuración/UI ofrece dos opciones y GOLES PARA GANAR; marcador indica ÚNICA PARTE/objetivo/tiempo jugado. Historial muestra reglas y tiempo pertinentes, sin inventar un límite para GOALS.
+
+Checkpoint V2 + `config.rulesVersion=2` para nuevos partidos; validación rechaza mezcla de versiones, segunda parte/penaltis o final sin objetivo en GOALS V2. Copias V1 sin campo conservan la semántica anterior al recuperar y reexportar. El contenedor ActiveMatchStore V1 no cambia. `metadata.rulesVersion` en inicio identifica el resultado nuevo sin migrar tablas/RPC; `engine_version` SQL mantiene su contrato anterior y `time_limit_seconds` sigue obligatorio pero inactivo en GOALS. No se reescriben filas, colas, resultados ni hashes antiguos.
+
+Verificación: npm test, siete grupos correctos (estadísticas/análisis 41/41); TypeScript y builds normal/aislado; navegador Chromium 13/13, cero omitidos/pageerror. Nuevos recorridos: GOALS sigue abierto a diez minutos, 1–1 no alcanza objetivo 2, final 2–1 y detalle de única parte; TIME dos partes de un minuto, acumulado 2–1 y detalle. Regresiones de ganadores blanco/azul, pausa, anulación del decisivo, copia V1, recuperación V2 activa/final, persistencia, pendientes/PWA y perfiles. Revisión visual local y tamaños 320×568/390×844/800×480, además de los tamaños ya cubiertos por la suite. Evidencia en VERIFICACION_MODALIDADES.md.
+
+El propietario ha comunicado que ya pudo iniciar sesión y que su prueba fue bien. No se ha verificado remotamente por el agente qué filas/casos abarcó; no se repite creación de cuenta ni se declara fase B íntegra cerrada. Sin migraciones, credenciales nuevas, dependencias, servicios de pago ni promoción a main/producción. El push a esta rama puede disparar una Preview automática, cuya publicación no se afirma verificada por las pruebas locales. Siguiente acción humana: cuando se publique la actualización, cerrar/reabrir el marcador sin borrar almacenamiento y probar un nuevo partido por goles. Publicación Git: comprobar la referencia remota y el historial de este bloque.
 
 ### 2026-10-01 — Bloqueo de registro/login en Preview protegido
 

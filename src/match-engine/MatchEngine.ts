@@ -25,7 +25,7 @@ export class MatchEngine {
   getState = (): Readonly<MatchState> => this.state
 
   getCheckpoint(): MatchCheckpoint {
-    return { version: 1, state: structuredClone(this.state), completedTimeSeconds: this.completedTimeSeconds,
+    return { version: this.state.config?.rulesVersion ?? 1, state: structuredClone(this.state), completedTimeSeconds: this.completedTimeSeconds,
       goalSequence: this.sequence, capturedAtMs: this.now(), goalLockRemainingMs: Math.max(0, this.goalLockUntil - this.now()) }
   }
 
@@ -48,12 +48,14 @@ export class MatchEngine {
   }
 
   createMatch(config: MatchConfiguration): void {
+    config = { ...config, rulesVersion: 2 }
     this.completedTimeSeconds = 0
     this.sequence = 0
     this.goalLockUntil = 0
     this.state = { startedAt: new Date(this.now()).toISOString(), finishedAt: null, events: [], elapsedSeconds: 0,
       status: 'COUNTDOWN', period: 'FIRST_HALF', config, whiteGoals: 0, blueGoals: 0,
-      remainingSeconds: config.halfDurationMinutes * 60, periodInitialSeconds: config.halfDurationMinutes * 60,
+      remainingSeconds: config.victoryCondition === 'GOALS' ? 0 : config.halfDurationMinutes * 60,
+      periodInitialSeconds: config.victoryCondition === 'GOALS' ? 0 : config.halfDurationMinutes * 60,
       countdownValue: 3, goalInputLocked: false, goalLockRemainingMs: 0, goals: [], lastGoal: null, penalty: null, periodResult: null }
     this.countdownUntil = this.now() + COUNTDOWN_MS
     this.emit()
@@ -68,7 +70,7 @@ export class MatchEngine {
       case 'QUITAR_GOL_AZUL': this.removeLatestTeamGoal('BLUE'); return
       case 'PAUSA': this.pause(); return
       case 'CONTINUAR': this.continue(); return
-      case 'FINALIZAR_PARTE': if (this.state.status === 'PLAYING' || this.state.status === 'PAUSED') this.endPeriod(); return
+      case 'FINALIZAR_PARTE': if (!this.isSingleGoalMatch() && (this.state.status === 'PLAYING' || this.state.status === 'PAUSED')) this.endPeriod(); return
       case 'FORZAR_PRORROGA': this.startExtraTime(); return
       case 'FORZAR_PENALTIS': this.startPenalties(); return
       default: this.registerPenalty(event)
@@ -133,15 +135,21 @@ export class MatchEngine {
     this.state = { ...this.state, whiteGoals, blueGoals, goals: [...this.state.goals, goal], lastGoal: goal, goalInputLocked: true, goalLockRemainingMs: GOAL_LOCK_MS }
     this.record('goal', team, { goalId: goal.id, effect: goal.effect })
     if (this.state.period === 'EXTRA_TIME') this.finishMatch()
-    else if (this.hasReachedGoalLimit()) this.endPeriod()
+    else if (this.hasReachedGoalLimit()) {
+      if (this.isSingleGoalMatch()) this.finishMatch()
+      else this.endPeriod()
+    }
     else this.emit() // Subscribers only checkpoint the settled state of an action.
   }
 
   private hasReachedGoalLimit(): boolean {
     const config = this.state.config
     if (!config || (config.victoryCondition !== 'GOALS' && config.victoryCondition !== 'BOTH')) return false
+    if (this.isSingleGoalMatch()) return Math.max(this.state.whiteGoals, this.state.blueGoals) >= config.goalLimit
     return this.state.goals.filter((goal) => goal.period === this.state.period).length >= config.goalLimit
   }
+
+  private isSingleGoalMatch(): boolean { return this.state.config?.rulesVersion === 2 && this.state.config.victoryCondition === 'GOALS' }
 
   private pause(): void {
     if (this.state.status !== 'PLAYING') return
@@ -177,10 +185,10 @@ export class MatchEngine {
     this.emit()
   }
 
-  private startExtraTime(): void { if (this.state.config) this.preparePeriod('EXTRA_TIME') }
+  private startExtraTime(): void { if (this.state.config && !this.isSingleGoalMatch()) this.preparePeriod('EXTRA_TIME') }
 
   private startPenalties(): void {
-    if (!this.state.config) return
+    if (!this.state.config || this.isSingleGoalMatch()) return
     this.completedTimeSeconds += this.state.elapsedSeconds
     this.state = { ...this.state, elapsedSeconds: 0, period: 'PENALTIES', status: 'PENALTIES', ...this.goalLockState(),
       penalty: { whiteGoals: 0, blueGoals: 0, whiteAttempts: 0, blueAttempts: 0, suddenDeath: false } }
@@ -235,14 +243,14 @@ export class MatchEngine {
     const goals = current.goals.slice(0, -1)
     this.state = { ...current, goals, lastGoal: goals.at(-1) ?? null,
       whiteGoals: current.whiteGoals - (goal.team === 'WHITE' ? 1 : 0), blueGoals: current.blueGoals - (goal.team === 'BLUE' ? 1 : 0),
-      status: current.status === 'PAUSED' ? 'PAUSED' : 'PLAYING', ...this.goalLockState(current.status === 'PAUSED'), finishedAt: null }
+      status: current.status === 'PAUSED' ? 'PAUSED' : 'PLAYING', ...this.goalLockState(current.status === 'PAUSED'), finishedAt: null, periodResult: null }
     this.record('undo', goal.team, { goalId: goal.id })
     this.emit()
   }
   private beginPeriod(now: number): void {
     this.clockStartedAt = now
     this.state = { ...this.state, status: 'PLAYING', countdownValue: null, ...this.goalLockState(false, now) }
-    this.record(this.state.period === 'EXTRA_TIME' ? 'extra_time_start' : 'period_start')
+    this.record(this.state.period === 'EXTRA_TIME' ? 'extra_time_start' : 'period_start', null, { rulesVersion: this.state.config?.rulesVersion ?? 1 })
     this.emit()
   }
   private finishMatch(): void {
