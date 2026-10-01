@@ -6,6 +6,13 @@ let currentTime = 0
 const engine = new MatchEngine(() => currentTime, () => 'flash')
 const config = { mode: 'QUICK' as const, victoryCondition: 'BOTH' as const, goalLimit: 5, halfDurationMinutes: 5 }
 
+// Historical V3 matches keep their per-half target when restored.
+function useLegacyHalfRules(match: MatchEngine) {
+  const copy = match.getCheckpoint()
+  copy.version = 3; copy.state.config!.rulesVersion = 3
+  match.restoreCheckpoint(copy)
+}
+
 engine.createMatch(config)
 assert.equal(engine.getState().status, 'COUNTDOWN')
 engine.dispatch('GOL_BLANCO')
@@ -62,6 +69,7 @@ for (const scenario of ['undo', 'minus', 'pause-undo', 'period-undo', 'next-peri
   const match = new MatchEngine(() => time, () => 'flash')
   const touch = new ScreenMatchInput(match)
   match.createMatch({ ...config, goalLimit: scenario === 'period-undo' || scenario === 'next-period' ? 1 : 5 })
+  if (scenario === 'period-undo' || scenario === 'next-period') useLegacyHalfRules(match)
   match.skipCountdown()
   if (scenario === 'golden-undo') { match.dispatch('FORZAR_PRORROGA'); match.skipCountdown() }
   touch.emit('GOL_BLANCO')
@@ -89,7 +97,7 @@ for (const scenario of ['undo', 'minus', 'pause-undo', 'period-undo', 'next-peri
 
 // Normal countdown can outlast the lock; a brand-new match starts clean.
 const transition = new MatchEngine(() => currentTime)
-transition.createMatch({ ...config, goalLimit: 1 }); transition.skipCountdown()
+transition.createMatch({ ...config, goalLimit: 1 }); useLegacyHalfRules(transition); transition.skipCountdown()
 transition.dispatch('GOL_BLANCO'); transition.continueToNextPeriod()
 currentTime += 3_000; transition.tick()
 assert.equal(transition.getState().goalInputLocked, false)
@@ -162,32 +170,70 @@ for (const winner of ['WHITE', 'BLUE'] as const) {
   assert.equal(match.getState().events.at(-1)?.matchTimeSeconds, 120)
 }
 
-// BOTH: a team reaches the target within this half, or the clock expires.
-// The match winner always comes from the two halves' cumulative score.
-for (const byClock of [false, true]) {
+// BOTH: the goal target belongs to the whole match, never to a half.
+for (const winner of ['WHITE', 'BLUE'] as const) {
+  for (const byClock of [false, true]) {
+    let time = 0
+    const match = new MatchEngine(() => time)
+    match.createMatch({ ...config, halfDurationMinutes: 1 }); match.skipCountdown()
+    const loser = winner === 'WHITE' ? 'BLUE' : 'WHITE'
+    const score = (team: 'WHITE' | 'BLUE') => { match.dispatch(team === 'WHITE' ? 'GOL_BLANCO' : 'GOL_AZUL'); time += 3_000 }
+    score(winner); score(loser); score(winner); score(loser); score(winner)
+    assert.equal(match.getState().status, 'PLAYING', '3–2 no alcanza cinco por equipo')
+    time = 60_000; match.tick()
+    assert.equal(match.getState().status, 'PERIOD_END')
+    match.continueToNextPeriod(); match.skipCountdown()
+    score(winner)
+    assert.equal(match.getState().status, 'PLAYING', '4–2 acumulado todavía no alcanza el objetivo')
+    if (byClock) {
+      time = 120_000; match.tick(); match.continueToNextPeriod()
+    } else {
+      const published: string[] = []
+      match.subscribe(state => published.push(state.status))
+      score(winner)
+      assert.equal(published.at(-1), 'MATCH_END', 'El quinto gol total termina el partido directamente')
+      assert.equal(published.includes('PERIOD_END'), false)
+      assert.equal(match.getState().goals.filter(g => g.period === 'SECOND_HALF').length, 2)
+      match.dispatch('DESHACER')
+      assert.equal(match.getState().status, 'PLAYING')
+      assert.equal(Math.max(match.getState().whiteGoals, match.getState().blueGoals), 4)
+      score(winner)
+    }
+    assert.equal(match.getState().status, 'MATCH_END')
+    assert.deepEqual([match.getState().whiteGoals, match.getState().blueGoals], winner === 'WHITE' ? [byClock ? 4 : 5, 2] : [2, byClock ? 4 : 5])
+  }
+}
+
+// One half won by each team: only the aggregate decides the match.
+{
   let time = 0
   const match = new MatchEngine(() => time)
   match.createMatch({ ...config, halfDurationMinutes: 1 }); match.skipCountdown()
-  const score = (team: 'WHITE' | 'BLUE') => { match.dispatch(team === 'WHITE' ? 'GOL_BLANCO' : 'GOL_AZUL'); time += 3_000 }
-  score('WHITE'); score('BLUE'); score('WHITE'); score('BLUE'); score('WHITE')
-  assert.equal(match.getState().status, 'PLAYING', '3–2 no alcanza cinco por equipo')
-  if (byClock) { time = 60_000; match.tick() }
-  else { score('BLUE'); score('WHITE'); score('BLUE'); score('WHITE') }
-  assert.equal(match.getState().status, 'PERIOD_END', 'Cierra la parte, todavía no hay ganador del partido')
-  assert.equal(match.getState().finishedAt, null)
-  match.continueToNextPeriod(); match.skipCountdown()
-  const secondStarted = time
-  assert.equal(match.getState().period, 'SECOND_HALF')
-  if (byClock) { score('WHITE'); time = secondStarted + 60_000; match.tick() }
-  else {
-    for (let i = 0; i < 4; i++) score('BLUE')
-    assert.equal(match.getState().status, 'PLAYING', 'El acumulado azul supera cinco pero su parcial todavía es cuatro')
-    score('BLUE')
-  }
-  assert.equal(match.getState().status, 'PERIOD_END')
-  match.continueToNextPeriod()
+  for (let i = 0; i < 3; i++) { match.dispatch('GOL_BLANCO'); time += 3_000 }
+  time = 60_000; match.tick(); match.continueToNextPeriod(); match.skipCountdown()
+  for (let i = 0; i < 4; i++) { match.dispatch('GOL_AZUL'); time += 3_000 }
+  assert.equal(match.getState().status, 'PLAYING', 'Siete goles entre ambos equipos no alcanzan el objetivo de cinco por equipo')
+  time = 120_000; match.tick(); match.continueToNextPeriod()
   assert.equal(match.getState().status, 'MATCH_END')
-  assert.deepEqual([match.getState().whiteGoals, match.getState().blueGoals], byClock ? [4, 2] : [5, 9])
+  assert.deepEqual([match.getState().whiteGoals, match.getState().blueGoals], [3, 4])
+  assert.equal(match.getState().penalty, null, 'Una parte ganada por cada equipo no produce empate')
+}
+
+// A target reached in the first half also ends the entire match.
+{
+  let time = 0
+  const match = new MatchEngine(() => time)
+  match.createMatch({ ...config, goalLimit: 2 }); match.skipCountdown()
+  match.dispatch('GOL_BLANCO'); time += 3_000; match.dispatch('GOL_AZUL')
+  time += 3_000; match.dispatch('GOL_BLANCO')
+  assert.equal(match.getState().status, 'MATCH_END')
+  match.continueToNextPeriod()
+  assert.equal(match.getState().period, 'FIRST_HALF')
+  time += 500; match.dispatch('DESHACER')
+  assert.equal(match.getState().goalLockRemainingMs, 2_500)
+  match.dispatch('GOL_BLANCO'); assert.equal(match.getState().whiteGoals, 1)
+  time += 2_500; match.dispatch('GOL_BLANCO')
+  assert.equal(match.getState().status, 'MATCH_END')
 }
 
 {

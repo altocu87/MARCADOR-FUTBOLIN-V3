@@ -2,13 +2,13 @@
 
 Última actualización: **2026-10-01**. Leer junto con `CONTEXTO_MAESTRO.md` y contrastar con el código real.
 
-**Último cambio funcional:** aclaración posterior del propietario: mantener también AMBAS, dos partes que terminan por objetivo de goles de un equipo dentro de cada parte o por tiempo; ganador por el total acumulado de las dos. AMBAS nuevo usa V3 y copias anteriores conservan sus reglas. GOALS/TIME mantienen V2: única parte sin límite para GOALS y dos por reloj para TIME. El propietario comunica login y prueba satisfactorios; es evidencia humana, no una inspección remota del agente. Detalles en el registro y [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md).
+**Último cambio funcional:** corregida la interpretación errónea del agente en AMBAS: el objetivo por equipo corresponde al partido completo y no se reinicia al cambiar de parte. Final directo cuando se alcanza el objetivo total; si no, gana el total acumulado al terminar las dos partes por reloj. AMBAS nuevo V4; copias anteriores preservadas. GOALS/TIME mantienen V2. El propietario comunica login y prueba satisfactorios; evidencia humana, no una inspección remota del agente. Detalles en el registro y [VERIFICACION_MODALIDADES.md](VERIFICACION_MODALIDADES.md).
 
 ## Punto de continuidad para conversaciones nuevas
 
 Petición del propietario: guardar el estado/cambios al terminar y organizar una conversación por bloque, con prompt listo. Plan y seguimiento en [BLOQUES_DESARROLLO.md](BLOQUES_DESARROLLO.md); AGENTS exige actualizarlo y entregar el siguiente prompt al cerrar cada bloque.
 
-Base comprobada al preparar ese plan: **871c363** en `codex/reliability-offline-v1`, código funcional **b9dfc7b**, referencias locales/remotas coincidentes y árbol limpio. `main` permanece en **900e470**. Estos hashes son una fotografía: futuras conversaciones deben obtener la punta de desarrollo vigente, no volver a ellos automáticamente. Implementados persistencia/fiabilidad/recuperación/PWA/responsive, perfiles/estadísticas/análisis y las tres condiciones de victoria corregidas. No hay XP/ELO, logros, torneos completos, backup o firmware/OTA implementados por este plan.
+Base comprobada al preparar ese plan: **871c363** en `codex/reliability-offline-v1`, código funcional **b9dfc7b**, referencias locales/remotas coincidentes y árbol limpio. `main` permanece en **900e470**. Estos hashes son una fotografía: futuras conversaciones deben obtener la punta de desarrollo vigente, no volver a ellos automáticamente. Implementados persistencia/fiabilidad/recuperación/PWA/responsive, perfiles/estadísticas/análisis y las tres condiciones de victoria; la corrección posterior de AMBAS parte de **472f945** y usa V4. No hay XP/ELO, logros, torneos completos, backup o firmware/OTA implementados por este plan.
 
 **Siguiente bloque recomendado: 01 — Consolidación y comprobación real.** Detallar lo que cubrió la prueba satisfactoria comunicada por el operador, verificar nueva Preview/reglas/guardado/perfil/recuperación/PWA donde haya acceso y corregir bugs. No recrear cuentas ni migraciones. Después: XP/niveles → ELO/ranking/categorías → análisis competitivo → logros/récords → torneos → sonido/pulido → backup → firmware/entradas físicas → OTA/administración local. Son entregas propuestas, con dependencias y decisiones pendientes explícitas; no una orden de implementarlas ahora ni promoción a main.
 
@@ -113,7 +113,7 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 - npm run test:offline: plantilla real de worker, allowlist/privacidad, navegación offline, actualizaciones/cache incompleta, iconos, alcance de identidad, respuestas de conexión desordenadas y observadores de cola.
 - npm run test:layout: preferencia, escala física y navegación/selector/modalidades accesibles.
 - npm run test:auth: validación, normalización, retorno sin tokens, mensajes y SDK con transporte aislado. No equivale a una prueba Auth real.
-- Última comprobación funcional, bloque AMBAS: npm test, siete grupos correctos; estadísticas/análisis 41/41. npm run test:browser: 14/14 recorridos Chromium, incluidas las tres condiciones, recuperación de parcial AMBAS, cookie/acceso protegido, perfiles, filtros, historial y PWA; TypeScript/builds normal y aislado correctos. Este bloque documental no los reejecuta ni equivale a comprobar Supabase real.
+- Última comprobación funcional, corrección AMBAS V4: npm test, siete grupos correctos, estadísticas/análisis 41/41. TypeScript/builds normal y aislado correctos; Chromium 15/15, sin omitidos ni fallos. Pruebas aisladas; no acreditan Supabase ni despliegue reales.
 - npm run build: TypeScript y Vite correctos.
 - npm audit: cero vulnerabilidades en la última ejecución.
 - Pruebas SQL en el proyecto real: RLS, cuentas, permisos, equipos/agregado, idempotencia, snapshot, restricciones de borrado, secuencia, modo prueba y rollback correctos. Fixtures íntegramente revertidos con ROLLBACK.
@@ -156,7 +156,7 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 ## Límites conocidos y decisiones a preservar
 
 - Discrepancia del bloqueo de gol corregida el 2026-10-01 en la rama de desarrollo: reproducida con una prueba fallida antes del arreglo y ocho casos correctos después. El motor conserva el plazo al deshacer/corregir/cambiar parte o prórroga. Main aún no contiene esta corrección mientras no se integre la rama.
-- Decisiones explícitas posteriores: GOALS objetivo por equipo/única parte/sin límite; TIME dos partes por reloj; AMBAS dos partes por objetivo de un equipo dentro de cada parte o reloj. TIME/AMBAS deciden por total acumulado y conservan desempate. Copias anteriores mantienen sus reglas, resultados históricos intactos; no volver a retirar AMBAS.
+- Decisiones explícitas posteriores: GOALS objetivo por equipo/única parte/sin límite; TIME dos partes por reloj; AMBAS objetivo por equipo para todo el partido, sin reinicio entre partes; final al alcanzarlo o por reloj tras dos partes. TIME/AMBAS deciden por total acumulado y conservan desempate. Copias anteriores mantienen sus reglas, resultados históricos intactos; no volver a retirar AMBAS.
 - Prórroga: 60 segundos y gol de oro; después penaltis alternos, cinco intentos y muerte súbita. No se atribuyen goles a jugadores.
 - Deshacer no retrocede el reloj; el journal conserva goles y anulaciones.
 - Historial remoto depende de conexión; panel de pendientes local disponible sin red. PWA/arranque offline en build tras primera carga completa, HTTPS o localhost y navegador compatible. No habilitado en npm run dev. Recuperación requiere mismo origen/navegador/cuenta y prueba OFF; no garantiza primera carga sin red ni almacenamiento no borrado. Vista previa Vercel publicada; instalación/PWA detrás de protección en móvil físico pendientes.
@@ -166,6 +166,16 @@ Ampliación autorizada después: últimos resultados, rachas, rendimiento por fo
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. No se implementaron XP/ELO, predicción/forma competitiva, logros, torneos, OTA ni ESP32. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-01 — Corrección AMBAS V4: objetivo total del partido
+
+Base **472f945**, rama `codex/reliability-offline-v1`, árbol limpio al iniciar. Corrección explícita del propietario: un partido dividido en dos partes, resultado por goles totales. La implementación V3 por objetivo de cada parte era un error del agente, no una decisión del propietario.
+
+Motor: AMBAS V4 compara el marcador acumulado de cada equipo con el objetivo y finaliza directamente al alcanzarlo, incluso en la primera parte. Si no se alcanza, cada reloj cierra su parte y gana el marcador total tras la segunda; empate mantiene el desempate existente. UI/configuración: GOLES PARA GANAR EL PARTIDO y OBJETIVO TOTAL; historial distingue V4. Tipos y validación de copias admiten V4 y rechazan objetivo alcanzado en una parte aún abierta. GOALS/TIME V2 y copias V1/V2/V3 preservadas sin reinterpretar partidas empezadas. Sin cambios SQL, migraciones, dependencias ni datos remotos.
+
+Pruebas ejecutadas: npm test, siete grupos correctos y estadísticas/análisis 41/41. Motor cubre ambos equipos, objetivo total entre partes, final por tiempo con menos goles que el objetivo, final directo en primera parte, deshacer con bloqueo de tres segundos y compatibilidad histórica. Recuperación V4 tras 24 horas conserva objetivo/marcador y documento final exacto; rechaza copias incompatibles. TypeScript/builds normal y aislado correctos; Chromium 15/15, sin omitidos ni fallos. Browser comprueba objetivo total en segunda parte con recarga (5–2), final directo en primera (2–1), historial y restantes regresiones. Configuración a 320×568, 390×844 y 800×480 sin scroll general; capturas revisadas en /tmp, fuera de Git. También probado primer parcial 3–0 y segundo 0–4: final total 3–4, sin empate por ganar una parte cada equipo. La primera aserción de la prueba nueva esperaba un solo aviso al marcar: corregida para admitir el aviso previo del tick a marcador anterior y exigir final MATCH_END sin PERIOD_END.
+
+Contexto actualizado en AGENTS, README, maestro (8/9/59), estado, verificación y plan de bloques. Siguiente recomendado: bloque 01, consolidación y prueba real. No se inicia XP/ELO ni se promueve main. Despliegue Vercel/Auth/RPC de esta versión no comprobados por el agente; no equivalen a los fixtures locales.
 
 ### 2026-10-01 — Contexto de continuidad y prompts por bloques
 
@@ -177,9 +187,11 @@ Bloque 01 recomendado antes de progresión: consolidación y comprobación real 
 
 Verificación de esta entrega documental: referencias Git, enlaces relativos, integridad de los 84 apartados y revisión de diff antes de publicar. No se reejecutan tests/build, SQL, Auth ni navegador: código/dependencias sin cambios. Sin migraciones, datos, secretos, variables, costes o promoción a main. Contexto/plan se publica en la rama de revisión; commit/push se comprueban con Git al entregar, no se infiere publicación Vercel.
 
-### 2026-10-01 — Aclaración de AMBAS: dos partes y ganador por acumulado
+### 2026-10-01 — AMBAS V3: interpretación errónea del agente, reemplazada por V4
 
-Base **a19dfc5**, rama `codex/reliability-offline-v1`, árbol limpio al iniciar y main **900e470**. El propietario aclara que AMBAS debe mantenerse: objetivo por equipo o reloj de cada parte, con resultado conjunto de ambas. Reemplaza la retirada de AMBAS del bloque inmediatamente anterior; conserva GOALS/TIME y no modifica desempates.
+**Histórico, no regla vigente:** el objetivo por parte descrito en esta entrada fue una interpretación errónea del agente. El propietario lo corrigió expresamente: corresponde al partido completo. V3 se conserva solo para recuperación compatible.
+
+Base **a19dfc5**, rama `codex/reliability-offline-v1`, árbol limpio al iniciar y main **900e470**. El agente interpretó erróneamente que mantener AMBAS implicaba objetivo por equipo o reloj de cada parte, con resultado conjunto de ambas. Reemplaza la retirada de AMBAS del bloque inmediatamente anterior; conserva GOALS/TIME y no modifica desempates.
 
 Motor: AMBAS nuevo cuenta goles activos de cada equipo en la parte actual. Al alcanzar el objetivo cierra esa parte, no el partido; el reloj también la cierra. Al empezar la segunda parte se reinician tiempo/objetivo y se mantiene el acumulado. Ejemplo probado 5–4 y 0–5 → Azul 9–5, aunque Blanco ganó la primera. El gol al vencer el tiempo sigue rechazado por el motor. UI/configuración restaura tres opciones, dos controles en AMBAS y etiqueta GOLES POR EQUIPO Y PARTE; reloj muestra parcial y meta sin reemplazar los marcadores acumulados. Historial muestra objetivo/tiempo por parte y resultado acumulado.
 

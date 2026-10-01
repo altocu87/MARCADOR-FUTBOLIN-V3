@@ -11,7 +11,8 @@ function conditionLabel(document: MatchDocument): string {
   const match = document.match
   if (singleGoalMatch(document)) return `POR GOLES · Primero a ${match.goal_limit} · Única parte · Sin límite de tiempo`
   if (match.victory_condition === 'TIME') return `POR TIEMPO · Dos partes de ${time(match.time_limit_seconds)}`
-  if (match.victory_condition === 'BOTH' && document.events.some(event => event.event_type === 'period_start' && event.metadata.rulesVersion === 3)) return `AMBAS · Dos partes · ${match.goal_limit} goles por equipo en cada parte o ${time(match.time_limit_seconds)} · Resultado acumulado`
+  if (match.victory_condition === 'BOTH' && document.events.some(event => event.event_type === 'period_start' && event.metadata.rulesVersion === 4)) return `AMBAS · Primero a ${match.goal_limit} goles en total o dos partes de ${time(match.time_limit_seconds)}`
+  if (match.victory_condition === 'BOTH' && document.events.some(event => event.event_type === 'period_start' && event.metadata.rulesVersion === 3)) return `AMBAS · Reglas anteriores · Dos partes · ${match.goal_limit} goles por equipo en cada parte o ${time(match.time_limit_seconds)} · Resultado acumulado`
   return `${match.victory_condition === 'GOALS' ? 'POR GOLES' : 'AMBAS'} · Reglas anteriores · ${match.goal_limit} goles sumados por parte${match.victory_condition === 'BOTH' ? ` / ${time(match.time_limit_seconds)}` : ' · Sin límite de tiempo'}`
 }
 

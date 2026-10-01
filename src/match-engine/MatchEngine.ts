@@ -48,7 +48,7 @@ export class MatchEngine {
   }
 
   createMatch(config: MatchConfiguration): void {
-    config = { ...config, rulesVersion: config.victoryCondition === 'BOTH' ? 3 : 2 }
+    config = { ...config, rulesVersion: config.victoryCondition === 'BOTH' ? 4 : 2 }
     this.completedTimeSeconds = 0
     this.sequence = 0
     this.goalLockUntil = 0
@@ -136,7 +136,7 @@ export class MatchEngine {
     this.record('goal', team, { goalId: goal.id, effect: goal.effect })
     if (this.state.period === 'EXTRA_TIME') this.finishMatch()
     else if (this.hasReachedGoalLimit()) {
-      if (this.isSingleGoalMatch()) this.finishMatch()
+      if (this.isSingleGoalMatch() || this.isGlobalGoalMatch()) this.finishMatch()
       else this.endPeriod()
     }
     else this.emit() // Subscribers only checkpoint the settled state of an action.
@@ -145,7 +145,7 @@ export class MatchEngine {
   private hasReachedGoalLimit(): boolean {
     const config = this.state.config
     if (!config || (config.victoryCondition !== 'GOALS' && config.victoryCondition !== 'BOTH')) return false
-    if (this.isSingleGoalMatch()) return Math.max(this.state.whiteGoals, this.state.blueGoals) >= config.goalLimit
+    if (this.isSingleGoalMatch() || this.isGlobalGoalMatch()) return Math.max(this.state.whiteGoals, this.state.blueGoals) >= config.goalLimit
     if (config.victoryCondition === 'BOTH' && config.rulesVersion === 3) {
       const goals = this.state.goals.filter(goal => goal.period === this.state.period)
       return Math.max(goals.filter(goal => goal.team === 'WHITE').length, goals.filter(goal => goal.team === 'BLUE').length) >= config.goalLimit
@@ -154,6 +154,8 @@ export class MatchEngine {
   }
 
   private isSingleGoalMatch(): boolean { return this.state.config?.rulesVersion === 2 && this.state.config.victoryCondition === 'GOALS' }
+
+  private isGlobalGoalMatch(): boolean { return this.state.config?.rulesVersion === 4 && this.state.config.victoryCondition === 'BOTH' }
 
   private pause(): void {
     if (this.state.status !== 'PLAYING') return
