@@ -39,6 +39,9 @@ assert.match(await auth.signUp('  owner@example.com  ', 'test-password'), /Solic
 assert.equal(requestBody.email, 'owner@example.com')
 assert.equal(requestBody.password, 'test-password')
 assert.match(await auth.signUp('owner@example.com', 'test-password'), /no confirma si ya existe/)
+const beforeProfileSignup = calls
+await assert.rejects(auth.signUp('owner@example.com', 'test-password', 'X'.repeat(61)), /nombre/)
+assert.equal(calls, beforeProfileSignup)
 const beforeReset = calls
 await assert.rejects(auth.requestPasswordReset('invalid'), /correo válido/)
 assert.equal(calls, beforeReset)
@@ -58,8 +61,13 @@ console.log('Acceso: validación, correo normalizado, retorno sin tokens, SDK ai
 
 // Isolated SDK events cover the authenticated recovery gate and reload marker.
 let listener: (event: AuthChangeEvent, session: Session | null) => void = () => {}
-let session = { user: { id: 'fixture-owner' }, expires_at: Math.floor(Date.now() / 1000) + 3600 } as Session
+let session = { user: { id: 'fixture-owner', email: 'owner@example.com', user_metadata: {} }, expires_at: Math.floor(Date.now() / 1000) + 3600 } as Session
 let updateCalls = 0
+let lastUpdate: Record<string, unknown> = {}
+let loginError: { code: string } | null = null
+let loginCalls = 0
+let logoutScope = ''
+let resendCalls = 0
 let duringSessionRead: (() => void) | undefined
 let updateError: { code: string } | null = null
 const markerStorage = new Map<string, string>()
@@ -71,7 +79,12 @@ Object.defineProperty(globalThis, 'sessionStorage', { configurable: true, value:
 const eventClient = { auth: {
   onAuthStateChange: (callback: typeof listener) => { listener = callback; return { data: { subscription: { unsubscribe() {} } } } },
   getSession: async () => { const snapshot = session; duringSessionRead?.(); return { data: { session: snapshot }, error: null } },
-  updateUser: async () => { updateCalls++; return { error: updateError } },
+  updateUser: async (attributes: Record<string, unknown>) => { lastUpdate = attributes; updateCalls++; return { error: updateError } },
+  getUser: async () => ({ data: { user: session.user }, error: null }),
+  signInWithPassword: async ({ email }: { email: string }) => { assert.equal(email, session.user.email); loginCalls++; return { data: { user: loginError ? null : session.user }, error: loginError } },
+  reauthenticate: async () => ({ error: null }),
+  resend: async () => { resendCalls++; return { error: null } },
+  signOut: async ({ scope }: { scope: string }) => { logoutScope = scope; return { error: null } },
 } } as unknown as SupabaseClient<Database>
 const recoveryAuth = new SupabaseAuthService(eventClient)
 assert.equal(recoveryAuth.getPasswordRecovery(), false)
@@ -124,3 +137,39 @@ console.log('Recuperación: petición, límites, evento SDK previo al montaje, r
 assert.match(passwordRecoveryLinkError('https://marker.example/#error=access_denied&error_code=otp_expired&error_description=private-details'), /Solicita otro/)
 assert.ok(!passwordRecoveryLinkError('https://marker.example/?error=private-details').includes('private-details'))
 assert.equal(passwordRecoveryLinkError('https://marker.example/#type=recovery&access_token=fixture'), '')
+
+listener('INITIAL_SESSION', session)
+const owner = session.user.id
+const baseline = updateCalls
+await assert.rejects(reloadedAuth.updateProfile('', owner), /nombre/)
+await assert.rejects(reloadedAuth.updateProfile('Valid name', 'different-owner'), /sesión ha cambiado/)
+assert.equal(updateCalls, baseline)
+await reloadedAuth.updateProfile('  OPERADOR  ', owner)
+assert.deepEqual(lastUpdate, { data: { display_name: 'OPERADOR' } }, 'Metadata affects display only; no owner or privilege claims')
+await assert.rejects(reloadedAuth.changePassword('current-fixture', 'short', owner), /ocho/)
+await assert.rejects(reloadedAuth.changePassword('current-fixture', 'current-fixture', owner), /diferente/)
+loginError = { code: 'invalid_credentials' }
+await assert.rejects(reloadedAuth.changePassword('wrong-fixture', 'new-password-fixture', owner), /correo y la contraseña/)
+assert.equal(updateCalls, baseline + 1, 'Rejected current password never updates the account')
+loginError = null
+await reloadedAuth.changePassword('current-fixture', 'new-password-fixture', owner, '123456')
+assert.deepEqual(lastUpdate, { password: 'new-password-fixture', current_password: 'current-fixture', nonce: '123456' })
+await assert.rejects(reloadedAuth.changeEmail('invalid', 'current-fixture', owner), /correo válido/)
+await assert.rejects(reloadedAuth.changeEmail('owner@example.com', 'current-fixture', owner), /diferente/)
+await assert.rejects(reloadedAuth.changeEmail('different@example.com', 'current-fixture', 'different-owner'), /sesión ha cambiado/)
+assert.match(await reloadedAuth.changeEmail('  different@example.com  ', 'current-fixture', owner), /misma cuenta|Tu cuenta/)
+assert.deepEqual(lastUpdate, { email: 'different@example.com' })
+assert.ok(loginCalls >= 3, 'Sensitive changes verify the existing account password')
+await assert.rejects(reloadedAuth.resendConfirmation('invalid'), /correo válido/)
+assert.equal(resendCalls, 0)
+assert.match(await reloadedAuth.resendConfirmation('owner@example.com'), /Si tu cuenta/)
+assert.equal(resendCalls, 1)
+await reloadedAuth.signOut('local', owner)
+assert.equal(logoutScope, 'local')
+await reloadedAuth.signOut('global', owner)
+assert.equal(logoutScope, 'global')
+duringSessionRead = () => { session = { ...session, user: { ...session.user, id: 'changed-owner' } }; listener('SIGNED_IN', session) }
+await assert.rejects(reloadedAuth.updateProfile('OPERADOR', owner), /sesión ha cambiado/)
+assert.deepEqual(lastUpdate, { email: 'different@example.com' }, 'Account switch cannot overwrite profile')
+duringSessionRead = undefined
+console.log('Gestión de cuenta: perfil sin privilegios, contraseña actual validada, cambio de correo, confirmación y cierre local/global probados de forma aislada.')

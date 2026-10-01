@@ -31,7 +31,7 @@ export function PasswordRecoveryScreen({ auth, online, onDone, onCheck }: {
         {!online && <button type="button" onClick={onCheck}>COMPROBAR CONEXIÓN</button>}
         {message && <p className="notice" role="status">{message}</p>}
       </form>}
-      <div className="account-alternative"><button type="button" disabled={busy} onClick={onDone}>{updated ? 'VOLVER A AJUSTES' : 'CANCELAR CAMBIO'}</button></div>
+      <div className="account-alternative"><button type="button" disabled={busy} onClick={onDone}>{updated ? 'VOLVER A MI CUENTA' : 'CANCELAR CAMBIO'}</button></div>
     </div>
   </section>
 }

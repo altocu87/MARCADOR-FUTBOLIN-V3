@@ -1,0 +1,106 @@
+[
+  {
+    "name": "confirmation",
+    "file": "confirmation.html",
+    "subject": "Confirma tu cuenta · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_confirmation",
+    "contentKey": "mailer_templates_confirmation_content",
+    "kind": "authentication"
+  },
+  {
+    "name": "recovery",
+    "file": "recovery.html",
+    "subject": "Recupera tu contraseña · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_recovery",
+    "contentKey": "mailer_templates_recovery_content",
+    "kind": "authentication"
+  },
+  {
+    "name": "email_change",
+    "file": "email_change.html",
+    "subject": "Confirma el cambio de correo · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_email_change",
+    "contentKey": "mailer_templates_email_change_content",
+    "kind": "authentication"
+  },
+  {
+    "name": "magic_link",
+    "file": "magic_link.html",
+    "subject": "Tu enlace de acceso · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_magic_link",
+    "contentKey": "mailer_templates_magic_link_content",
+    "kind": "authentication"
+  },
+  {
+    "name": "invite",
+    "file": "invite.html",
+    "subject": "Tienes una invitación · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_invite",
+    "contentKey": "mailer_templates_invite_content",
+    "kind": "authentication"
+  },
+  {
+    "name": "reauthentication",
+    "file": "reauthentication.html",
+    "subject": "Confirma tu identidad · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_reauthentication",
+    "contentKey": "mailer_templates_reauthentication_content",
+    "kind": "authentication"
+  },
+  {
+    "name": "password_changed",
+    "file": "password_changed.html",
+    "subject": "Tu contraseña ha cambiado · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_password_changed_notification",
+    "contentKey": "mailer_templates_password_changed_notification_content",
+    "kind": "notification"
+  },
+  {
+    "name": "email_changed",
+    "file": "email_changed.html",
+    "subject": "Tu correo ha cambiado · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_email_changed_notification",
+    "contentKey": "mailer_templates_email_changed_notification_content",
+    "kind": "notification"
+  },
+  {
+    "name": "phone_changed",
+    "file": "phone_changed.html",
+    "subject": "Tu teléfono ha cambiado · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_phone_changed_notification",
+    "contentKey": "mailer_templates_phone_changed_notification_content",
+    "kind": "notification"
+  },
+  {
+    "name": "mfa_factor_enrolled",
+    "file": "mfa_factor_enrolled.html",
+    "subject": "Verificación añadida · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_mfa_factor_enrolled_notification",
+    "contentKey": "mailer_templates_mfa_factor_enrolled_notification_content",
+    "kind": "notification"
+  },
+  {
+    "name": "mfa_factor_unenrolled",
+    "file": "mfa_factor_unenrolled.html",
+    "subject": "Verificación retirada · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_mfa_factor_unenrolled_notification",
+    "contentKey": "mailer_templates_mfa_factor_unenrolled_notification_content",
+    "kind": "notification"
+  },
+  {
+    "name": "identity_linked",
+    "file": "identity_linked.html",
+    "subject": "Acceso vinculado · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_identity_linked_notification",
+    "contentKey": "mailer_templates_identity_linked_notification_content",
+    "kind": "notification"
+  },
+  {
+    "name": "identity_unlinked",
+    "file": "identity_unlinked.html",
+    "subject": "Acceso desvinculado · Marcador Futbolín V3",
+    "subjectKey": "mailer_subjects_identity_unlinked_notification",
+    "contentKey": "mailer_templates_identity_unlinked_notification_content",
+    "kind": "notification"
+  }
+]

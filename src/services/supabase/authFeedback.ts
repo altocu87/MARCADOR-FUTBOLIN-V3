@@ -17,6 +17,17 @@ export function validatePassword(password: string): void {
   if (password.length < 8) throw new Error('La contraseña debe tener al menos ocho caracteres.')
 }
 
+export function validatedDisplayName(name: string): string {
+  const normalized = name.trim()
+  if (!normalized || normalized.length > 60) throw new Error('El nombre debe tener entre uno y sesenta caracteres.')
+  return normalized
+}
+
+export class AuthActionError extends Error {
+  constructor(error: { code?: string }) { super(authErrorMessage(error), { cause: error }); this.code = error.code }
+  readonly code: string | undefined
+}
+
 export function registrationEmail(email: string, password: string): string {
   const normalized = validatedEmail(email)
   validatePassword(password)
@@ -34,6 +45,8 @@ export function authErrorMessage(error: unknown): string {
     case 'signup_disabled': return 'El registro no está habilitado en este entorno. Contacta con el administrador.'
     case 'user_already_exists': return 'Ya existe una cuenta con ese correo. Inicia sesión o utiliza RECUPERAR CONTRASEÑA.'
     case 'same_password': return 'Elige una contraseña diferente de la anterior.'
+    case 'reauthentication_needed': return 'Confirma tu identidad con el código de seguridad enviado a tu correo.'
+    case 'reauthentication_not_valid': return 'El código de seguridad no es válido. Solicita uno nuevo e inténtalo otra vez.'
     case 'otp_expired':
     case 'session_not_found': return 'El enlace o la sesión han caducado. Solicita otro enlace desde RECUPERAR CONTRASEÑA.'
     case 'weak_password': return 'Elige una contraseña más segura, de al menos ocho caracteres.'

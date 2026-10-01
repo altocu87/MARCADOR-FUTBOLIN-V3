@@ -3,6 +3,7 @@
  */
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { AuthActionError } from '../src/services/supabase/authFeedback'
 import { App } from '../src/app/App'
 import type { ApplicationServices } from '../src/app/services'
 import type { MatchDocument, Player } from '../src/services/persistence/models'
@@ -57,16 +58,24 @@ async function requireNetwork() {
   const response = await fetch('/connection.json', { cache: 'no-store', signal: AbortSignal.timeout(2_000) })
   if (!response.ok) throw new Error('Red de fixture no disponible')
 }
+let fixtureIdentity = guest ? null : { id: 'fixture', email: 'operator@example.invalid', displayName: 'OPERADOR UI LOCAL', emailVerified: true, pendingEmail: '' }
+const identityListeners = new Set<(user: typeof fixtureIdentity) => void>()
+const accountCalls = { profile: 0, email: 0, password: 0, resend: 0, reauthenticate: 0, logout: [] as string[] }
+Object.defineProperty(window, 'fixtureAccountCalls', { value: accountCalls })
 const services: ApplicationServices = {
   namespace: 'marcador-ui-fixture',
   auth: {
-    async getIdentity() { await requireNetwork(); return guest ? null : { id: 'fixture', email: 'PRUEBA UI LOCAL · SIN SUPABASE' } },
+    async getIdentity() { await requireNetwork(); return fixtureIdentity },
     getPasswordRecovery: () => passwordRecovery,
     subscribePasswordRecovery(listener) { recoveryListeners.add(listener); return () => { recoveryListeners.delete(listener) } },
     async requestPasswordReset() { recoveryCalls.request += 1; return 'Si existe una cuenta con ese correo, recibirás un enlace para cambiar la contraseña.' },
     async updatePassword() { if (!passwordRecovery) throw new Error('Enlace necesario'); recoveryCalls.update += 1 },
     finishPasswordRecovery() { passwordRecovery = false; for (const listener of recoveryListeners) listener() },
-    subscribe() { return () => {} }, async signIn() { authCalls.login += 1 }, async signUp() { authCalls.register += 1; return 'Prueba local' }, async signOut() {},
+    subscribe(listener) { identityListeners.add(listener); return () => { identityListeners.delete(listener) } }, async signIn() { authCalls.login += 1 }, async signUp() { authCalls.register += 1; return 'Prueba local' }, async signOut(scope = 'local') { accountCalls.logout.push(scope); fixtureIdentity = null; for (const listener of identityListeners) listener(null) },
+    async resendConfirmation() { accountCalls.resend++; return 'Si tu cuenta necesita confirmación, recibirás un nuevo correo.' },
+    async updateProfile(displayName, ownerId) { if (fixtureIdentity?.id !== ownerId) throw new Error('Cuenta distinta'); accountCalls.profile++; fixtureIdentity = { ...fixtureIdentity, displayName }; for (const listener of identityListeners) listener(fixtureIdentity) },
+    async changeEmail(email, _password, ownerId) { if (fixtureIdentity?.id !== ownerId) throw new Error('Cuenta distinta'); accountCalls.email++; fixtureIdentity = { ...fixtureIdentity, pendingEmail: email }; for (const listener of identityListeners) listener(fixtureIdentity); return 'Cambio solicitado. Confirma los enlaces enviados a tu correo actual y al nuevo según la configuración de seguridad. Tu cuenta y tus datos se mantienen.' },
+    async changePassword(_current, _next, _owner, nonce) { if (new URLSearchParams(window.location.search).get('account') === 'reauth' && nonce !== '123456') throw new AuthActionError({ code: nonce ? 'reauthentication_not_valid' : 'reauthentication_needed' }); accountCalls.password++ }, async reauthenticate() { accountCalls.reauthenticate++ },
   },
   players: {
     async getPlayers() { await requireNetwork(); return players.map(p => ({ ...p })) },

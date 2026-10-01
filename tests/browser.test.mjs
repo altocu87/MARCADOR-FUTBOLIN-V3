@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { before, after, test } from 'node:test'
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
+import { readFile } from 'node:fs/promises'
 import { chromium } from 'playwright'
 
 // Built application + isolated in-memory fixture. Never registers an account
@@ -87,12 +88,17 @@ async function matchStorage(page) {
 
 test('build sin sesión: navegación responsive y preferencia física persistente', async () => withPage(async page => {
   await page.goto(base)
-  for (const [width, height] of [[390, 844], [800, 480], [768, 1024], [1440, 900]]) {
+  for (const [width, height] of [[320, 568], [390, 844], [844, 390], [800, 480], [768, 1024], [1440, 900]]) {
     await page.setViewportSize({ width, height })
     await settings(page)
+    assert.equal(await page.getByRole('textbox', { name: 'Correo' }).count(), 0, 'Settings no longer embeds Auth')
+    await page.getByRole('navigation', { name: 'Acceso y cuenta' }).getByRole('button', { name: 'INICIAR SESIÓN', exact: true }).click()
     await page.getByRole('textbox', { name: 'Correo' }).waitFor()
+    assert.equal(await page.getByRole('button', { name: 'ENTRAR', exact: true }).isDisabled(), true, 'Missing configuration does not send Auth')
     await noOverflow(page)
+    await page.screenshot({ path: `/tmp/futbolin-account-layout-${width}-${height}.png` })
   }
+  await settings(page)
   await page.getByRole('button', { name: 'PANTALLA 800×480' }).click()
   const box = await page.locator('.physical-canvas').boundingBox()
   assert.deepEqual({ width: box.width, height: box.height, x: box.x, y: box.y }, { width: 800, height: 480, x: 320, y: 210 })
@@ -308,7 +314,7 @@ test('vista protegida: cookie del mismo origen habilita acceso, sin cookie sigue
       : { status: 401, contentType: 'text/html', body: '<h1>Protected preview</h1>' })
   })
   await page.goto(fixture + '?auth=guest')
-  await settings(page)
+  await page.getByRole('navigation', { name: 'Acceso y cuenta' }).getByRole('button', { name: 'INICIAR SESIÓN', exact: true }).click()
   await page.getByRole('textbox', { name: 'Correo' }).fill('operator@example.invalid')
   await page.getByLabel('Contraseña', { exact: true }).fill('fixture-password-123')
   await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SIN CONEXIÓN'))
@@ -323,7 +329,9 @@ test('vista protegida: cookie del mismo origen habilita acceso, sin cookie sigue
     await noOverflow(page)
     await page.getByRole('button', { name: 'ENTRAR', exact: true }).scrollIntoViewIfNeeded()
   }
+  await settings(page)
   await page.getByRole('button', { name: 'PANTALLA 800×480' }).click()
+  await page.getByRole('navigation', { name: 'Acceso y cuenta' }).getByRole('button', { name: 'INICIAR SESIÓN', exact: true }).click()
   await noOverflow(page)
   const register = page.getByRole('button', { name: 'IR AL REGISTRO DE CUENTA NUEVA' })
   await register.scrollIntoViewIfNeeded()
@@ -342,7 +350,7 @@ test('vista protegida: cookie del mismo origen habilita acceso, sin cookie sigue
 }))
 
 test('acceso: entrar por botón o teclado no registra; registro separado requiere envío explícito', async () => withPage(async page => {
-  await page.goto(fixture + '?auth=guest'); await settings(page)
+  await page.goto(fixture + '?auth=guest'); await page.getByRole('navigation', { name: 'Acceso y cuenta' }).getByRole('button', { name: 'INICIAR SESIÓN', exact: true }).click()
   await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SISTEMA ONLINE'))
   await page.getByRole('heading', { name: 'INICIAR SESIÓN', exact: true }).waitFor()
   assert.equal(await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).count(), 0)
@@ -365,12 +373,17 @@ test('acceso: entrar por botón o teclado no registra; registro separado requier
   assert.equal(await password.inputValue(), '', 'El paso al registro no reutiliza la contraseña de acceso')
   assert.equal(await page.getByRole('button', { name: 'ENTRAR', exact: true }).count(), 0)
   assert.deepEqual(await page.evaluate(() => window.fixtureAuthCalls), { login: 2, register: 0 }, 'Abrir el registro no envía Auth')
+  await page.getByLabel('Nombre de cuenta', { exact: true }).fill('OPERADOR DE PRUEBA')
   await password.fill('fixture-password-123')
+  await page.getByLabel('Repetir contraseña', { exact: true }).fill('fixture-password-123')
   await page.getByRole('button', { name: 'CREAR CUENTA', exact: true }).click()
   await visible(page, 'Prueba local')
   assert.deepEqual(await page.evaluate(() => window.fixtureAuthCalls), { login: 2, register: 1 })
+  await settings(page)
   await page.getByRole('button', { name: 'PANTALLA 800×480' }).click()
+  await page.getByRole('navigation', { name: 'Acceso y cuenta' }).getByRole('button', { name: 'INICIAR SESIÓN', exact: true }).click()
   await noOverflow(page)
+  await page.getByRole('button', { name: 'IR AL REGISTRO DE CUENTA NUEVA' }).click()
   await page.getByRole('button', { name: 'VOLVER A INICIAR SESIÓN' }).scrollIntoViewIfNeeded()
   await page.screenshot({ path: '/tmp/futbolin-registration-separated-physical.png' })
   await page.getByRole('button', { name: 'VOLVER A INICIAR SESIÓN' }).click()
@@ -380,7 +393,7 @@ test('acceso: entrar por botón o teclado no registra; registro separado requier
 }))
 
 test('recuperar contraseña: formulario separado, validación, sin registro ni login accidental', async () => withPage(async (page, context) => {
-  await page.goto(fixture + '?auth=guest'); await settings(page)
+  await page.goto(fixture + '?auth=guest'); await page.getByRole('navigation', { name: 'Acceso y cuenta' }).getByRole('button', { name: 'INICIAR SESIÓN', exact: true }).click()
   await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SISTEMA ONLINE'))
   await page.getByLabel('Correo', { exact: true }).fill('operator@example.invalid')
   await page.getByLabel('Contraseña', { exact: true }).fill('fixture-password-123')
@@ -403,7 +416,7 @@ test('recuperar contraseña: formulario separado, validación, sin registro ni l
     await page.screenshot({ path: `/tmp/futbolin-reset-request-${width}.png` })
   }
   await context.route(base + '/connection.json', route => route.fulfill({ status: 503 }))
-  await page.getByRole('button', { name: 'COMPROBAR CONEXIÓN', exact: true }).click()
+  await context.setOffline(true)
   await page.waitForFunction(() => document.querySelector('.system-status')?.textContent.includes('SIN CONEXIÓN'))
   assert.equal(await page.getByRole('button', { name: 'ENVIAR ENLACE' }).isDisabled(), true)
   await page.getByRole('button', { name: 'VOLVER A INICIAR SESIÓN' }).click()
@@ -412,7 +425,7 @@ test('recuperar contraseña: formulario separado, validación, sin registro ni l
 
 test('retorno inválido: aviso seguro y parámetros de URL no habilitan cambio de contraseña', async () => withPage(async page => {
   await page.goto(fixture + '?auth=guest#error=access_denied&error_code=otp_expired&error_description=private-details')
-  await page.getByRole('heading', { name: 'AJUSTES' }).waitFor()
+  await page.getByRole('heading', { name: 'INICIAR SESIÓN' }).waitFor()
   await page.getByText(/No se pudo validar el enlace de acceso/).waitFor()
   assert.ok(!(await page.locator('body').innerText()).includes('private-details'))
   await page.getByRole('button', { name: 'RECUPERAR CONTRASEÑA', exact: true }).click()
@@ -445,9 +458,125 @@ test('enlace de recuperación: confirmación, guardado explícito y datos locale
   await visible(page, 'Contraseña actualizada. Ya puedes entrar con tu nueva contraseña.')
   assert.deepEqual(await page.evaluate(() => window.fixtureRecoveryCalls), { request: 0, update: 1 })
   assert.equal(await password.count(), 0)
-  await page.getByRole('button', { name: 'VOLVER A AJUSTES' }).click()
-  await page.getByRole('heading', { name: 'AJUSTES' }).waitFor()
+  await page.getByRole('button', { name: 'VOLVER A MI CUENTA' }).click()
+  await page.getByRole('heading', { name: 'MI CUENTA', exact: true }).waitFor()
   assert.deepEqual(await page.evaluate(() => [localStorage.getItem('fixture-preserve-data'), sessionStorage.getItem('fixture-preserve-session-data')]), ['unchanged', 'unchanged'])
+}))
+
+test('cabecera y mi cuenta: perfil, correo, seguridad y sesiones sin alterar datos', async () => withPage(async page => {
+  await page.goto(fixture)
+  const account = page.getByRole('navigation', { name: 'Acceso y cuenta' })
+  await account.getByRole('button', { name: /MI CUENTA/ }).waitFor()
+  for (const [width, height] of [[320, 568], [390, 844], [800, 480], [1280, 720]]) {
+    await page.setViewportSize({ width, height }); await noOverflow(page)
+    const box = await account.boundingBox()
+    assert.ok(box.x + box.width <= width && box.y < 110, 'Acceso visible en la esquina superior')
+  }
+  await page.evaluate(() => localStorage.setItem('fixture-preserve-data', 'preserved'))
+  await account.getByRole('button', { name: /MI CUENTA/ }).click()
+  await page.getByRole('heading', { name: 'MI CUENTA', exact: true }).waitFor()
+  await page.getByLabel('Nombre de cuenta', { exact: true }).fill('MI OPERADOR')
+  await page.getByRole('button', { name: 'GUARDAR PERFIL' }).click()
+  await visible(page, 'Perfil actualizado.')
+  assert.equal(await page.evaluate(() => window.fixtureAccountCalls.profile), 1)
+  await page.getByLabel('Nuevo correo', { exact: true }).fill('new-operator@example.invalid')
+  await page.getByLabel('Contraseña actual', { exact: true }).fill('fixture-password')
+  await page.getByRole('button', { name: 'SOLICITAR CAMBIO DE CORREO' }).click()
+  await page.getByText('Confirmación pendiente: new-operator@example.invalid').waitFor()
+  assert.equal(await page.getByLabel('Contraseña actual', { exact: true }).inputValue(), '')
+  await page.getByRole('button', { name: 'SEGURIDAD', exact: true }).click()
+  await page.getByLabel('Contraseña actual', { exact: true }).fill('fixture-password')
+  await page.getByLabel('Nueva contraseña', { exact: true }).fill('new-fixture-password')
+  await page.getByRole('button', { name: 'Mostrar nueva contraseña', exact: true }).click()
+  assert.equal(await page.getByLabel('Nueva contraseña', { exact: true }).getAttribute('type'), 'text')
+  await page.getByRole('button', { name: 'Ocultar nueva contraseña', exact: true }).click()
+  await page.getByLabel('Repetir contraseña', { exact: true }).fill('different-password')
+  await page.getByRole('button', { name: 'CAMBIAR CONTRASEÑA', exact: true }).click()
+  await visible(page, 'Las contraseñas no coinciden.')
+  assert.equal(await page.evaluate(() => window.fixtureAccountCalls.password), 0)
+  await page.getByLabel('Repetir contraseña', { exact: true }).fill('new-fixture-password')
+  await page.getByRole('button', { name: 'CAMBIAR CONTRASEÑA', exact: true }).click()
+  await visible(page, 'Contraseña actualizada. Utilízala la próxima vez que inicies sesión.')
+  assert.equal(await page.getByLabel('Nueva contraseña', { exact: true }).inputValue(), '')
+  for (const [width, height] of [[390, 844], [800, 480]]) {
+    await page.setViewportSize({ width, height }); await noOverflow(page)
+    await page.getByLabel('Nueva contraseña', { exact: true }).scrollIntoViewIfNeeded()
+    await page.screenshot({ path: `/tmp/futbolin-account-security-${width}.png` })
+  }
+  await page.getByRole('button', { name: 'SESIONES', exact: true }).click()
+  await page.getByRole('button', { name: 'CERRAR TODAS LAS SESIONES', exact: true }).click()
+  assert.deepEqual(await page.evaluate(() => window.fixtureAccountCalls.logout), [])
+  await page.getByRole('button', { name: 'CANCELAR', exact: true }).click()
+  await page.getByRole('button', { name: 'CERRAR SESIÓN EN ESTE DISPOSITIVO' }).click()
+  await account.getByRole('button', { name: 'INICIAR SESIÓN', exact: true }).waitFor()
+  assert.deepEqual(await page.evaluate(() => window.fixtureAccountCalls.logout), ['local'])
+  assert.equal(await page.evaluate(() => localStorage.getItem('fixture-preserve-data')), 'preserved')
+}))
+
+test('cuenta: cierre global explícito; partido en curso bloquea cambios y mantiene recuperación', async () => withPage(async page => {
+  await page.goto(fixture)
+  await page.getByRole('button', { name: /MI CUENTA/ }).click()
+  await page.getByRole('button', { name: 'SESIONES', exact: true }).click()
+  await page.getByRole('button', { name: 'CERRAR TODAS LAS SESIONES', exact: true }).click()
+  await page.getByRole('button', { name: 'CONFIRMAR CIERRE EN TODOS LOS DISPOSITIVOS' }).click()
+  await page.getByRole('navigation', { name: 'Acceso y cuenta' }).getByRole('button', { name: 'INICIAR SESIÓN' }).waitFor()
+  assert.deepEqual(await page.evaluate(() => window.fixtureAccountCalls.logout), ['global'])
+  await page.goto(fixture)
+  await realMode(page); await selection(page, 2, 5); await start(page); await whiteGoal(page)
+  const original = await matchStorage(page)
+  await page.getByRole('button', { name: /MI CUENTA/ }).click()
+  await page.getByText('Termina el partido y conserva su resultado antes de cambiar el acceso o cerrar sesión.').waitFor()
+  assert.equal(await page.getByRole('button', { name: 'GUARDAR PERFIL' }).isDisabled(), true)
+  await page.getByRole('button', { name: 'SESIONES', exact: true }).click()
+  assert.equal(await page.getByRole('button', { name: 'CERRAR SESIÓN EN ESTE DISPOSITIVO' }).isDisabled(), true)
+  assert.equal(await page.getByRole('button', { name: 'CERRAR TODAS LAS SESIONES' }).isDisabled(), true)
+  const current = await matchStorage(page)
+  assert.equal(current[0][0], original[0][0])
+  const before = JSON.parse(original[0][1]); const after = JSON.parse(current[0][1])
+  assert.equal(after.id, before.id); assert.deepEqual(after.players, before.players); assert.equal(after.checkpoint.state.whiteGoals, before.checkpoint.state.whiteGoals); assert.equal(after.checkpoint.state.blueGoals, before.checkpoint.state.blueGoals); assert.deepEqual(after.checkpoint.state.goals, before.checkpoint.state.goals); assert.deepEqual(after.checkpoint.state.events.slice(0, before.checkpoint.state.events.length), before.checkpoint.state.events)
+  assert.equal(after.checkpoint.state.status, 'PAUSED')
+  await page.getByRole('button', { name: 'NUEVO PARTIDO', exact: true }).click()
+  await page.locator('.pause-overlay').waitFor()
+}))
+
+test('seguridad: el código requerido por Auth se solicita explícitamente y valida antes del cambio', async () => withPage(async page => {
+  await page.goto(fixture + '?account=reauth')
+  await page.getByRole('button', { name: /MI CUENTA/ }).click()
+  await page.getByRole('button', { name: 'SEGURIDAD', exact: true }).click()
+  await page.getByLabel('Contraseña actual', { exact: true }).fill('fixture-current-password')
+  await page.getByLabel('Nueva contraseña', { exact: true }).fill('fixture-new-password')
+  await page.getByLabel('Repetir contraseña', { exact: true }).fill('fixture-new-password')
+  await page.getByRole('button', { name: 'CAMBIAR CONTRASEÑA', exact: true }).click()
+  await page.getByLabel('Código de seguridad', { exact: true }).waitFor()
+  assert.deepEqual(await page.evaluate(() => [window.fixtureAccountCalls.reauthenticate, window.fixtureAccountCalls.password]), [0, 0])
+  await page.getByRole('button', { name: 'ENVIAR CÓDIGO DE SEGURIDAD' }).click()
+  await visible(page, 'Código enviado. Revisa tu correo.')
+  await page.getByLabel('Código de seguridad', { exact: true }).fill('000000')
+  await page.getByRole('button', { name: 'CAMBIAR CONTRASEÑA', exact: true }).click()
+  await visible(page, 'El código de seguridad no es válido. Solicita uno nuevo e inténtalo otra vez.')
+  assert.equal(await page.evaluate(() => window.fixtureAccountCalls.password), 0)
+  await page.getByLabel('Código de seguridad', { exact: true }).fill('123456')
+  await page.getByRole('button', { name: 'CAMBIAR CONTRASEÑA', exact: true }).click()
+  await visible(page, 'Contraseña actualizada. Utilízala la próxima vez que inicies sesión.')
+  assert.deepEqual(await page.evaluate(() => [window.fixtureAccountCalls.reauthenticate, window.fixtureAccountCalls.password]), [1, 1])
+}))
+
+test('correos: trece plantillas, enlaces nativos, código OTP y diseño adaptable sin tráfico', async () => withPage(async (page, context) => {
+  await context.route('**/*', route => route.abort())
+  const manifest = JSON.parse(await readFile('supabase/templates/manifest.json', 'utf8'))
+  assert.equal(manifest.length, 13)
+  for (const template of manifest) {
+    const html = await readFile('supabase/templates/' + template.file, 'utf8')
+    assert.ok(!/<script|<form|<input|https?:\/\//i.test(html), 'Static email without scripts, forms, external assets or tracking')
+    if (['confirmation', 'recovery', 'email_change', 'magic_link', 'invite'].includes(template.name)) assert.equal((html.match(/href="{{ \.ConfirmationURL }}"/g) ?? []).length, 2)
+    if (template.name === 'reauthentication') assert.ok(html.includes('{{ .Token }}'))
+    if (template.kind === 'notification') assert.ok(!html.includes('.ConfirmationURL') && !html.includes('.Token'))
+    const rendered = html.replace(/{{ \.ConfirmationURL }}/g, 'https://example.invalid/auth-fixture').replace(/{{ \.Token }}/g, '123456').replace(/{{ \.(\w+)(?: \| html)? }}/g, 'DATOS DE PRUEBA')
+    await page.setViewportSize({ width: 390, height: 844 }); await page.setContent(rendered)
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true)
+    assert.equal(await page.getByRole('heading', { level: 1 }).count(), 1)
+    if (['confirmation', 'recovery'].includes(template.name)) await page.screenshot({ path: `/tmp/futbolin-email-${template.name}-390.png`, fullPage: true })
+  }
 }))
 
 test('2v2: selección exacta, bloqueo, recarga en pausa y misma identidad del partido', async () => withPage(async page => {

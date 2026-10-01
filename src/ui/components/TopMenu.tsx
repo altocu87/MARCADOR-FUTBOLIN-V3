@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { type ReactNode } from 'react'
 
 export interface MenuItem {
   id: string
@@ -9,17 +9,20 @@ interface TopMenuProps {
   items: MenuItem[]
   activeItem: string
   onSelect: (id: string) => void
+  accountActions?: ReactNode
+  disabled?: boolean
 }
 
-export function TopMenu({ items, activeItem, onSelect }: TopMenuProps) {
+export function TopMenu({ items, activeItem, onSelect, accountActions, disabled = false }: TopMenuProps) {
   return (
     <header className="app-header">
-      <div className="app-brand"><span className="brand-mark" aria-hidden="true"><i /><i /></span><span><b>MARCADOR</b><strong>FUTBOLÍN V3</strong></span><small>SIMULADOR WEB</small></div>
+      <div className="header-identity"><div className="app-brand"><span className="brand-mark" aria-hidden="true"><i /><i /></span><span><b>MARCADOR</b><strong>FUTBOLÍN V3</strong></span><small>SIMULADOR WEB</small></div>{accountActions}</div>
     <nav className="top-menu" aria-label="Navegación principal">
       {items.map((item) => (
         <button
           className={`menu-button${activeItem === item.id ? ' is-active' : ''}`}
           type="button"
+          disabled={disabled}
           key={item.id}
           aria-current={activeItem === item.id ? 'page' : undefined}
           onClick={() => onSelect(item.id)}
