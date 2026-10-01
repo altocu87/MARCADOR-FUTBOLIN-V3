@@ -7,11 +7,16 @@ coverage/
 
 # Variables de entorno y secretos
 .env
+.env.*
 .env.local
 .env.*.local
 !.env.example
 *.pem
 *.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
 
 # Vercel
 .vercel/
