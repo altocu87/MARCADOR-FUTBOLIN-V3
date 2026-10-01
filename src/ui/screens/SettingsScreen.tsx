@@ -17,7 +17,7 @@ export function SettingsScreen({ services, user, players, protectedIds, testMode
   const [tab, setTab] = useState<'general' | 'players'>('general')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [accessMode, setAccessMode] = useState<'login' | 'register'>('login')
+  const [accessMode, setAccessMode] = useState<'login' | 'register' | 'reset'>('login')
   const [draft, setDraft] = useState<PlayerDraft | null>(null)
   const [editId, setEditId] = useState<string | null>(null)
   const [message, setMessage] = useState('')
@@ -34,12 +34,13 @@ export function SettingsScreen({ services, user, players, protectedIds, testMode
     event.preventDefault()
     if (!services) return
     void run(async () => {
-      if (accessMode === 'register') setMessage(await services.auth.signUp(email, password))
+      if (accessMode === 'reset') setMessage(await services.auth.requestPasswordReset(email))
+      else if (accessMode === 'register') setMessage(await services.auth.signUp(email, password))
       else await services.auth.signIn(email, password)
       setPassword('')
     })
   }
-  function switchAccess(mode: 'login' | 'register') {
+  function switchAccess(mode: 'login' | 'register' | 'reset') {
     setAccessMode(mode); setPassword(''); setMessage('')
   }
   const save = (event: FormEvent) => {
@@ -57,11 +58,12 @@ export function SettingsScreen({ services, user, players, protectedIds, testMode
     {!services && <p className="notice">La conexión de datos no está configurada en este entorno. Puedes jugar con MODO PRUEBA ON.</p>}
     {tab === 'general' ? <div className="settings-grid">
       <div className="data-panel system-panel">{displaySettings}<h2>MODO PRUEBA</h2><button className={`test-toggle ${testMode ? 'selected' : ''}`} type="button" aria-pressed={testMode} onClick={() => onTestMode(!testMode)}>{testMode ? 'ON · NO GUARDAR PARTIDOS' : 'OFF · GUARDAR PARTIDOS'}</button><p>Se fija al iniciar cada partido.</p><div className="pending-actions"><button type="button" disabled={busy || syncBusy || !user || !online || pendingCount === 0} onClick={() => void run(onRetry)}>{syncBusy ? 'SINCRONIZANDO…' : 'REINTENTAR'}</button><button type="button" onClick={onPending}>VER {pendingCount} PENDIENTES</button></div><div className="offline-summary"><p>{offline.message}</p>{offline.installable ? <button type="button" onClick={() => void offline.install()}>INSTALAR APLICACIÓN</button> : <small>Instalar: menú del navegador → Instalar / Añadir a inicio.</small>}<button type="button" onClick={onCheck}>COMPROBAR CONEXIÓN</button></div></div>
-      <div className="data-panel"><h2>{user ? 'ACCESO PRIVADO' : accessMode === 'login' ? 'INICIAR SESIÓN' : 'CREAR CUENTA NUEVA'}</h2>{user ? <><p>{user.email}</p><p>Tu cuenta administra tus jugadores y partidos. Los jugadores no necesitan registrarse.</p>{!online && <p>Sesión local. Puedes jugar y recuperar; para gestionar o sincronizar necesitas conexión y sesión válida.</p>}<button type="button" disabled={busy || !online} onClick={() => void run(async () => { await services?.auth.signOut(); onSignedOut() })}>CERRAR SESIÓN</button></> : <form className="account-form" onSubmit={access}>
-        <p>{accessMode === 'login' ? 'Entra con tu cuenta existente para gestionar tus jugadores y partidos.' : 'Registro para un correo nuevo. Si ya tienes cuenta, vuelve a iniciar sesión.'}</p>
+      <div className="data-panel"><h2>{user ? 'ACCESO PRIVADO' : accessMode === 'login' ? 'INICIAR SESIÓN' : accessMode === 'register' ? 'CREAR CUENTA NUEVA' : 'RECUPERAR CONTRASEÑA'}</h2>{user ? <><p>{user.email}</p><p>Tu cuenta administra tus jugadores y partidos. Los jugadores no necesitan registrarse.</p>{!online && <p>Sesión local. Puedes jugar y recuperar; para gestionar o sincronizar necesitas conexión y sesión válida.</p>}<button type="button" disabled={busy || !online} onClick={() => void run(async () => { await services?.auth.signOut(); onSignedOut() })}>CERRAR SESIÓN</button></> : <form className="account-form" onSubmit={access}>
+        <p>{accessMode === 'login' ? 'Entra con tu cuenta existente para gestionar tus jugadores y partidos.' : accessMode === 'register' ? 'Registro para un correo nuevo. Si ya tienes cuenta, vuelve a iniciar sesión.' : 'Introduce el correo de tu cuenta. Te enviaremos un enlace para elegir una nueva contraseña.'}</p>
         <input aria-label="Correo" type="email" required value={email} placeholder="Correo" onChange={event => setEmail(event.target.value)} autoComplete="username" />
-        <input aria-label="Contraseña" type="password" required minLength={8} value={password} placeholder="Contraseña · mínimo 8 caracteres" onChange={event => setPassword(event.target.value)} autoComplete={accessMode === 'login' ? 'current-password' : 'new-password'} />
-        <button type="submit" disabled={busy || !services || !online}>{accessMode === 'login' ? 'ENTRAR' : 'CREAR CUENTA'}</button>
+        {accessMode !== 'reset' && <input aria-label="Contraseña" type="password" required minLength={8} value={password} placeholder="Contraseña · mínimo 8 caracteres" onChange={event => setPassword(event.target.value)} autoComplete={accessMode === 'login' ? 'current-password' : 'new-password'} />}
+        <button type="submit" disabled={busy || !services || !online}>{accessMode === 'login' ? 'ENTRAR' : accessMode === 'register' ? 'CREAR CUENTA' : 'ENVIAR ENLACE'}</button>
+        {accessMode !== 'reset' && <button type="button" disabled={busy} onClick={() => switchAccess('reset')}>RECUPERAR CONTRASEÑA</button>}
         <small>{accessMode === 'register' ? 'Confirma el correo para activar la cuenta. ' : ''}Los jugadores no necesitan registrarse.</small>
         <div className="account-alternative">
           {accessMode === 'login' && <p>¿Todavía no tienes cuenta?</p>}

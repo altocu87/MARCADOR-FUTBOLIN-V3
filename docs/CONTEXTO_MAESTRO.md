@@ -805,6 +805,12 @@ Consultar documentación Supabase actual antes de tomar decisiones sensibles. Su
 
 Decisión expresa durante el bloque 01, 2026-10-01: separar registro de inicio de sesión para evitar pulsar CREAR CUENTA accidentalmente. AJUSTES abre INICIAR SESIÓN con ENTRAR como único envío. IR AL REGISTRO DE CUENTA NUEVA es un botón secundario separado, sin llamada Auth; abre otro formulario con CREAR CUENTA y VOLVER A INICIAR SESIÓN. Cambiar de formulario limpia la contraseña. La tecla Intro en acceso solo inicia sesión; no cambia Auth, confirmación ni RLS.
 
+Continuación expresa del propietario, 2026-10-01: el registro repetido con el mismo correo no debe presentarse como confirmación de una cuenta nueva ni deducir cuentas duplicadas. Supabase puede responder genéricamente para proteger la existencia de cuentas; explicar esa limitación y orientar a ENTRAR/RECUPERAR CONTRASEÑA. Si el servidor devuelve explícitamente user_already_exists, mostrar el error comprensible sin inferencias desde identities vacías.
+
+Recuperación de contraseña implementada dentro del bloque 01: formulario separado para solicitar enlace, sin contraseña ni registro; resetPasswordForEmail con retorno al origen actual autorizado. El SDK valida el enlace y emite PASSWORD_RECOVERY; capturarlo antes del montaje y presentar nueva contraseña/confirmación. updateUser solo tras verificar la misma sesión de recuperación, con mínimo ocho caracteres y errores seguros. Recarga en la misma pestaña restaura el formulario mediante marcador sessionStorage versionado de ID/expiración ligado a la sesión SDK; no copiar tokens ni contraseña en ese marcador. Cierre/cambio de cuenta limpia solo ese marcador; no tocar jugadores, historial, pendientes o checkpoints. Enlace inválido/caducado ofrece solicitar otro sin mostrar descripciones privadas del proveedor. Correo y recorrido Auth remoto aún pendientes de comprobación; no pedir otra cuenta ni enviar correos de prueba por el agente.
+
+Petición futura expresa: login con Google y guardado/backup en Google Drive. Registrarlos para una fase posterior; no habilitar proveedores, OAuth ni Drive en el bloque 01. Al planificar Google, concretar la vinculación a la cuenta existente sin perder owner_id/datos; al planificar Drive, concretar contenido, frecuencia, restauración y permisos mínimos. No se consideran parámetros aprobados ni integración implementada.
+
 Acceso web V1: cuenta de operador por correo/contraseña, con confirmación; los jugadores son registros gestionados por esa cuenta, no usuarios Auth obligatorios. Los datos se mantienen privados por owner_id/RLS. El registro solicita retornar al origen actual y debe tener esa URL exacta autorizada en Supabase. No compartir sesiones/tokens entre dominios ni desactivar confirmación para facilitar pruebas. El SMTP predeterminado es para pruebas con correos del equipo y tiene límites; abrir registro a otros correos requiere configurar envío autorizado, sin asumir costes ni contratar servicios automáticamente.
 
 ## 46. MODELO DE DATOS V1 PREVISTO
@@ -1069,6 +1075,8 @@ No implementar todavía si estamos en fase web.
 Futuro: exportar/importar jugadores, historial, configuración y estadísticas.
 
 Útil antes de actualizaciones y para recuperación.
+
+Petición expresa posterior, 2026-10-01: incluir guardado/backup en Google Drive más adelante. Sin implementación ni autorización para activar OAuth, permisos o servicios ahora. Revisar el bloque 08 para decidir exportación, restauración, frecuencia y alcance de acceso; Supabase y los pendientes locales mantienen sus responsabilidades actuales.
 
 ## 64. ADMINISTRACIÓN LOCAL
 

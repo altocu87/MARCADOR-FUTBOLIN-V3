@@ -21,6 +21,10 @@ const realNetwork = new URLSearchParams(window.location.search).get('network') =
 const statisticsMode = new URLSearchParams(window.location.search).get('statistics')
 const guest = new URLSearchParams(window.location.search).get('auth') === 'guest'
 // Counts only; never expose or retain the entered email/password.
+let passwordRecovery = new URLSearchParams(window.location.search).get('auth') === 'recovery'
+const recoveryListeners = new Set<() => void>()
+const recoveryCalls = { request: 0, update: 0 }
+Object.defineProperty(window, 'fixtureRecoveryCalls', { value: recoveryCalls })
 const authCalls = { login: 0, register: 0 }
 Object.defineProperty(window, 'fixtureAuthCalls', { value: authCalls })
 // Built, isolated profile/pagination fixtures. No database writes.
@@ -57,6 +61,11 @@ const services: ApplicationServices = {
   namespace: 'marcador-ui-fixture',
   auth: {
     async getIdentity() { await requireNetwork(); return guest ? null : { id: 'fixture', email: 'PRUEBA UI LOCAL · SIN SUPABASE' } },
+    getPasswordRecovery: () => passwordRecovery,
+    subscribePasswordRecovery(listener) { recoveryListeners.add(listener); return () => { recoveryListeners.delete(listener) } },
+    async requestPasswordReset() { recoveryCalls.request += 1; return 'Si existe una cuenta con ese correo, recibirás un enlace para cambiar la contraseña.' },
+    async updatePassword() { if (!passwordRecovery) throw new Error('Enlace necesario'); recoveryCalls.update += 1 },
+    finishPasswordRecovery() { passwordRecovery = false; for (const listener of recoveryListeners) listener() },
     subscribe() { return () => {} }, async signIn() { authCalls.login += 1 }, async signUp() { authCalls.register += 1; return 'Prueba local' }, async signOut() {},
   },
   players: {

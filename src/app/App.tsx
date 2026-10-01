@@ -8,6 +8,7 @@ import { ScreenMatchInput } from '../inputs/ScreenMatchInput'
 import { NewMatchScreen } from '../ui/screens/NewMatchScreen'
 import { MatchConfigurationScreen, MatchFlow, PlayerSelectionScreen } from '../ui/screens/MatchFlow'
 import { TopMenu, type MenuItem } from '../ui/components/TopMenu'
+import { PasswordRecoveryScreen } from '../ui/screens/PasswordRecoveryScreen'
 import { SettingsScreen } from '../ui/screens/SettingsScreen'
 import { HistoryScreen } from '../ui/screens/HistoryScreen'
 import { StatisticsScreen } from '../ui/screens/StatisticsScreen'
@@ -17,6 +18,7 @@ import { useConnection } from '../system/useConnection'
 import { useOfflineApp } from '../system/useOfflineApp'
 import { usePendingQueue } from './usePendingQueue'
 import type { ApplicationServices } from './services'
+import { passwordRecoveryLinkError } from '../services/supabase/authFeedback'
 import { errorMessage, useData } from './useData'
 import { SaveCoordinator, type KeyValueStorage } from '../services/persistence/SaveCoordinator'
 import { ActiveMatchStore, type ActiveMatchCopy } from '../services/persistence/ActiveMatchStore'
@@ -27,6 +29,8 @@ import { mapMatch, participantsFor } from '../services/persistence/mapMatch'
 const menuItems: MenuItem[] = [{ id: 'new-match', label: 'NUEVO PARTIDO' }, { id: 'tournament', label: 'TORNEO' }, { id: 'ranking', label: 'RANKING' }, { id: 'settings', label: 'AJUSTES' }]
 type Screen = 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'statistics' | 'placeholder' | 'recovery' | 'pending'
 const browserStorage: KeyValueStorage = { getItem: key => localStorage.getItem(key), setItem: (key, value) => localStorage.setItem(key, value) }
+const noRecovery = () => false
+const noRecoverySubscription = () => () => {}
 const practicePlayers: Player[] = ['PRUEBA BLANCO', 'PRUEBA AZUL'].map((name, i) => ({ id: 'practice-' + i, name, nickname: null, photoUrl: null, active: true, level: 0 }))
 
 export function App({ services }: { services: ApplicationServices | null }) {
@@ -41,6 +45,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
   const offline = useOfflineApp()
   const online = connection.state === 'online'
   const data = useData(services, connection.state)
+  const passwordRecovery = useSyncExternalStore(services?.auth.subscribePasswordRecovery ?? noRecoverySubscription, services?.auth.getPasswordRecovery ?? noRecovery, noRecovery)
   const userId = data.user?.id ?? null
   const coordinator = useMemo(() => {
     if (!services || !userId) return null
@@ -56,8 +61,9 @@ export function App({ services }: { services: ApplicationServices | null }) {
   }, [services, userId, connection.monitor])
   const activeStore = useMemo(() => services && userId ? new ActiveMatchStore(browserStorage, services.namespace, userId) : null, [services, userId])
   const [recovery, setRecovery] = useState<ActiveMatchCopy | null>(null)
-  const [activeMenu, setActiveMenu] = useState('new-match')
-  const [screen, setScreen] = useState<Screen>('new')
+  const [accessLinkError] = useState(() => passwordRecoveryLinkError(window.location.href))
+  const [activeMenu, setActiveMenu] = useState(accessLinkError ? 'settings' : 'new-match')
+  const [screen, setScreen] = useState<Screen>(accessLinkError ? 'settings' : 'new')
   const [profilePlayerId, setProfilePlayerId] = useState<string | null>(null)
   const [mode, setMode] = useState<MatchMode>('QUICK')
   const [configuration, setConfiguration] = useState<MatchConfiguration | null>(null)
@@ -68,7 +74,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
   const [saveMessage, setSaveMessage] = useState('')
   const [saving, setSaving] = useState(false)
   const [canLeave, setCanLeave] = useState(true)
-  const [notice, setNotice] = useState('')
+  const [notice, setNotice] = useState(accessLinkError)
   const run = useRef<RunContext | null>(null)
   const recoveryWarning = useActiveMatch(engine, run)
   const finalDocument = useRef<MatchDocument | null>(null)
@@ -171,8 +177,9 @@ export function App({ services }: { services: ApplicationServices | null }) {
   const selectable = activePlayers(data.players)
   const availablePlayers = selectable.length ? selectable : testMode ? practicePlayers : []
   return <FixedCanvas mode={displayMode}><main className="application-shell" data-screen={screen} aria-label="Marcador Futbolín V3">
-    <TopMenu items={menuItems} activeItem={activeMenu} onSelect={selectMenu} />
+    <TopMenu items={menuItems} activeItem={passwordRecovery ? 'settings' : activeMenu} onSelect={selectMenu} />
     <section className="app-content">
+      {passwordRecovery && services ? <PasswordRecoveryScreen auth={services.auth} online={online && !data.localIdentity} onCheck={() => void connection.monitor.check()} onDone={() => { services.auth.finishPasswordRecovery(); setActiveMenu('settings'); setScreen('settings') }} /> : <>
       {screen === 'new' && <NewMatchScreen onSelect={nextMode => { setMode(nextMode); setScreen('configuration') }} />}
       {screen === 'recovery' && recovery && <RecoveryScreen copy={recovery} onRecover={recoverMatch} />}
       {screen === 'configuration' && <MatchConfigurationScreen mode={mode} onContinue={next => { setConfiguration(next); setScreen('players') }} onBack={() => setScreen('new')} />}
@@ -184,6 +191,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
       {screen === 'history' && <HistoryScreen key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} online={online && !data.localIdentity} onStatistics={() => openStatistics()} />}
       {screen === 'statistics' && <StatisticsScreen key={userId ?? 'guest'} repository={services?.matches ?? null} players={data.players} playersLoading={data.loading} dataMessage={data.message} userId={userId} online={online && !data.localIdentity} initialPlayerId={profilePlayerId} onBack={() => setScreen('history')} />}
       {screen === 'placeholder' && <div className="placeholder-screen"><span>PRÓXIMAMENTE</span><p>Torneos se implementará en otra fase.</p></div>}
+      </>}
     </section>
     <footer className="system-status" role="status"><span className={`status-dot ${online ? '' : 'status-offline'}`} /><span>{connection.state === 'online' ? 'SISTEMA ONLINE' : connection.state === 'offline' ? 'SIN CONEXIÓN' : 'COMPROBANDO CONEXIÓN'} · {(run.current?.testMode ?? testMode) ? 'PRUEBA ON' : 'PRUEBA OFF'} · {data.user ? data.localIdentity || !online ? 'SESIÓN LOCAL' : 'SESIÓN ACTIVA' : 'SIN SESIÓN'}{pendingCount > 0 && ` · ${pendingCount} PENDIENTES`}</span>{(recoveryWarning || notice && screen !== 'settings') && <span className="status-warning">{recoveryWarning || notice}</span>}{matchOpen && screen !== 'match' && <button type="button" onClick={() => { setActiveMenu('new-match'); setScreen('match') }}>VOLVER AL PARTIDO</button>}</footer>
   </main></FixedCanvas>

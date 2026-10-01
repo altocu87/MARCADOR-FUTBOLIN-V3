@@ -7,10 +7,19 @@ export function authReturnUrl(href: string): string | undefined {
   } catch { return undefined }
 }
 
-export function registrationEmail(email: string, password: string): string {
+export function validatedEmail(email: string): string {
   const normalized = email.trim()
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) throw new Error('Introduce un correo válido.')
+  return normalized
+}
+
+export function validatePassword(password: string): void {
   if (password.length < 8) throw new Error('La contraseña debe tener al menos ocho caracteres.')
+}
+
+export function registrationEmail(email: string, password: string): string {
+  const normalized = validatedEmail(email)
+  validatePassword(password)
   return normalized
 }
 
@@ -23,7 +32,21 @@ export function authErrorMessage(error: unknown): string {
     case 'over_email_send_rate_limit':
     case 'over_request_rate_limit': return 'Se ha alcanzado el límite de intentos o correos. Espera antes de volver a intentarlo.'
     case 'signup_disabled': return 'El registro no está habilitado en este entorno. Contacta con el administrador.'
+    case 'user_already_exists': return 'Ya existe una cuenta con ese correo. Inicia sesión o utiliza RECUPERAR CONTRASEÑA.'
+    case 'same_password': return 'Elige una contraseña diferente de la anterior.'
+    case 'otp_expired':
+    case 'session_not_found': return 'El enlace o la sesión han caducado. Solicita otro enlace desde RECUPERAR CONTRASEÑA.'
     case 'weak_password': return 'Elige una contraseña más segura, de al menos ocho caracteres.'
     default: return 'No se pudo completar el acceso. Comprueba la conexión y vuelve a intentarlo.'
   }
+}
+
+/** Show a safe callback error; never render provider descriptions or credentials. */
+export function passwordRecoveryLinkError(href: string): string {
+  try {
+    const url = new URL(href)
+    const fragment = new URLSearchParams(url.hash.slice(1))
+    if (url.searchParams.has('error') || fragment.has('error')) return 'No se pudo validar el enlace de acceso. Puede haber caducado o haberse usado. Solicita otro desde RECUPERAR CONTRASEÑA.'
+  } catch { /* Not a valid callback URL. */ }
+  return ''
 }

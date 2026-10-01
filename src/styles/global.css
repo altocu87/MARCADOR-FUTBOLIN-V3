@@ -64,6 +64,7 @@
 .data-panel button { width: 100%; }
 .test-toggle.selected { border-color: #6ae7ce; background: #15584c; }
 .account-form { display: flex; flex-direction: column; gap: 12px; }
+.account-form label { display: flex; flex-direction: column; gap: 8px; color: #adbed6; }
 .account-alternative { margin-top: 16px; padding-top: 16px; border-top: 1px solid #334f70; }
 .account-alternative p { margin: 0 0 12px; }
 .account-alternative button { background: transparent; color: #adbed6; }
