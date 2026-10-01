@@ -732,7 +732,11 @@ Durante el partido: NO depender de Supabase para cada gol. Mantener el estado lo
 
 Recuperación web implementada el 2026-10-01: solo con MODO PRUEBA OFF, copia en localStorage aislada por proyecto/cuenta, tras acciones y cada segundo de reloj. Conserva partido, participantes y journal completos con el mismo ID. La app ofrece recuperación explícita al volver a cargar. No cambia el reloj por tiempo de cierre; el plazo real de bloqueo de gol sí puede expirar. MODO PRUEBA ON no escribe estas copias ni colas de partidos.
 
-La copia activa se libera únicamente tras entregar el resultado a la cola durable o confirmar guardado. Fallos de almacenamiento avisan y no detienen el motor. Copias dañadas/incompatibles o de otro partido no se sobrescriben silenciosamente. Usar una sola pestaña activa; no es sincronización entre dispositivos, backup ni arranque offline/PWA. Requiere mismo navegador, origen y cuenta. Consultar `VERIFICACION_RECUPERACION.md` y el estado real de la rama.
+La copia activa se libera únicamente tras entregar el resultado a la cola durable o confirmar guardado. Fallos de almacenamiento avisan y no detienen el motor. Copias dañadas/incompatibles o de otro partido no se sobrescriben silenciosamente. Usar una sola pestaña activa; no es sincronización entre dispositivos ni backup. Requiere mismo navegador, origen y cuenta. Consultar `VERIFICACION_RECUPERACION.md` y el estado real de la rama.
+
+Ampliación PWA web implementada el 2026-10-01: el build precachea únicamente recursos estáticos con lista exacta y permite arranque offline después de una primera carga completa con conexión. AJUSTES muestra disponibilidad e instalación cuando el navegador lo permite. Requiere HTTPS (localhost admitido para pruebas); no se activa en el servidor de desarrollo. Las actualizaciones esperan al cierre de la app sin forzar recarga. No se cachean APIs, respuestas Auth, tokens ni datos personales por el service worker.
+
+Un selector local versionado conserva solo el ID de la última cuenta para acceder sin red a sus jugadores/copia/cola locales; no autoriza acceso remoto. La sesión SDK y RLS siguen siendo necesarias para sincronizar. Cerrar sesión olvida el selector, no destruye resultados pendientes. No se garantiza recuperación si se borran los datos del navegador; no hay primera carga offline ni transferencia automática PC/móvil. Evidencia y límites en `VERIFICACION_PWA.md`.
 
 Al terminar: persistir/sincronizar.
 
@@ -1212,6 +1216,8 @@ No perder el resultado silenciosamente.
 
 Refuerzo del coordinador web, 2026-10-01: cada intento de guardado tiene un límite de diez segundos. Si la petición no responde, conserva el agregado local y permite continuar/reintentar. Las respuestas tardías se recuperan con el mismo ID mediante guardado idempotente, sin retirar otros partidos pendientes. La recuperación de partidas en curso es una copia independiente, descrita en el apartado 43; ninguna de estas copias sustituye un backup.
 
+Panel local de pendientes y reconexión, 2026-10-01: AJUSTES permite ver resultado, participantes y cronología de la cola sin consultar Supabase. Con la app abierta, sesión válida y servidor accesible, se intenta sincronizar al reconectar o cambiar la cola, fuera de un partido en curso/guardado activo; no hay bucle ante el mismo fallo ni sincronización en segundo plano con la app cerrada. Se mantiene reintento manual y UUID estable. El indicador ONLINE verifica únicamente el servidor web mediante una sonda no cacheada; no equivale a salud/autorización de Supabase. SIN CONEXIÓN es ámbar. Estos módulos no participan en la validación de goles del motor.
+
 ## 75. TYPESCRIPT
 
 Evitar any.
@@ -1235,6 +1241,8 @@ Antes de dar una fase por terminada:
 - 800×480.
 
 Como mínimo npm run test:engine y npm run build, si esos scripts siguen existiendo.
+
+La rama de desarrollo incorpora npm run test:offline junto a motor, persistencia y recuperación en npm test. Verificar el service worker del build y reapertura con el servidor realmente apagado; una fixture con guardado simulado no sustituye esa prueba ni el recorrido Auth/Supabase real.
 
 ## 77. VERIFICACIÓN VISUAL
 

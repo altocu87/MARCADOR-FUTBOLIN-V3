@@ -8,9 +8,9 @@
 - Remoto: origin = https://github.com/altocu87/MARCADOR-FUTBOLIN-V3.git
 - Rama principal: main.
 - Último commit de código funcional en main comprobado: **b10b1df — Initial functional match simulator**; main contiene además el contexto documental 900e470.
-- Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**, commit funcional **eeb23b8**, push comprobado con la referencia remota y divergencia 0/0. No equivale a promoverla a main ni completar la fase B; las actualizaciones documentales posteriores tienen sus propios commits.
+- Rama de desarrollo para compartir persistencia y refuerzo de fiabilidad: **codex/reliability-offline-v1**, persistencia/fiabilidad **eeb23b8** y recuperación activa **176d470**, con push comprobado. El bloque PWA descrito abajo está preparado localmente para publicar; contrastar `git log`/referencias y la entrada de publicación al retomar. No equivale a promoverla a main ni completar la fase B.
 - Entorno de esta implementación: **PC local Windows**, no Codex Cloud. Las instrucciones de nube del apartado 79 se aplican cuando se trabaje realmente allí.
-- Esta ficha describe el código de persistencia y fiabilidad publicado en la rama de desarrollo. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
+- Esta ficha describe persistencia/fiabilidad/recuperación de la rama de desarrollo y la ampliación PWA. Si solo se trabaja con main, ese código todavía no está integrado allí. Consultar `git log` y las referencias remotas para comprobar qué versión tiene cada checkout.
 
 ## Fases
 
@@ -30,12 +30,15 @@
 - Guardado final del agregado mediante RPC transaccional, UUID estable y reintentos idempotentes. Se fija la cuenta y el modo prueba al iniciar la partida.
 - Modo prueba ON por defecto, preferencia local; no guarda partidos/participantes/eventos ni los introduce en la cola local. Sin jugadores reales ofrece dos plazas de práctica solo en este modo. La gestión autenticada de jugadores sí es real.
 - Historial V1 dentro de RANKING: lista paginada de 20 y detalle de configuración, participantes, resultado y cronología. No hay cálculo de ranking.
-- Caché de jugadores y cola de resultados finalizados en localStorage, aisladas por proyecto/cuenta. Reintento manual en Ajustes. Los goles no dependen de Internet.
+- Caché de jugadores y cola de resultados finalizados en localStorage, aisladas por proyecto/cuenta. Reintento manual y automático al reconectar con sesión verificada, fuera del partido activo/guardado. Ajustes incluye lista/detalle local de pendientes. Los goles no dependen de Internet.
 - Lienzo fijo 800×480, escalado proporcional en ventanas pequeñas y centrado en grandes. Corregido el recorte por dimensionamiento implícito de la cuadrícula.
 - Panel de simulación solo en desarrollo. No hay comunicaciones físicas ni firmware.
 - Corregido el desbloqueo prematuro al deshacer/cambiar de parte o prórroga: el motor conserva los tres segundos del último gol aceptado. Ocho regresiones verifican pantalla/adaptador directo, límite exacto, simulación de transiciones y rechazo sin eventos adicionales. Al deshacer desde un final, el reloj no incorpora el tiempo de descanso.
 - Guardado con límite de diez segundos: una petición colgada deja el resultado pendiente y libera el resumen. Pruebas de recarga, varios resultados, confirmaciones desordenadas/tardías y fallo de limpieza local.
 - Recuperación de partidos en curso con prueba OFF: checkpoint versionado, validación, misma cuenta/proyecto, mismo ID y participantes. Juego activo recuperado en pausa, sin tiempo de cierre; cuenta atrás reiniciada, descanso/penaltis preservados. Copia retirada solo al entregar el resultado a cola durable/guardado. Modo prueba ON no escribe checkpoints.
+- PWA del build con precaché estática exacta, manifest/iconos, arranque offline tras primera preparación conectada y avisos/instalación desde Ajustes. Actualizaciones esperan al cierre sin forzar recarga. No activa caché en desarrollo ni cachea API/Auth/datos de usuario mediante service worker.
+- Identidad local mínima (solo ID versionado) selecciona jugadores/copia/cola del último operador sin red. No es credencial ni sustituye sesión/RLS; reconectar verifica Auth y cerrar sesión olvida selector sin borrar colas.
+- Indicador real de alcance del servidor web: ONLINE verde, SIN CONEXIÓN ámbar, comprobación acotada no cacheada. No implica salud/autorización Supabase ni afecta al motor.
 
 ### Módulos principales
 
@@ -53,6 +56,9 @@
 - `docs/VERIFICACION_PERSISTENCIA_V1.md`: evidencia de la fase B y recorrido autenticado pendiente.
 - `docs/VERIFICACION_FIABILIDAD.md`: reproducción del fallo, correcciones, pruebas y recorrido visual de recuperación sin servicios externos.
 - `tests/recovery.test.ts`, `docs/VERIFICACION_RECUPERACION.md`: regresiones y evidencia de recuperación del partido activo.
+- `tooling/pwa.ts`, `tooling/service-worker.js`, `public/connection.json`: generación PWA y sonda excluida de caché.
+- `src/system/`, `src/app/usePendingQueue.ts`, `src/services/persistence/OfflineIdentityStore.ts`: conexión, instalación/estado offline, cola observable e identidad local mínima.
+- `src/ui/screens/PendingMatchesScreen.tsx`, `tests/offline.test.ts`, `docs/VERIFICACION_PWA.md`: panel local de resultados y verificación del worker/arranque offline.
 
 ## Supabase ya aplicado — no repetir a ciegas
 
@@ -84,6 +90,7 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 - npm run test:engine: correcto.
 - npm run test:persistence y npm test: correctos.
 - npm run test:recovery: reloj, bloqueo, IDs anulados, estados, penaltis, corrupción, aislamiento, modo prueba y entrega del resultado sin duplicados.
+- npm run test:offline: plantilla real de worker, allowlist/privacidad, navegación offline, actualizaciones/cache incompleta, iconos, alcance de identidad, respuestas de conexión desordenadas y observadores de cola. npm test ejecuta los cuatro grupos.
 - npm run build: TypeScript y Vite correctos.
 - npm audit: cero vulnerabilidades en la última ejecución.
 - Pruebas SQL en el proyecto real: RLS, cuentas, permisos, equipos/agregado, idempotencia, snapshot, restricciones de borrado, secuencia, modo prueba y rollback correctos. Fixtures íntegramente revertidos con ROLLBACK.
@@ -93,6 +100,8 @@ No volver a crear estas tablas ni aplicar migraciones duplicadas. Inspeccionar p
 - Navegador con repositorios **en memoria**: creación de jugadores, selección válida 2v2, tres jugadores rechazados, cuenta atrás, partes, resumen e historial/detalle. Esto NO valida Auth ni el recorrido completo navegador → Supabase.
 - Lienzo medido 800×480 sin scroll general; comprobados también 755 px de ancho y ventana de 1280×720. Cronología con scroll interno.
 - Vite preview del build: carga, navegación y consola sin errores/advertencias. Avisos de recarga WebSocket de desarrollo registrados por separado.
+- PWA en preview de producción: primera carga conectada → OFFLINE DISPONIBLE → apagar servidor → cerrar y reabrir → app cargada desde caché con SIN CONEXIÓN, sin sesión. Documento 800×480; escala 390×844 sin recorte/scroll general.
+- PWA con repositorios aislados: apagar servidor de verdad durante partido 1–0, cerrar/reabrir offline, recuperar en pausa, terminar 4–0, consultar pendiente/eventos tras recarga aún sin servidor. Restaurar servidor → sincronización automática → un único partido simulado. No demuestra Auth/RPC Supabase real. Actualización en espera observada y activada tras cierre; no recarga forzada.
 - .env real, node_modules, dist y caché CLI ignorados; escaneo de fuentes versionables sin claves privadas/tokens.
 
 ## Bloqueo y siguiente acción exacta
@@ -117,7 +126,7 @@ Después, el agente debe verificar con la capa Supabase real:
 - GOALS cuenta los goles totales del periodo; el marcador visible es acumulativo. TIME termina por reloj; BOTH por la primera condición. Cambiar a objetivo por equipo requeriría una decisión explícita.
 - Prórroga: 60 segundos y gol de oro; después penaltis alternos, cinco intentos y muerte súbita. No se atribuyen goles a jugadores.
 - Deshacer no retrocede el reloj; el journal conserva goles y anulaciones.
-- Historial depende de conexión. Todavía no hay PWA/arranque offline. Sí hay recuperación de partida en curso en la rama de desarrollo: requiere app cargable, mismo origen/navegador/cuenta y prueba OFF. El resultado final pendiente también se conserva si localStorage funciona.
+- Historial remoto depende de conexión; panel de pendientes local disponible sin red. PWA/arranque offline en build tras primera carga completa, HTTPS o localhost y navegador compatible. No habilitado en npm run dev. Recuperación requiere mismo origen/navegador/cuenta y prueba OFF; no garantiza primera carga sin red ni almacenamiento no borrado. Instalación en móvil físico pendiente, no se ha desplegado este bloque.
 - Usar una sola pestaña activa. La protección frente a journal antiguo no es un protocolo de coordinación simultánea entre pestañas. Copias inválidas se conservan y bloquean su sobrescritura; no hay borrado automático ni botón de descarte de partidas. La precisión de recuperación del reloj es de segundos; una caída abrupta puede perder la fracción aún no escrita.
 - Pendientes locales no son backup ni se comparten entre PC/móvil; la desactivación es más segura que eliminar cuando otros dispositivos puedan tener resultados sin sincronizar.
 - Clave pública configurada localmente en .env.local ignorado; cloud/Vercel necesitan su propia configuración segura. No copiar credenciales a esta documentación.
@@ -144,3 +153,13 @@ Publicación comprobada: eeb23b8 en origin/codex/reliability-offline-v1; main co
 Implementados checkpoint puro y validado, copia local por cuenta/proyecto, escritor síncrono y pantalla de recuperación. Conservados reglas, goles, participantes, journal, contador de IDs anulados y penaltis. Recuperación en pausa para juego activo; tiempo de cierre excluido. MODO PRUEBA no escribe copias. El resultado pasa a la cola final con el mismo ID antes de retirar el checkpoint.
 
 Pruebas automatizadas ampliadas. Navegador integrado con repositorios aislados en memoria: recarga tras 1–0 → pausa → continuación → descanso recuperado → cuenta atrás de segunda parte recuperada → final 4–0 sin red → recarga → un pendiente → reintento → un resultado y journal completo. Cierre/reapertura de pestaña y penaltis recuperados con turno azul, final 3–0. Modo prueba ON restaurado, cero pendientes de fixture y consola sin errores/avisos. Pantalla nueva comprobada a 800×480 y escala 390×844 sin scroll general. Esto NO valida Auth ni Supabase real. Sin migraciones, cuentas, servicios externos o cambios de Vercel. Main sigue pendiente de prueba autenticada y revisión de la rama; ver `git log` para el commit de este bloque.
+
+Publicación de recuperación comprobada: 176d470 en la misma rama, divergencia 0/0 al iniciar el siguiente bloque.
+
+### 2026-10-01 — PWA, conexión y resultados pendientes
+
+Implementados precaché estática solo en build, manifest/iconos e instalación/estado offline; indicador de alcance del host, identidad local mínima, panel de resultados pendientes y reintento automático al reconectar con sesión válida. No se modifica MatchEngine ni se almacena información Supabase/Auth en la caché del worker. Las copias de partido y sesión SDK conservan su almacenamiento independiente. Actualización sin recargas forzadas.
+
+Cuatro grupos de tests, TypeScript/build y build aislado correctos. Verificado navegador con servidor realmente apagado: cierre/reapertura, recuperación y final 4–0 pendiente, reconexión automática con un único resultado simulado. Arranque offline también verificado en el build real sin sesión; 800×480 y 390×844 íntegros. Consola de aplicación sin avisos/errores capturados; modo prueba ON restaurado, cero pendientes de fixture, previews propios cerrados. Nuevos módulos y detalles en `VERIFICACION_PWA.md`.
+
+Sin migraciones, costes, cuentas Auth, Vercel, firmware o competición nueva. Fase B sigue pendiente del recorrido autenticado real y promoción a main. Build normal dist excluye fixture; offline-test separado bajo tmp ignorado. Instalación física en móvil pendiente. Bloque preparado localmente, pendiente de registrar publicación comprobada.

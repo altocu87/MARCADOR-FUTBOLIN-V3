@@ -10,7 +10,10 @@
     "test:engine": "tsx tests/matchEngine.test.ts",
     "test:persistence": "tsx tests/persistence.test.ts",
     "test:recovery": "tsx tests/recovery.test.ts",
-    "test": "npm run test:engine && npm run test:persistence && npm run test:recovery"
+    "test:offline": "tsx tests/offline.test.ts",
+    "build:test-offline": "vite build --mode offline-test",
+    "preview:test-offline": "vite preview --outDir tmp/pwa-test --host 127.0.0.1 --port 5188 --strictPort",
+    "test": "npm run test:engine && npm run test:persistence && npm run test:recovery && npm run test:offline"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2",
@@ -21,6 +24,7 @@
     "vite": "latest"
   },
   "devDependencies": {
+    "@types/node": "24.19.0",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "tsx": "^4.23.15"

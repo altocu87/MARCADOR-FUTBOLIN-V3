@@ -27,6 +27,7 @@ Las variables VITE son públicas y se incluyen en el build. La seguridad depende
 npm run test:engine
 npm run test:persistence
 npm run test:recovery
+npm run test:offline
 npm test
 npm run build
 npm run preview
@@ -34,7 +35,7 @@ npm run preview
 
 El build comprueba TypeScript y genera `dist/`. Las pruebas SQL reproducibles están en `supabase/tests/persistence_v1.sql`: ejecutar completas como administrador, con su ROLLBACK final. Usan fixtures temporales y no dejan cuentas ni partidos.
 
-La página `/tests/ui-fixture.html`, disponible solo en desarrollo, inyecta repositorios en memoria para verificar formularios, partido e historial sin usar credenciales ni modificar Supabase. No valida la conexión real ni forma parte del build de producción.
+La página `/tests/ui-fixture.html` inyecta repositorios en memoria para verificar formularios, partido e historial sin usar credenciales ni modificar Supabase. Está disponible en desarrollo y en el build aislado `npm run build:test-offline` → `npm run preview:test-offline` (puerto 5188, salida ignorada `tmp/pwa-test`). No valida Supabase real ni forma parte de `dist/` de producción. `?network=real` exige respuesta del servidor local para simular identidad, jugadores y guardado; permite apagar ese servidor y verificar el arranque desde la caché PWA.
 
 Para reproducir fallos de guardado en esa fixture: `?save=offline` simula un rechazo de red y `?save=hang` una petición que nunca responde. Con MODO PRUEBA OFF, completar un partido y comprobar el aviso de pendiente. Recargar conserva la cola; abrir la fixture sin esos parámetros y reintentar en AJUSTES simula la recuperación. Son datos de prueba locales, no registros de Supabase. Restaurar MODO PRUEBA ON después de verificar.
 
@@ -61,6 +62,8 @@ El espacio lógico es siempre 800×480, sin aspect-ratio. Se centra a tamaño re
 - `src/ui/`: pantallas y presentación.
 - `src/services/persistence/`: modelos, contratos PlayerRepository/MatchRepository, mapeo, copia activa versionada y cola offline.
 - `src/services/supabase/`: cliente oficial, adaptadores Auth/repositorios y tipos generados de la base.
+- `src/system/`: comprobación de conexión, preparación offline e instalación PWA, sin dependencias del motor.
+- `tooling/`: plugin de build, iconos, manifest y service worker con lista exacta de recursos estáticos.
 - `supabase/migrations/`: esquema, RLS, RPC transaccional e integridad.
 - `tests/`: pruebas del motor, persistencia y fixture visual aislada.
 
@@ -86,19 +89,32 @@ Un jugador con historial no puede eliminarse; se desactiva. La interfaz también
 
 MODO PRUEBA está ON por defecto, se recuerda localmente y se fija al empezar cada partido. No guarda partidos, participantes ni eventos, ni los escribe en la cola local o en copias de recuperación. Sin jugadores reales hay dos plazas de práctica únicamente en este modo. La gestión de jugadores sigue siendo real si se inicia sesión.
 
-No se envían goles a la nube durante el juego. La lista de jugadores se conserva por proyecto/cuenta para empezar partidos sin red tras un primer acceso. La app debe poder cargarse; no es todavía una PWA con arranque offline.
+No se envían goles a la nube durante el juego. La lista de jugadores se conserva por proyecto/cuenta para empezar partidos sin red tras un primer acceso. El build incluye una PWA que permite volver a cargar la aplicación sin servidor después de prepararla con conexión. Esta función no está activa en `npm run dev`.
 
 Con prueba OFF y sesión de operador, cada acción aceptada y cada segundo de reloj actualizan una copia local del partido activo. Después de recargar o cerrar y volver a abrir, aparece PARTIDO POR RECUPERAR: conserva ID, configuración, jugadores, marcador, tiempos, eventos, goles anulados y penaltis. Pulsa RECUPERAR PARTIDO; si estaba jugando, reaparece en pausa y requiere CONTINUAR. El tiempo de cierre no cuenta como juego. Una cuenta atrás se reinicia en 3, los descansos y los turnos de penaltis se conservan. Un resultado final aún no entregado conserva su ID para reintentar sin duplicarlo.
 
 La recuperación requiere la misma cuenta, navegador y dirección del marcador. No se transfiere entre PC y móvil. Usa una sola pestaña activa; una copia incompatible o con eventos más recientes se protege frente a sobrescritura. Si falla el almacenamiento, se muestra un aviso de no cerrar/recargar y el partido sigue en memoria. No borres los datos del navegador. Una caída abrupta puede perder la fracción de segundo no registrada; no es un backup ni una garantía si falla el disco. Detalles y pruebas en `docs/VERIFICACION_RECUPERACION.md`.
 
-Con prueba OFF, el resultado se escribe primero en localStorage y después se envía a Supabase. Si falla, queda pendiente en ese navegador/dispositivo; AJUSTES permite reintentar. No se sincroniza una cola desde otra cuenta. No borres los datos del navegador mientras haya pendientes. Si falla incluso el almacenamiento local, el resumen permanece en memoria y pide no cerrar y reintentar. Pendientes no son copias de seguridad y no se comparten entre móvil/PC.
+Con prueba OFF, el resultado se escribe primero en localStorage y después se envía a Supabase. Si falla, queda pendiente en ese navegador/dispositivo; AJUSTES → VER PENDIENTES permite consultar resultado, jugadores y cronología, sin depender de Supabase. La app abierta reintenta automáticamente al recuperar conexión y sesión válida, fuera de un partido en curso o guardado activo; también permite reintentar manualmente. Un fallo no inicia un bucle de reintentos. No se sincroniza una cola desde otra cuenta. No borres los datos del navegador mientras haya pendientes. Si falla incluso el almacenamiento local, el resumen permanece en memoria y pide no cerrar y reintentar. Pendientes no son copias de seguridad y no se comparten entre móvil/PC.
 
 La copia del partido activo solo se retira después de conservar el resultado final en la cola durable o confirmar el guardado. Si falla esa entrega, la copia de recuperación no se descarta.
 
 El coordinador limita cada intento a diez segundos para no bloquear indefinidamente el resumen. Una confirmación tardía no elimina la copia local: el reintento idempotente con el mismo ID recupera la operación sin duplicarla. Cada confirmación retira solo su partido, conservando los demás pendientes.
 
 El historial requiere conexión: lista paginada de 20 partidos, participantes, ganador, prórroga/penaltis y detalle cronológico. No se calcula XP, ELO, ranking ni estadísticas.
+
+### Preparar e instalar la PWA
+
+1. Generar el build y abrir `npm run preview`, o una publicación HTTPS autorizada. En un móvil, `127.0.0.1` apunta al propio móvil, no al PC; una dirección LAN HTTP no sustituye HTTPS para el service worker.
+2. Con conexión, esperar en AJUSTES → GENERAL el mensaje **OFFLINE DISPONIBLE EN ESTE DISPOSITIVO**. Para partidos reales, haber iniciado sesión y cargado jugadores en ese mismo navegador/origen.
+3. Si aparece INSTALAR APLICACIÓN, usarlo; si no, usar el menú del navegador → Instalar / Añadir a pantalla de inicio. La disponibilidad depende del navegador. No hace falta instalar para usar la caché en un navegador compatible.
+4. Usar una sola pestaña. Una actualización espera al cierre de la aplicación; no fuerza recargas. No cerrar con una advertencia de copia incompleta o fallo de almacenamiento.
+
+El service worker solo conserva HTML, JS, CSS, manifest e iconos del build. No almacena respuestas Supabase, correo, tokens ni resultados: estos últimos mantienen su almacenamiento local existente. Un selector local contiene solo el ID de la última cuenta y permite recuperar sus copias sin red; no es una credencial. El SDK de Auth conserva su propia sesión como antes. Para enviar datos se vuelve a verificar la sesión y RLS permanece vigente. Cerrar sesión elimina el selector, no las colas de partidos.
+
+El punto verde significa que responde el servidor web (sonda no cacheada, máximo cuatro segundos; revisión cada treinta segundos mientras la app está visible). No demuestra que Supabase o la sesión funcionen. Sin servidor se muestra **SIN CONEXIÓN** con punto ámbar; AJUSTES permite COMPROBAR CONEXIÓN.
+
+No hay primera carga offline, sincronización con la app cerrada, backup, historial remoto offline ni garantía frente a eliminación de datos/cuota del navegador. Detalles y pruebas reales de servidor apagado en `docs/VERIFICACION_PWA.md`. La instalación en un teléfono físico y el recorrido autenticado Supabase siguen pendientes; no se ha desplegado este bloque en Vercel.
 
 ## Próximas fases
 

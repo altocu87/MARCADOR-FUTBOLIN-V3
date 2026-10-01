@@ -9,6 +9,10 @@ import { TopMenu, type MenuItem } from '../ui/components/TopMenu'
 import { SettingsScreen } from '../ui/screens/SettingsScreen'
 import { HistoryScreen } from '../ui/screens/HistoryScreen'
 import { RecoveryScreen } from '../ui/screens/RecoveryScreen'
+import { PendingMatchesScreen } from '../ui/screens/PendingMatchesScreen'
+import { useConnection } from '../system/useConnection'
+import { useOfflineApp } from '../system/useOfflineApp'
+import { usePendingQueue } from './usePendingQueue'
 import type { ApplicationServices } from './services'
 import { errorMessage, useData } from './useData'
 import { SaveCoordinator, type KeyValueStorage } from '../services/persistence/SaveCoordinator'
@@ -18,7 +22,7 @@ import { activePlayers, type MatchDocument, type Player } from '../services/pers
 import { mapMatch, participantsFor } from '../services/persistence/mapMatch'
 
 const menuItems: MenuItem[] = [{ id: 'new-match', label: 'NUEVO PARTIDO' }, { id: 'tournament', label: 'TORNEO' }, { id: 'ranking', label: 'RANKING' }, { id: 'settings', label: 'AJUSTES' }]
-type Screen = 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'placeholder' | 'recovery'
+type Screen = 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'placeholder' | 'recovery' | 'pending'
 const browserStorage: KeyValueStorage = { getItem: key => localStorage.getItem(key), setItem: (key, value) => localStorage.setItem(key, value) }
 const practicePlayers: Player[] = ['PRUEBA BLANCO', 'PRUEBA AZUL'].map((name, i) => ({ id: 'practice-' + i, name, nickname: null, photoUrl: null, active: true, level: 0 }))
 
@@ -27,19 +31,23 @@ export function App({ services }: { services: ApplicationServices | null }) {
   const input = useMemo(() => new ScreenMatchInput(engine), [engine])
   const subscribe = useMemo(() => engine.subscribe.bind(engine), [engine])
   const state = useSyncExternalStore(subscribe, engine.getState, engine.getState)
-  const data = useData(services)
+  const connection = useConnection()
+  const offline = useOfflineApp()
+  const online = connection.state === 'online'
+  const data = useData(services, connection.state)
   const userId = data.user?.id ?? null
   const coordinator = useMemo(() => {
     if (!services || !userId) return null
     return new SaveCoordinator({
       saveMatch: async document => {
+        if (connection.monitor.getSnapshot() !== 'online') throw new Error('Sin conexión; resultado conservado localmente.')
         if ((await services.auth.getIdentity())?.id !== userId) throw new Error('Accede con la cuenta que inició el partido para sincronizarlo.')
         await services.matches.saveMatch({ ...document, owner_id: userId })
       },
       getMatches: offset => services.matches.getMatches(offset),
       getMatchById: id => services.matches.getMatchById(id),
     }, browserStorage, services.namespace + ':pending:v1:' + userId)
-  }, [services, userId])
+  }, [services, userId, connection.monitor])
   const activeStore = useMemo(() => services && userId ? new ActiveMatchStore(browserStorage, services.namespace, userId) : null, [services, userId])
   const [recovery, setRecovery] = useState<ActiveMatchCopy | null>(null)
   const [activeMenu, setActiveMenu] = useState('new-match')
@@ -50,7 +58,6 @@ export function App({ services }: { services: ApplicationServices | null }) {
   const [testMode, setTestMode] = useState(() => {
     try { return localStorage.getItem('marcador:test-mode:v1') !== 'false' } catch { return true }
   })
-  const [pendingCount, setPendingCount] = useState(0)
   const [saveMessage, setSaveMessage] = useState('')
   const [saving, setSaving] = useState(false)
   const [canLeave, setCanLeave] = useState(true)
@@ -60,6 +67,11 @@ export function App({ services }: { services: ApplicationServices | null }) {
   const finalDocument = useRef<MatchDocument | null>(null)
   const handledId = useRef<string | null>(null)
   const matchOpen = run.current !== null
+  const pending = usePendingQueue(coordinator, online && !data.localIdentity, matchOpen && state.status !== 'MATCH_END' || saving)
+  const pendingCount = pending.documents.length
+  useEffect(() => {
+    if (state.status === 'MATCH_END' && pending.lastSavedId === run.current?.id && run.current.checkpointReleased) setSaveMessage('PARTIDO GUARDADO EN SUPABASE')
+  }, [pending.lastSavedId, state.status])
   const protectedIds = useMemo(() => {
     try { return [...players.map(p => p.id), ...(recovery?.players ?? []).map(p => p.id), ...(coordinator?.getPending() ?? []).flatMap(doc => doc.participants.map(p => p.player_id))] }
     catch { return data.players.map(p => p.id) }
@@ -75,9 +87,6 @@ export function App({ services }: { services: ApplicationServices | null }) {
   }, [activeStore])
 
   useEffect(() => { const timer = window.setInterval(() => engine.tick(), 100); return () => window.clearInterval(timer) }, [engine])
-  useEffect(() => {
-    try { setPendingCount(coordinator?.getPending().length ?? 0) } catch (error) { setNotice(errorMessage(error)) }
-  }, [coordinator, saveMessage])
 
   async function persist(context: RunContext, document: MatchDocument) {
     setSaving(true); setCanLeave(false); setSaveMessage('Guardando resultado…')
@@ -87,7 +96,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
       // Only release recovery after a durable final queue or remote acknowledgement.
       context.checkpointReleased = true
       try { context.activeStore?.clear(context.id) } catch { setNotice('Resultado conservado; no se pudo limpiar la copia de recuperación.') }
-      setSaveMessage(result === 'saved' ? 'PARTIDO GUARDADO EN SUPABASE' : result === 'test' ? 'MODO PRUEBA · NO SE HA GUARDADO NADA' : 'PENDIENTE EN ESTE DISPOSITIVO · Reintenta en Ajustes')
+      setSaveMessage(result === 'saved' ? 'PARTIDO GUARDADO EN SUPABASE' : result === 'test' ? 'MODO PRUEBA · NO SE HA GUARDADO NADA' : 'PENDIENTE EN ESTE DISPOSITIVO · Se reintentará al reconectar')
       setCanLeave(true)
     } catch (error) { setSaveMessage(errorMessage(error) + ' · No cierres el resultado; reintenta.') }
     finally { setSaving(false) }
@@ -103,12 +112,6 @@ export function App({ services }: { services: ApplicationServices | null }) {
     } catch (error) { setSaveMessage(errorMessage(error)); setCanLeave(false) }
   }, [state])
 
-  async function retryPending() {
-    if (!coordinator) return
-    const results = await coordinator.retry()
-    setPendingCount(coordinator.getPending().length)
-    setNotice(results.includes('pending') ? 'Aún hay resultados pendientes. Revisa Internet y la sesión.' : 'Sincronización completada.')
-  }
   function selectMenu(id: string) {
     if (state.status === 'MATCH_END' && (!canLeave || saving)) { setNotice('Espera al guardado o reintenta en el resultado.'); return }
     if (state.status === 'PLAYING') input.emit('PAUSA')
@@ -165,10 +168,11 @@ export function App({ services }: { services: ApplicationServices | null }) {
       {screen === 'configuration' && <MatchConfigurationScreen mode={mode} onContinue={next => { setConfiguration(next); setScreen('players') }} onBack={() => setScreen('new')} />}
       {screen === 'players' && <PlayerSelectionScreen key={userId ?? 'practice'} availablePlayers={availablePlayers} testMode={testMode} onStart={start} onBack={() => setScreen('configuration')} />}
       {screen === 'match' && <MatchFlow state={state} engine={engine} input={input} players={players} onNewMatch={newMatch} saveMessage={saveMessage} canLeave={canLeave && !saving} onRetry={() => { if (!saving && run.current && finalDocument.current) void persist(run.current, finalDocument.current) }} />}
-      {screen === 'settings' && <SettingsScreen key={userId ?? 'guest'} services={services} user={data.user} players={data.players} protectedIds={protectedIds} testMode={testMode} onTestMode={value => { setTestMode(value); try { localStorage.setItem('marcador:test-mode:v1', String(value)) } catch { setNotice('Preferencia aplicada; no se pudo recordar localmente.') } }} refresh={data.refresh} pendingCount={pendingCount} onRetry={retryPending} dataMessage={notice || data.message} />}
-      {screen === 'history' && <HistoryScreen key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} />}
+      {screen === 'settings' && <SettingsScreen key={userId ?? 'guest'} services={services} user={data.user} players={data.players} protectedIds={protectedIds} testMode={testMode} onTestMode={value => { setTestMode(value); try { localStorage.setItem('marcador:test-mode:v1', String(value)) } catch { setNotice('Preferencia aplicada; no se pudo recordar localmente.') } }} refresh={data.refresh} pendingCount={pendingCount} onRetry={pending.retry} dataMessage={notice || pending.message || data.message} online={online && !data.localIdentity} onSignedOut={data.signedOut} syncBusy={pending.busy} onPending={() => setScreen('pending')} offline={offline} onCheck={() => void connection.monitor.check()} />}
+      {screen === 'pending' && <PendingMatchesScreen documents={pending.documents} online={online && !data.localIdentity} busy={pending.busy} message={pending.message} onRetry={pending.retry} onBack={() => setScreen('settings')} />}
+      {screen === 'history' && <HistoryScreen key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} online={online && !data.localIdentity} />}
       {screen === 'placeholder' && <div className="placeholder-screen"><span>PRÓXIMAMENTE</span><p>Torneos se implementará en otra fase.</p></div>}
     </section>
-    <footer className="system-status"><span className="status-dot" />{recoveryWarning || (notice && screen !== 'settings' ? notice : 'SISTEMA ONLINE · ' + ((run.current?.testMode ?? testMode) ? 'PRUEBA ON' : 'PRUEBA OFF') + ' · ' + (data.user ? 'SESIÓN ACTIVA' : 'SIN SESIÓN'))}{matchOpen && screen !== 'match' && <button type="button" onClick={() => { setActiveMenu('new-match'); setScreen('match') }}>VOLVER AL PARTIDO</button>}</footer>
+    <footer className="system-status" role="status"><span className={`status-dot ${online ? '' : 'status-offline'}`} /><span>{connection.state === 'online' ? 'SISTEMA ONLINE' : connection.state === 'offline' ? 'SIN CONEXIÓN' : 'COMPROBANDO CONEXIÓN'} · {(run.current?.testMode ?? testMode) ? 'PRUEBA ON' : 'PRUEBA OFF'} · {data.user ? data.localIdentity || !online ? 'SESIÓN LOCAL' : 'SESIÓN ACTIVA' : 'SIN SESIÓN'}{pendingCount > 0 && ` · ${pendingCount} PENDIENTES`}</span>{(recoveryWarning || notice && screen !== 'settings') && <span className="status-warning">{recoveryWarning || notice}</span>}{matchOpen && screen !== 'match' && <button type="button" onClick={() => { setActiveMenu('new-match'); setScreen('match') }}>VOLVER AL PARTIDO</button>}</footer>
   </main></FixedCanvas>
 }

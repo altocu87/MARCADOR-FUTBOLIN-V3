@@ -50,7 +50,7 @@ La CLI agent-browser no está instalada. Verificación equivalente mediante el n
 
 ## Límites y pendientes
 
-- Copia del mismo navegador/origen/cuenta, no sincronización de partidas en directo entre móvil/PC. No es backup, PWA ni garantiza arrancar sin conexión.
+- Copia del mismo navegador/origen/cuenta, no sincronización de partidas en directo entre móvil/PC ni backup. Este bloque original no incluía arranque offline; ampliado posteriormente por la PWA descrita en `VERIFICACION_PWA.md`, después de una primera carga completa con conexión.
 - El almacenamiento puede estar bloqueado o borrarse; entonces no se garantiza recuperación. La precisión de reloj es un segundo; un cierre abrupto puede perder la fracción no registrada. Goles se escriben en la notificación síncrona de su acción, si el almacenamiento funciona.
 - Una única pestaña activa. Se rechazan journals antiguos/divergentes, pero no hay bloqueo distribuido ni coordinación de juego simultáneo entre pestañas.
 - No se han aplicado migraciones ni cambiado servicios externos. Falta recorrido Auth/partido/historial contra Supabase real con cuenta introducida por el propietario, y posteriormente revisión/promoción a main.

@@ -8,6 +8,9 @@ const SAVE_TIMEOUT_MS = 10_000
 /** Queue scoped to project/account. Never contains test matches. */
 export class SaveCoordinator {
   private inFlight = new Map<string, Promise<SaveResult>>()
+  private listeners = new Set<(savedId?: string) => void>()
+  subscribe = (listener: (savedId?: string) => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener) } }
+  private notify(savedId?: string) { for (const listener of this.listeners) { try { listener(savedId) } catch { /* UI observers cannot break durable saving. */ } } }
   constructor(private readonly repository: MatchRepository, private readonly storage: KeyValueStorage, private readonly storageKey: string,
     private readonly timeoutMs = SAVE_TIMEOUT_MS) {
     if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) throw new Error('El tiempo límite de guardado debe ser positivo.')
@@ -45,6 +48,7 @@ export class SaveCoordinator {
     // Write-ahead: retain result even if the browser closes during the network request.
     const queue = this.getPending().filter(item => item.match.id !== document.match.id)
     this.storage.setItem(this.storageKey, JSON.stringify([...queue, document]))
+    this.notify()
     let timeout: ReturnType<typeof setTimeout> | undefined
     try {
       // A missing network response cannot trap the result screen indefinitely.
@@ -57,6 +61,7 @@ export class SaveCoordinator {
     } catch { return 'pending' }
     finally { if (timeout !== undefined) clearTimeout(timeout) }
     this.storage.setItem(this.storageKey, JSON.stringify(this.getPending().filter(item => item.match.id !== document.match.id)))
+    this.notify(document.match.id)
     return 'saved'
   }
 }

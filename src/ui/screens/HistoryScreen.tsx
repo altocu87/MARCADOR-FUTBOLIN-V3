@@ -7,7 +7,7 @@ const modeLabel = (mode: string) => mode === 'QUICK' ? 'RÁPIDO' : mode === 'CHA
 const time = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
 const labels: Record<string, string> = { goal: 'GOL', score_correction: 'CORRECCIÓN −1', undo: 'DESHACER', period_start: 'INICIO DE PARTE', period_end: 'FINAL DE PARTE', extra_time_start: 'PRÓRROGA', penalty: 'PENALTI', match_end: 'FINAL', pause: 'PAUSA', resume: 'CONTINUAR' }
 
-export function HistoryScreen({ repository, userId }: { repository: MatchRepository | null; userId: string | null }) {
+export function HistoryScreen({ repository, userId, online }: { repository: MatchRepository | null; userId: string | null; online: boolean }) {
   const [matches, setMatches] = useState<MatchSummary[]>([])
   const [detail, setDetail] = useState<MatchDocument | null>(null)
   const [offset, setOffset] = useState(0)
@@ -16,13 +16,14 @@ export function HistoryScreen({ repository, userId }: { repository: MatchReposit
   const [version, setVersion] = useState(0)
   useEffect(() => {
     if (!repository || !userId) return
+    if (!online) { setBusy(false); setMessage('SIN CONEXIÓN · El historial remoto requiere conexión. Los pendientes están en AJUSTES.'); return }
     let alive = true
     setBusy(true); setMessage('')
     void repository.getMatches(offset).then(data => { if (alive) setMatches(data) }).catch(error => { if (alive) setMessage(errorMessage(error)) }).finally(() => { if (alive) setBusy(false) })
     return () => { alive = false }
-  }, [repository, userId, offset, version])
+  }, [repository, userId, offset, version, online])
   const open = async (id: string) => {
-    if (!repository || busy) return
+    if (!repository || busy || !online) return
     setBusy(true)
     try { setDetail(await repository.getMatchById(id)); setMessage('') } catch (error) { setMessage(errorMessage(error)) } finally { setBusy(false) }
   }

@@ -15,14 +15,20 @@ const matches = new Map<string, MatchDocument>()
 // Reproducible network failures without changing browser settings or Supabase.
 // ?save=offline rejects; ?save=hang never acknowledges; default succeeds.
 const saveMode = new URLSearchParams(window.location.search).get('save')
+const realNetwork = new URLSearchParams(window.location.search).get('network') === 'real'
+async function requireNetwork() {
+  if (!realNetwork) return
+  const response = await fetch('/connection.json', { cache: 'no-store', signal: AbortSignal.timeout(2_000) })
+  if (!response.ok) throw new Error('Red de fixture no disponible')
+}
 const services: ApplicationServices = {
   namespace: 'marcador-ui-fixture',
   auth: {
-    async getIdentity() { return { id: 'fixture', email: 'PRUEBA UI LOCAL · SIN SUPABASE' } },
+    async getIdentity() { await requireNetwork(); return { id: 'fixture', email: 'PRUEBA UI LOCAL · SIN SUPABASE' } },
     subscribe() { return () => {} }, async signIn() {}, async signUp() { return 'Prueba local' }, async signOut() {},
   },
   players: {
-    async getPlayers() { return players.map(p => ({ ...p })) },
+    async getPlayers() { await requireNetwork(); return players.map(p => ({ ...p })) },
     async createPlayer(draft) { players.push({ id: crypto.randomUUID(), name: draft.name.trim(), nickname: draft.nickname || null, photoUrl: draft.photoUrl || null, active: true, level: 0 }) },
     async updatePlayer(id, draft) { players = players.map(p => p.id === id ? { ...p, name: draft.name, nickname: draft.nickname || null, photoUrl: draft.photoUrl || null } : p) },
     async setActive(id, active) { players = players.map(p => p.id === id ? { ...p, active } : p) },
@@ -33,6 +39,7 @@ const services: ApplicationServices = {
   },
   matches: {
     async saveMatch(document) {
+      await requireNetwork()
       if (saveMode === 'offline') throw new Error('Sin conexión · simulación local')
       if (saveMode === 'hang') await new Promise<void>(() => {})
       matches.set(document.match.id, structuredClone(document))

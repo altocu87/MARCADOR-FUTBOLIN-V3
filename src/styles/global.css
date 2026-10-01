@@ -72,3 +72,12 @@ button:focus-visible,input:focus-visible { outline: 2px solid #86ebff; outline-o
 .recovery-players { max-height: 42px; overflow-y: auto; }
 .recovery-screen .result-summary { margin: 0 0 4px; }
 .recovery-screen small { margin-top: 4px; color: #9db3ca; font-size: 11px; }
+.system-panel { overflow-y: auto; min-height: 0; }
+.pending-actions { display: flex; gap: 8px; }
+.offline-summary { margin-top: 10px; border-top: 1px solid #334f70; padding-top: 6px; }
+.offline-summary p { margin: 4px 0 8px; font-size: 11px; }
+.offline-summary small { display: block; color: #adbed6; font-size: 10px; margin: 0 0 8px; }
+.status-dot.status-offline { background: #ffbf5c; box-shadow: 0 0 8px #ffbf5c; }
+.system-status > span:not(.status-dot) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.system-status button, .system-status .status-dot { flex-shrink: 0; }
+.system-status .status-warning { max-width: 240px; color: #ffe08c; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
