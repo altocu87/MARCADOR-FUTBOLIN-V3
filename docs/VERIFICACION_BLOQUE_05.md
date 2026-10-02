@@ -60,9 +60,19 @@ siguen siendo 0. Tests de versiones cuentan entradas desde la fuente actual.
 
 **Batería final Chromium 53/53**, cero fallos/omitidos (114 s); once grupos
 `npm test` finales correctos. Incluye servidor PWA realmente apagado.
-Publicación de v0.5.2 se anota al comprobarla. SQL y
+Publicación funcional comprobada a continuación. SQL y
 fixtures no sustituyen el perfil real. Para la observación autenticada usar
 jugador/historial existente, sin repetir cuentas/partidos del checklist cerrado.
+
+**Publicación funcional comprobada:** `0ca87ac94f2518cb98f511c861cc0f7e6bbf8db0`,
+push fast-forward 3dffdaa→0ca87ac en `codex/reliability-offline-v1`, `ls-remote`
+coincidente y árbol limpio. Main intacta `900e470a719bc99bee4df853f0e11301a5b6562e`.
+GitHub Vercel success; `dpl_8MPkb9z1Xxr9qoeARUKCZF85xBEt` READY, commit/rama
+correctos. [Preview v0.5.2](https://marcador-futbolin-v3-c73xlp7b2-altocuvlc-9686s-projects.vercel.app/)
+HTML/bundle HTTP 200; `index-CwpNJxy4.js` coincide exactamente con build local,
+versión 0.5.2 y sin fixture. Sin sesión Supabase del operador ni recorrido
+web autenticado de 05. Esta anotación se publica después con el mismo código;
+no acredita de antemano el despliegue de ese commit documental.
 
 ## Prompt efectivo para la siguiente conversación: completar 05
 

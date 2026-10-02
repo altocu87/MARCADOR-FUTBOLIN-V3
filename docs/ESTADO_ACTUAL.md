@@ -28,7 +28,16 @@ Siguiente acción efectiva: resolver únicamente esas decisiones y completar 05,
 con perfil/histórico existentes para la observación autenticada según acceso.
 06 no iniciado ni desbloqueado por cambiar versión. Prompt vigente y resultados
 locales/SQL/Preview en [VERIFICACION_BLOQUE_05.md](VERIFICACION_BLOQUE_05.md).
-Publicación de esta continuación se anota después de comprobarla.
+**Publicación funcional comprobada:** `0ca87ac94f2518cb98f511c861cc0f7e6bbf8db0`,
+push fast-forward 3dffdaa→0ca87ac en `codex/reliability-offline-v1`, `ls-remote`
+coincidente y árbol limpio. Main intacta `900e470a719bc99bee4df853f0e11301a5b6562e`.
+GitHub Vercel success; `dpl_8MPkb9z1Xxr9qoeARUKCZF85xBEt` READY, commit/rama
+correctos. [Preview v0.5.2](https://marcador-futbolin-v3-c73xlp7b2-altocuvlc-9686s-projects.vercel.app/)
+HTML/bundle HTTP 200; `index-CwpNJxy4.js` coincide exactamente con build local,
+versión 0.5.2 y sin fixture. Sin sesión Supabase del operador ni recorrido
+web autenticado de 05. Esta anotación se publica después con el mismo código;
+no acredita de antemano el despliegue de ese commit documental.
+
 
 **Registro de v0.5.1, preservado; continuidad sustituida por la entrada anterior:**
 
@@ -329,8 +338,9 @@ cruce simultáneamente un tier de racha. Nada concede XP ni activa Hall.
 
 Versión/novedades/package/lock 0.5.2; README, contexto, seguimiento, catálogo y
 verificación coherentes. Tabla de fases corrige estados históricos de 03/04 que
-contradecían las aprobaciones posteriores. Pruebas efectivas y publicación en
-VERIFICACION_BLOQUE_05; sin dependencias, migraciones/escrituras reales, nuevas
+contradecían las aprobaciones posteriores. Once grupos npm test, 21 contratos 05, Chromium final 53/53, builds/typecheck
+y 19 escenarios SQL READ ONLY/ROLLBACK PASS. Publicación funcional 0ca87ac,
+Preview READY/bundle coincidente; evidencia exacta en VERIFICACION_BLOQUE_05; sin dependencias, migraciones/escrituras reales, nuevas
 cuentas/partidos, consultas por gol, administración, torneos, Google/Drive, SMTP,
 pagos ni promoción main. Siguiente efectivo: completar decisiones e integración
 aprobada de 05, no iniciar 06.
