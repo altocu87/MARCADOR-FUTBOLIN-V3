@@ -26,7 +26,7 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 | Bloque | Entrega | Estado al preparar el plan | Condición para comenzar |
 | --- | --- | --- | --- |
-| 01 | Consolidación y comprobación real | 2026-10-02: 1/6 y recuperación contraseña humanas OK; 2–5 simuladas por agente; oferta de recuperar 7 confirmada, falta reanudación; cancelación/descarte autorizados; 8–11/PWA y plantillas/remitente hosted pendientes | Evidencia y pasos restantes en VERIFICACION_BLOQUE_01.md |
+| 01 | Consolidación y comprobación real | 2026-10-02: 1/6/8/9 y recuperación contraseña humanas OK; 2–5 simuladas; 7 oferta confirmada, falta reanudación; 10 alias/datos conservados, nombre actual corregido y baja/reactivación pendientes; 11/PWA y plantillas/remitente hosted pendientes | Evidencia y pasos restantes en VERIFICACION_BLOQUE_01.md |
 | 02 | XP y niveles | Siguiente propuesto, todavía condicionado | Cerrar pendientes concretos del 01 y aprobar XP/curva/históricos |
 | 03 | ELO, ranking y categorías | Propuesto | Base verificada; parámetros competitivos aprobados |
 | 04 | Análisis competitivo y predicción | Propuesto | 03 y reglas/muestra aprobadas |
@@ -46,6 +46,8 @@ Continuación del 2026-10-02: el operador confirma recuperación de contraseña 
 Incidencia posterior del 2026-10-02: captura Safari con offline no disponible pese a conexión/sesión activas. Error de precarga de archivos protegidos reproducido; cookies del mismo origen y rechazo de redirects corregidos dentro de 01. Pruebas HTTP/worker/navegador independientes correctas, sin desactivar protección ni cachear Auth/API; publicación/evidencia en ESTADO_ACTUAL y VERIFICACION_PWA. Falta confirmar Safari físico: no repetir cuentas, GOALS/TIME ni esperar durante un partido para preparar offline.
 
 Seguimiento posterior del 2026-10-02: capturas móviles y Supabase real en solo lectura confirman un único nuevo 0–3 finalizado/no de prueba, histórico anterior conservado y cero pendientes/sincronización completada. El propietario confirma posteriormente que vio el partido en pendientes y pulsó reintentar. Prueba 8 completada mediante reintento manual; no pedir repetirla ni atribuir a este recorrido reintento automático observado. Reanudación completa de 7, PWA física/reapertura sin red de 11 y demás pendientes explícitos siguen abiertos. Esta evidencia no inicia 02 ni cambia datos, reglas o permisos.
+
+Seguimiento de alias y prueba ON, 2026-10-02: 9 confirmada por el propietario; SELECT real mantiene dos partidos y cero de prueba. Cambio de alias/nombre de 10 conserva datos. Por petición expresa, historial global/filtrado, detalle y últimos resultados muestran alias/nombre actual por ID, incluyendo inactivos y fallback al nombre guardado, sin reescribir resultados. Regresión independiente correcta; quedan observar la entrega publicada y desactivar/reactivar en el dispositivo. Pruebas 7/11 mantienen sus pendientes; no repetir 8/9 ni iniciar 02. Evidencia/publicación en ESTADO_ACTUAL.
 
 Cada fila pasa a en curso, completado o pendiente de verificación con evidencia fechada; no marcar todas completadas al copiar los prompts. El orden puede ajustarse expresamente: el pulido web no depende de disponer de hardware y el diseño del protocolo puede prepararse sin una placa conectada.
 

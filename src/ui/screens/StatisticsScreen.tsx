@@ -15,7 +15,7 @@ export function StatisticsScreen({ repository, players, userId, online, initialP
   const [selectedId, setSelectedId] = useState(initialPlayerId)
   const [search, setSearch] = useState('')
   const player = players.find(p => p.id === selectedId)
-  if (userId && player) return <PlayerProfile key={player.id} player={player} userId={userId} repository={repository} online={online} onBack={() => setSelectedId(null)} />
+  if (userId && player) return <PlayerProfile key={player.id} player={player} players={players} userId={userId} repository={repository} online={online} onBack={() => setSelectedId(null)} />
   const query = search.trim().toLocaleLowerCase('es')
   const filtered = players.filter(p => `${p.name} ${p.nickname ?? ''}`.toLocaleLowerCase('es').includes(query))
   return <section className="data-screen statistics-screen">
@@ -28,8 +28,9 @@ export function StatisticsScreen({ repository, players, userId, online, initialP
   </section>
 }
 
-function PlayerProfile({ player, userId, repository, online, onBack }: {
+function PlayerProfile({ player, players, userId, repository, online, onBack }: {
   player: Player; userId: string; repository: MatchRepository | null; online: boolean; onBack: () => void
+  players: readonly Player[]
 }) {
   const [results, setResults] = useState<PlayerResult[] | null>(null)
   const [history, setHistory] = useState(false)
@@ -55,7 +56,7 @@ function PlayerProfile({ player, userId, repository, online, onBack }: {
   const stats = analysis?.totals
   const filtered = Object.keys(filter).some(key => filter[key as keyof AnalysisFilter] !== emptyAnalysisFilter[key as keyof AnalysisFilter])
   const filterLabel = `${filter.from || 'inicio'} → ${filter.to || 'sin límite final'} · ${filter.mode === 'ALL' ? 'todos los modos' : filter.mode === 'QUICK' ? 'Rápido' : filter.mode === 'CHAOS' ? 'Caos' : 'Clasificatorio'} · ${filter.format === 'ALL' ? '1v1 y 2v2' : filter.format}`
-  if (history) return <HistoryScreen repository={repository} userId={userId} online={online} playerId={player.id} playerName={player.nickname || player.name} filteredMatches={analysis?.matches ?? []} filterLabel={filterLabel} onBack={() => setHistory(false)} />
+  if (history) return <HistoryScreen players={players} repository={repository} userId={userId} online={online} playerId={player.id} playerName={player.nickname || player.name} filteredMatches={analysis?.matches ?? []} filterLabel={filterLabel} onBack={() => setHistory(false)} />
   const metrics = stats ? [
     ['PARTIDOS', stats.played], ['VICTORIAS', stats.wins], ['DERROTAS', stats.losses], ['EMPATES', stats.draws],
     ['VICTORIAS %', stats.winRate.toLocaleString('es-ES', { maximumFractionDigits: 1 }) + '%'],
@@ -74,7 +75,7 @@ function PlayerProfile({ player, userId, repository, online, onBack }: {
         <p className="statistics-note">Fechas inclusivas en la zona horaria de este dispositivo. Los cambios se aplican al pulsar APLICAR FILTROS.</p>{filterError && <p role="alert" className="notice">{filterError}</p>}
       </form></details>
       {filtered && <p className="analysis-scope" role="status">FILTRO APLICADO · {filterLabel}</p>}
-      {online && stats && analysis ? <><dl className="statistics-grid">{metrics.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>{stats.played === 0 && <p>{filtered ? 'No hay partidos que coincidan con estos filtros.' : 'No hay partidos guardados para este jugador.'}</p>}<AnalysisDetails analysis={analysis} /></> : <p role={message ? 'alert' : 'status'}>{busy ? 'Calculando todos los partidos guardados…' : message || 'Preparando consulta…'}</p>}
+      {online && stats && analysis ? <><dl className="statistics-grid">{metrics.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>{stats.played === 0 && <p>{filtered ? 'No hay partidos que coincidan con estos filtros.' : 'No hay partidos guardados para este jugador.'}</p>}<AnalysisDetails analysis={analysis} players={players} /></> : <p role={message ? 'alert' : 'status'}>{busy ? 'Calculando todos los partidos guardados…' : message || 'Preparando consulta…'}</p>}
       <p className="statistics-note">Los goles son de su equipo, no goles individuales. Los penaltis deciden la victoria pero no se suman a los goles. Partidos de prueba y pendientes de sincronización no cuentan.</p>
     </div>
     <div className="panel-toolbar profile-actions"><button type="button" disabled={busy || !online || !analysis} onClick={() => setHistory(true)}>VER HISTORIAL DEL JUGADOR</button><button type="button" disabled={busy || !online} onClick={() => setVersion(v => v + 1)}>ACTUALIZAR</button></div>

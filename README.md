@@ -127,7 +127,7 @@ Cuatro tablas: players, matches, match_participants y match_events. Cada fila pe
 
 Al finalizar, App transforma una instantánea del motor y participantes. La operación save_match_v1 guarda el agregado en una sola transacción, aplica RLS como SECURITY INVOKER y valida la cuenta de inicio. UUID estable y hash de contenido hacen idempotentes los reintentos. Triggers diferidos también impiden insertar partidos incompletos por fuera de la RPC.
 
-Un jugador con historial no puede eliminarse; se desactiva. La interfaz también bloquea la eliminación de participantes de un partido en curso o de resultados pendientes en este dispositivo. Sus nombres en los partidos se conservan como snapshots aunque se edite el jugador. Si se trabaja desde varios dispositivos, desactivar es la opción segura: otro dispositivo puede tener un partido aún no sincronizado.
+Un jugador con historial no puede eliminarse; se desactiva. La interfaz también bloquea la eliminación de participantes de un partido en curso o de resultados pendientes en este dispositivo. Los nombres guardados al jugar se conservan en los datos originales; el historial muestra el alias actual, o el nombre actual si no hay alias, mediante el ID del jugador. Se incluyen jugadores inactivos y se usa el nombre guardado si no está disponible su ficha. Editar el nombre no reescribe resultados ni eventos. Si se trabaja desde varios dispositivos, desactivar es la opción segura: otro dispositivo puede tener un partido aún no sincronizado.
 
 ### Modo prueba y offline
 
@@ -151,7 +151,7 @@ El historial requiere conexión: lista paginada de 20 partidos, participantes, g
 
 ### Estadísticas básicas y perfil de jugador
 
-RANKING → ESTADÍSTICAS → elegir jugador, o AJUSTES → JUGADORES → PERFIL. Incluye búsqueda por nombre/alias y jugadores inactivos. El perfil muestra partidos, victorias, derrotas, empates, porcentaje de victorias, goles de su equipo a favor/en contra y diferencia. VER HISTORIAL DEL JUGADOR filtra antes de paginar; el detalle conserva los nombres históricos de todos los participantes.
+RANKING → ESTADÍSTICAS → elegir jugador, o AJUSTES → JUGADORES → PERFIL. Incluye búsqueda por nombre/alias y jugadores inactivos. El perfil muestra partidos, victorias, derrotas, empates, porcentaje de victorias, goles de su equipo a favor/en contra y diferencia. VER HISTORIAL DEL JUGADOR filtra antes de paginar; lista y detalle muestran los alias/nombres actuales de todos los participantes, manteniendo intactos los datos originales del partido.
 
 Totales calculados desde **todos** los resultados guardados, no solo los primeros 20. Lectura por cursor fecha/ID, deduplicación por UUID y ninguna actualización de contadores. 1v1 y 2v2 usan la perspectiva del equipo; los goles no se atribuyen individualmente. Prórroga incluida en el marcador; penaltis deciden victoria/derrota pero sus lanzamientos no suman goles. Porcentaje = victorias / partidos × 100, redondeado a una decimal; sin partidos es 0%. Empates guardados se conservan como empates, aunque el flujo actual normalmente los resuelva.
 
@@ -161,7 +161,7 @@ La gestión administrativa de añadir/editar/eliminar partidos fue reafirmada el
 
 ### Análisis, filtros y evolución
 
-El perfil añade los últimos cinco resultados (más reciente primero), racha actual de victorias/derrotas/empates, mejor racha de victorias y comparación 1v1/2v2. Los empates cortan las rachas de victorias/derrotas; un triunfo por penaltis cuenta como victoria. Los nombres del listado reciente son snapshots históricos, no goleadores.
+El perfil añade los últimos cinco resultados (más reciente primero), racha actual de victorias/derrotas/empates, mejor racha de victorias y comparación 1v1/2v2. Los empates cortan las rachas de victorias/derrotas; un triunfo por penaltis cuenta como victoria. El listado reciente muestra los alias/nombres actuales por identidad del jugador; los goles siguen siendo del equipo.
 
 FILTRAR ANÁLISIS permite elegir Desde/Hasta, modalidad Rápido/Caos/Clasificatorio y formato. APLICAR FILTROS cambia todas las métricas, rachas, últimos resultados, evolución e historial abierto desde el perfil al mismo conjunto; QUITAR FILTROS restablece todo. Fechas inclusivas según la zona horaria del dispositivo, con límites de día calendario (incluidos cambios de horario). Rango inválido conserva el filtro anterior y muestra aviso. Volver del historial conserva filtros; cambiar de jugador/cuenta los reinicia. No se guardan en almacenamiento ni se envían consultas por cada cambio de selector.
 

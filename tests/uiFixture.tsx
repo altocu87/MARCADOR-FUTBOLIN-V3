@@ -15,6 +15,8 @@ let players: Player[] = ['BLANCO UNO', 'AZUL UNO', 'BLANCO DOS', 'AZUL DOS'].map
   id: `00000000-0000-4000-8000-00000000000${index + 1}`, name, nickname: null, photoUrl: null, active: true, level: 0,
 }))
 const matches = new Map<string, MatchDocument>()
+// Read-only copies let browser regressions check that rendering never rewrites results.
+Object.defineProperty(window, 'fixtureSavedDocuments', { get: () => structuredClone([...matches.values()]) })
 // Reproducible network failures without changing browser settings or Supabase.
 // ?save=offline rejects; ?save=hang never acknowledges; default succeeds.
 const saveMode = new URLSearchParams(window.location.search).get('save')

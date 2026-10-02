@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { MatchRepository } from '../../services/persistence/MatchRepository'
-import type { MatchDocument, MatchSummary } from '../../services/persistence/models'
+import type { MatchDocument, MatchSummary, Player } from '../../services/persistence/models'
 import { errorMessage } from '../../app/useData'
+import { createParticipantNameResolver } from '../participantNames'
 
 const modeLabel = (mode: string) => mode === 'QUICK' ? 'RÁPIDO' : mode === 'CHAOS' ? 'CAOS' : 'CLASIFICATORIO'
 const time = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
@@ -16,8 +17,9 @@ function conditionLabel(document: MatchDocument): string {
   return `${match.victory_condition === 'GOALS' ? 'POR GOLES' : 'AMBAS'} · Reglas anteriores · ${match.goal_limit} goles sumados por parte${match.victory_condition === 'BOTH' ? ` / ${time(match.time_limit_seconds)}` : ' · Sin límite de tiempo'}`
 }
 
-export function HistoryScreen({ repository, userId, online, playerId, playerName, onBack, onStatistics, filteredMatches, filterLabel }: {
+export function HistoryScreen({ repository, players, userId, online, playerId, playerName, onBack, onStatistics, filteredMatches, filterLabel }: {
   repository: MatchRepository | null; userId: string | null; online: boolean; playerId?: string; playerName?: string
+  players: readonly Player[]
   onBack?: () => void; onStatistics?: () => void
   filteredMatches?: readonly MatchSummary[]; filterLabel?: string
 }) {
@@ -28,6 +30,7 @@ export function HistoryScreen({ repository, userId, online, playerId, playerName
   const [message, setMessage] = useState('')
   const [version, setVersion] = useState(0)
   const detailRequest = useRef<AbortController | null>(null)
+  const participantName = useMemo(() => createParticipantNameResolver(players), [players])
   useEffect(() => {
     detailRequest.current?.abort(); detailRequest.current = null
     setMatches([]); setDetail(null)
@@ -57,9 +60,9 @@ export function HistoryScreen({ repository, userId, online, playerId, playerName
     {playerName && <p className="history-player-label">JUGADOR · {playerName}</p>}
     {filterLabel && <p className="analysis-scope">{filterLabel} · Para actualizar los resultados, vuelve al perfil.</p>}
     {!userId ? <div className="empty-state">Inicia sesión en AJUSTES para consultar tus partidos.</div> : detail ? <>
-      <div className="history-summary"><b>BLANCO {detail.match.white_score} — {detail.match.blue_score} AZUL</b><span>{modeLabel(detail.match.match_type)} · {conditionLabel(detail)}</span><span>{detail.participants.map(p => `${p.team === 'WHITE' ? 'BLANCO' : 'AZUL'}: ${p.player_name}`).join(' · ')}</span>{detail.match.went_to_penalties && <span>Penaltis: {detail.match.penalty_white_score} — {detail.match.penalty_blue_score}</span>}</div>
+      <div className="history-summary"><b>BLANCO {detail.match.white_score} — {detail.match.blue_score} AZUL</b><span>{modeLabel(detail.match.match_type)} · {conditionLabel(detail)}</span><span>{detail.participants.map(p => `${p.team === 'WHITE' ? 'BLANCO' : 'AZUL'}: ${participantName(p)}`).join(' · ')}</span>{detail.match.went_to_penalties && <span>Penaltis: {detail.match.penalty_white_score} — {detail.match.penalty_blue_score}</span>}</div>
       <div className="scroll-panel event-list">{detail.events.map(event => <div key={event.sequence}><span>{event.sequence} · {time(event.match_time_seconds)} · {singleGoalDetail ? 'PARTIDO' : event.period}</span><b>{singleGoalDetail && event.event_type === 'period_start' ? 'INICIO DEL PARTIDO' : labels[event.event_type]} {event.team === 'WHITE' ? 'BLANCO' : event.team === 'BLUE' ? 'AZUL' : ''}{event.event_type === 'penalty' ? event.penalty_scored ? ' · GOL' : ' · FALLO' : ''}</b><span>{event.white_score} — {event.blue_score}</span></div>)}</div>
-    </> : <><div className="scroll-panel history-list">{busy ? <p>Cargando…</p> : message ? <p>No se pudo cargar esta consulta.</p> : matches.length === 0 ? <p>No hay partidos guardados.</p> : matches.map(match => <button type="button" key={match.id} onClick={() => void open(match.id)}><span>{new Date(match.finished_at).toLocaleString('es-ES')} · {modeLabel(match.match_type)}</span><b>BLANCO {match.white_score} — {match.blue_score} AZUL · {match.winner_team ? `GANA ${match.winner_team === 'WHITE' ? 'BLANCO' : 'AZUL'}` : 'EMPATE'}</b><small>{match.participants.map(p => `${p.team === 'WHITE' ? 'B' : 'A'}: ${p.player_name}`).join(' · ')}{match.went_to_extra_time ? ' · PRÓRROGA' : ''}{match.went_to_penalties ? ' · PENALTIS' : ''}</small></button>)}</div><div className="panel-toolbar"><button type="button" disabled={busy || !online || offset === 0} onClick={() => setOffset(value => Math.max(0, value - 20))}>ANTERIORES</button><button type="button" disabled={busy || !online || matches.length < 20} onClick={() => setOffset(value => value + 20)}>SIGUIENTES</button></div></>}
+    </> : <><div className="scroll-panel history-list">{busy ? <p>Cargando…</p> : message ? <p>No se pudo cargar esta consulta.</p> : matches.length === 0 ? <p>No hay partidos guardados.</p> : matches.map(match => <button type="button" key={match.id} onClick={() => void open(match.id)}><span>{new Date(match.finished_at).toLocaleString('es-ES')} · {modeLabel(match.match_type)}</span><b>BLANCO {match.white_score} — {match.blue_score} AZUL · {match.winner_team ? `GANA ${match.winner_team === 'WHITE' ? 'BLANCO' : 'AZUL'}` : 'EMPATE'}</b><small>{match.participants.map(p => `${p.team === 'WHITE' ? 'B' : 'A'}: ${participantName(p)}`).join(' · ')}{match.went_to_extra_time ? ' · PRÓRROGA' : ''}{match.went_to_penalties ? ' · PENALTIS' : ''}</small></button>)}</div><div className="panel-toolbar"><button type="button" disabled={busy || !online || offset === 0} onClick={() => setOffset(value => Math.max(0, value - 20))}>ANTERIORES</button><button type="button" disabled={busy || !online || matches.length < 20} onClick={() => setOffset(value => value + 20)}>SIGUIENTES</button></div></>}
     {message && <p className="notice" role="alert">{message}</p>}
   </section>
 }

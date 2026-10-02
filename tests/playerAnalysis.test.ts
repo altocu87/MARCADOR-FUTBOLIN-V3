@@ -121,7 +121,7 @@ test('lectura completa reutilizable: no pide eventos ni escribe, más de 20 resu
 test('gráfico acotado: calcula 200 partidos, dibuja 60 puntos y conserva extremos', () => {
   const games = Array.from({ length: 200 }, (_, i) => ({ ...match(1, i % 2 ? 'LOSS' : 'WIN'), id: id(100 + i), finished_at: new Date(Date.UTC(2026, 0, 1) + i * 86_400_000).toISOString() }))
   const a = analyze(games)
-  const html = renderToStaticMarkup(createElement(AnalysisDetails, { analysis: a }))
+  const html = renderToStaticMarkup(createElement(AnalysisDetails, { analysis: a, players: [] }))
   assert.equal(a.evolution.length, 200)
   const coordinates = html.match(/<polyline points="([^"]+)"/)![1].split(' ')
   assert.equal(coordinates.length, 60); assert.equal(coordinates[0], '20,20'); assert.equal(coordinates.at(-1), '300,70')
@@ -129,7 +129,25 @@ test('gráfico acotado: calcula 200 partidos, dibuja 60 puntos y conserva extrem
   assert.match(html, /<th scope="row">200<\/th>/)
 })
 test('gráfico de un único resultado: punto visible y descripción accesible', () => {
-  const html = renderToStaticMarkup(createElement(AnalysisDetails, { analysis: analyze([match(1)]) }))
+  const html = renderToStaticMarkup(createElement(AnalysisDetails, { analysis: analyze([match(1)]), players: [] }))
   assert.match(html, /role="img" aria-label="Porcentaje acumulado/)
   assert.match(html, /<circle cx="160" cy="20" r="4"/)
+})
+
+test('nombres actuales por ID: homónimos, inactivos y fallback sin alterar resultados', () => {
+  const game = match(1, 'WIN', 4)
+  game.participants[0].player_name = 'Nombre antiguo compartido'
+  game.participants[1].player_name = 'Nombre antiguo compartido'
+  const original = structuredClone(game)
+  const analysis = analyze([game])
+  const players = [
+    { id: id(1), name: 'Nombre compartido', nickname: '<Alias blanco>', photoUrl: null, active: true, level: 0 },
+    { id: id(2), name: 'Azul actual', nickname: null, photoUrl: null, active: false, level: 0 },
+  ]
+  const html = renderToStaticMarkup(createElement(AnalysisDetails, { analysis, players }))
+  assert.match(html, /B: &lt;Alias blanco&gt; · A: Azul actual · B: Jugador 3 · A: Jugador 4/)
+  assert.doesNotMatch(html, /Nombre antiguo compartido/)
+  assert.deepEqual(game, original)
+  assert.equal(analysis.totals.played, 1)
+  assert.equal(analysis.totals.wins, 1)
 })

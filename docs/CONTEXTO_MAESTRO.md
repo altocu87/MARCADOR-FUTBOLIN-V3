@@ -1180,6 +1180,8 @@ Ejecución del bloque 01, 2026-10-01: reglas vigentes GOALS/TIME V2 y BOTH V4 co
 
 Seguimiento humano, 2026-10-02: recuperación de contraseña confirmada; oferta de recuperar partido observada; prueba 2 delegada expresamente al agente y simulada de nuevo (TIME/AMBAS, final directo). Cancelar/descartar incompletos autorizado e implementado dentro de 01, sin borrar resultados/pendientes. Prueba 8: capturas móviles y SELECT en Supabase confirman nuevo 0–3 único, histórico anterior conservado y cero pendientes/sincronización completada; el propietario confirma además el pendiente previo y el reintento manual. Prueba 8 completada. Reanudación completa, PWA física/reapertura sin red y aplicación de correos/remitente siguen pendientes. No repetir 2–5 ni el guardado de 8 por rutina. ESTADO_ACTUAL mantiene evidencia y publicación de esta continuación.
 
+Seguimiento posterior del 2026-10-02: prueba 9 ON correcta según el propietario y resultados reales conservados; 10 confirma alias/nombre editado con sus datos. Solicita nombre actual en historial, implementado por ID sin reescribir snapshots (§73). Pendiente comprobar entrega publicada y baja/reactivación del dispositivo; 7/11 y correos hosted mantienen sus límites. No repetir partidos/registros ni iniciar XP/ELO.
+
 Organización solicitada posteriormente por el propietario, 2026-10-01: una conversación por bloque, con contexto registrado y prompt listo para continuar. [BLOQUES_DESARROLLO.md](BLOQUES_DESARROLLO.md) define diez entregas propuestas y sus dependencias. Siguiente recomendado: bloque 01, consolidar las tres condiciones ya corregidas y detallar/comprobar el recorrido real; el operador ya comunica login y prueba satisfactorios. Los bloques futuros no se ejecutan por leer ese plan, ni convierten parámetros de XP/ELO, formato de torneos o conexiones de hardware propuestos en decisiones aprobadas. ESTADO_ACTUAL mantiene el seguimiento operativo real.
 
 Actualización posterior, 2026-10-01: el propietario autoriza avanzar a estadísticas básicas/perfiles (primer bloque C), sin cerrar artificialmente B ni promover a main. Lecturas privadas desde resultados existentes, sin nuevas tablas ni contadores. Se excluyen prueba/pendientes, se deduplican IDs y se recorre el historial completo con cursor. Los penaltis deciden el ganador sin añadirse a goles del partido. XP/ELO y el resto de fases permanecen fuera del bloque. Ver ESTADO_ACTUAL.md y VERIFICACION_ESTADISTICAS.md.
@@ -1241,6 +1243,8 @@ No hace falta todavía editor avanzado de fotografía.
 
 Jugadores activos: seleccionables. Inactivos: conservar en historial.
 
+Seguimiento humano del 2026-10-02: prueba 9 ON confirmada correcta; cambio de alias/nombre de 10 conserva los datos. Desactivación/reactivación desde el dispositivo todavía sin confirmar. No pedir repetir registro ni editar/generar partidos para volver a comprobar el cambio de nombre.
+
 ## 72. SELECCIÓN DE JUGADORES
 
 Nuevo Partido: obtener jugadores activos. Permitir máximo 4.
@@ -1248,6 +1252,8 @@ Nuevo Partido: obtener jugadores activos. Permitir máximo 4.
 Debe quedar claro BLANCO y AZUL. Validar configuración. Soportar 1v1 y 2v2.
 
 ## 73. HISTORIAL V1
+
+Decisión posterior del propietario, 2026-10-02: al editar alias/nombre, el historial debe mostrar el nombre actual. Implementado por ID en historial global y filtrado, detalle y últimos resultados del perfil: alias actual preferente, nombre actual si no hay alias, incluyendo inactivos; nombre guardado como fallback si falta la ficha. Reemplaza la presentación anterior de nombres históricos en estas vistas; los snapshots almacenados, UUID, resultados, equipos, eventos e idempotencia permanecen intactos. Reutiliza jugadores de la cuenta ya cargados, sin consultas por fila/gol ni permisos/migraciones nuevos. Pruebas y publicación en ESTADO_ACTUAL.
 
 Pantalla inicial sencilla.
 
