@@ -2,7 +2,7 @@ import { AchievementCards } from '../src/ui/components/AchievementsPanel'
 import { rebuildAchievements } from '../src/achievements/rebuild'
 import { useState } from 'react'
 import { FixedCanvas } from '../src/ui/layout/FixedCanvas'
-import { reviewHonours, type RecordId } from './block05Prototype'
+import { proposedTierXp, reviewHonours, type RecordId } from './block05Prototype'
 import { eloFixtures, eloPlayers, testEloRules } from './eloFixtures'
 
 const rules = { ...testEloRules, version: 2, marginMultipliers: [1, 1, 1, 1, 1, 1] }
@@ -62,7 +62,10 @@ export function Block05Review() {
           <section aria-label="Resumen de propuesta">
             <h2>{tab === 'hall' ? 'Líderes de esta cuenta simulada' : displayName(row.player)}</h2>
             <p className="muted05">{row.player.active ? 'Activo' : 'Baja · conserva historial'} · {row.metrics.played} partidos simulados</p>
-            <p data-testid="proposed-xp">XP extraordinario concedido: 0</p>
+            <p data-testid="proposed-xp">XP V2 simulado: {row.proposedExtraXp} · XP extraordinario concedido: 0</p>
+            <p className="warning05">Propuesta sin activar: {proposedTierXp.join(' / ')} XP por nivel. Máximo 275 por familia, 2475 en total.</p>
+            <details><summary>VER DESGLOSE XP V2 SIMULADO</summary><ul>{row.achievements.filter(a => a.evidence).map(a =>
+              <li key={a.identity}>{a.title} · +{a.xp} XP propuestos</li>)}</ul></details>
             <p className="muted05">Prueba y pendientes excluidos. Récords: 0 XP. Goles siempre de equipo.</p>
           </section>
           {tab === 'achievements' && <AchievementCards snapshot={rebuildAchievements({ accountId: 'fixture-account', playerId, source: 'confirmed', complete: true, matches: state === 'empty' ? [] : history })} />}

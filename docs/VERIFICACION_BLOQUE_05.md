@@ -1,3 +1,99 @@
+# Bloque 05 — continuación de revisión, v0.5.2, 2026-10-02
+
+**No cerrado; pendiente de decisión expresa de XP V2 y récords/Hall.** La petición
+vigente mantiene ese requisito. Dos preguntas concretas enviadas durante el
+trabajo: mantener 0 XP extra o aprobar V2 (incluidos históricos/recálculo); aprobar
+los ocho récords/Hall o aplazarlos expresamente. Sin respuesta registrada. No se
+activa catálogo propuesto ni se interpreta el silencio como decisión. 06 no iniciado.
+
+## Cambio verificable de esta continuación
+
+La maqueta anterior dejaba los importes por tier a 0, por lo que su XP propuesto
+no permitía valorar V2. `tests/block05Prototype.ts` ahora centraliza la propuesta
+25/25/50/75/100; `block05Review.tsx` muestra total y desglose por identidad del tier.
+45 identidades únicas, máximo 275 por familia y 2475 total. Todo únicamente en
+fixture aislado; `grantedExtraXp=0`, sin funciones SQL nuevas, proyección XP,
+migración/escritura, caché privada, llamada remota o modificación del motor.
+Producción conserva nueve familias/45 estrellas y 0 XP extra. El build normal
+solo cambia versión/novedades 0.5.2, nunca importa la propuesta ni la maqueta.
+
+Dos contratos nuevos verifican importes y ejemplos: primer Rápido 3–0 propone
++100 (cuatro tiers 1), goles 4→50 añade solo +75 (tiers 2/3), retry y recálculo.
+Dos expectativas antiguas de 0 XP propuesto quedan sustituidas. Para comprobar
+que mejorar un récord no añade XP se edita el marcador sin añadir simultáneamente
+una tercera victoria que cruza el tier 2 de racha; todos los premios concedidos
+siguen siendo 0. Tests de versiones cuentan entradas desde la fuente actual.
+
+## Verificación realizada en esta sesión
+
+- Sincronización: checkout limpio `work/900e470`, rama local f9ebe15. Fetch genérico
+  solo main; fetch explícito de revisión recupera 3dffdaa, 0 commits locales/41
+  remotos, integración fast-forward. Ningún reset/stash/sobrescritura ni promoción.
+- Baseline once grupos `npm test` y build correctos. EPERM inicial del socket
+  IPC de tsx resuelto ejecutando con permiso de red/sockets, sin cambios de código.
+- `npm run test:block05`: **15/15 propuesta + 6/6 módulo activo**; typecheck
+  explícito de referencia, componente/fixture/tests y generador SQL correcto.
+  Builds normal/aislado correctos. Dependencias intactas, package/lock 0.5.2.
+- Chromium focalizado **7/7**, incluidos revisión/desglose, estados, versiones,
+  perfil/filtros/offline, conflictos y pendiente→sync/prueba. Repositorios en
+  memoria y peticiones Supabase bloqueadas, sin sesión/filas reales.
+- Capturas revisadas de revisión 390×844 y perfil físico 800×480; batería mide
+  también 320×568/844×390/768×1024/1440×900. Scroll interno, controles ≥48 px,
+  sin scroll general ni errores de ejecución. Capturas temporales fuera de Git.
+- `agent-browser` ausente: Playwright/Chromium existentes, sin instalar dependencia.
+  React: hooks incondicionales, estado limitado a revisión, keys por identidad,
+  texto escapado y ningún efecto/almacenamiento nuevo.
+- `npm audit --omit=dev --audit-level=moderate`: **0 vulnerabilidades**.
+  Changelog Supabase bloqueado CONNECT 403, sin eludir política; documentación
+  vigente de vistas SECURITY INVOKER/RLS consultada mediante search_docs.
+- Generador SQL actualizado automáticamente por sus importes de propuesta:
+  **19 escenarios PASS** en Supabase real `unemjyfhzljcdjcbiiwh`, REPEATABLE READ
+  READ ONLY/ROLLBACK. Compara badges/métricas/evidencias/XP propuesto y 0 concedido,
+  récords propuestos, RLS/permisos y XP/ELO aprobados. Solo JSON/CTEs, ningún
+  INSERT/UPDATE/DELETE/DDL, cuenta/partido nuevo o migración. No prueba una RPC
+  de premios. SELECT posterior: 2 jugadores/2 Rápidos/4 participantes/12 eventos,
+  0 Clasificatorios, ambos XP 225/nivel 1/2 partidos, igual que antes.
+- Preview base comprobada por conector Vercel: 3dffdaa, rama correcta,
+  `dpl_498wmXCUGob8x9tupXKd7V45M2ND` READY y alias protegido HTTP 200,
+  `index-DrgevwC6.js`. Esto acredita publicación del build base; sin sesión
+  Supabase del operador ni observación autenticada de 05. No retirar protección.
+
+**Batería final Chromium 53/53**, cero fallos/omitidos (114 s); once grupos
+`npm test` finales correctos. Incluye servidor PWA realmente apagado.
+Publicación de v0.5.2 se anota al comprobarla. SQL y
+fixtures no sustituyen el perfil real. Para la observación autenticada usar
+jugador/historial existente, sin repetir cuentas/partidos del checklist cerrado.
+
+## Prompt efectivo para la siguiente conversación: completar 05
+
+```text
+Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1 y completa
+exclusivamente 05. Lee AGENTS y contexto, estado, seguimiento, catálogo y
+VERIFICACION_BLOQUE_05 vigentes; sincroniza sin sobrescribir trabajo local.
+v0.5.2 conserva nueve familias/cinco tiers/45 estrellas de v0.5.1, identidad
+cuenta/jugador/familia/ordinal e historial confirmado completo; excluye prueba,
+pendientes e incompletos. La propuesta XP V2 25/25/50/75/100 y ocho récords/Hall
+está desglosada/verificada solo en fixture; concedido 0, ninguna aprobación
+registrada. Usa las respuestas expresas posteriores si existen; si faltan,
+solicita únicamente mantener 0 o aprobar V2 con históricos/recálculo y aprobar
+o aplazar Hall, sin activar propuestas ni declarar cierre. Con aprobación XP,
+deriva contribuciones únicas en servidor bajo RLS, desglose y recálculo desde
+hechos vigentes; no alteres XP base/curva. Hall aprobado: privado, todos los
+líderes empatados, 0 XP por récord, alias/bajas por UUID, porcentaje exacto con
+mínimo 20 y ELO solo con Clasificatorio. Conserva XP/ELO aprobados, RLS,
+idempotencia, motor y 04 descriptivo. 1v1/2v2 todos los modos; 1v2 solo Rápido/Caos,
+XP completo y sin ELO. No atribuyas goles individuales ni inventes tiempos.
+Verifica código/UI/SQL según acceso, distinguiendo fixtures de Preview autenticada;
+usa perfil/histórico existentes, no repitas cuentas/partidos del checklist cerrado.
+Actualiza contexto, seguimiento, versión/novedades; publica en revisión y entrega
+prompt condicionado al cierre real de 05. Sin iniciar 06, torneos, administración,
+pagos, Google/Drive, SMTP ni promoción main.
+```
+
+La propuesta de prompt 06 conservada al final sigue condicionada al cierre de 05.
+
+## Registro histórico v0.5.1
+
 # Bloque 05 — logros progresivos, v0.5.1, 2026-10-02
 
 Petición vigente implementada: una familia que sube de nivel con estrellas/tiers,
@@ -106,7 +202,7 @@ HTTP 200 con versión 0.5.1, catálogo tiers-v2 y tarjetas de estrellas, sin fix
 Sin sesión del operador ni recorrido autenticado del nuevo panel. Esta anotación
 se publica después sin modificar código/versión, y puede generar otra Preview.
 
-## Prompt vigente: continuar solo 05
+## Prompt histórico v0.5.1: sustituido por el efectivo de arriba
 
 ```text
 Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1 y trabaja
@@ -294,7 +390,7 @@ Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1 y ejecut
 exclusivamente bloque 06: torneos. Lee AGENTS.md, CONTEXTO_MAESTRO, ESTADO_ACTUAL,
 BLOQUES_DESARROLLO y VERIFICACION_BLOQUE_05; sincroniza preservando trabajo local,
 sin promover main. Comprueba primero cierre y catálogo aprobado/activo de 05;
-05 permanece abierto en v0.5.1: si sigue abierto, registra dependencia
+05 permanece abierto en v0.5.2: si sigue abierto, registra dependencia
 y no lo saltes. Con 05 cerrado, prepara propuesta concreta de formato, equipos,
 cuadro/liguilla, byes, empates y recompensas para aprobación propia de 06. Avanza
 diseño/pruebas independientes; no inventes ni actives reglas/premios propuestos.

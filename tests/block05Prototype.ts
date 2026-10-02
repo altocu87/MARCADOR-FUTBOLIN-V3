@@ -8,8 +8,10 @@ import { rebuildCompetition, type EloRules } from '../src/competition/elo'
 /** Records/Hall remain a proposal. Badge tiers use the production catalogue. */
 export type Metric = AchievementMetric
 export interface DraftAchievement { id: string; metric: Metric; threshold: number; xp: number; title: string }
+// Review-only V2 proposal. Never imported by the app or used to grant XP.
+export const proposedTierXp = [25, 25, 50, 75, 100] as const
 export const draftCatalog: readonly DraftAchievement[] = achievementCatalog.flatMap(family =>
-  family.thresholds.map((threshold, i) => ({ id: `${family.id}:tier_${i + 1}`, metric: family.id, threshold, xp: 0, title: `${family.title} · Nivel ${i + 1}` })))
+  family.thresholds.map((threshold, i) => ({ id: `${family.id}:tier_${i + 1}`, metric: family.id, threshold, xp: proposedTierXp[i], title: `${family.title} · Nivel ${i + 1}` })))
 
 export type RecordId = 'most_played' | 'most_wins' | 'best_streak' | 'biggest_margin' | 'most_team_goals' | 'best_win_rate' | 'current_elo' | 'max_elo'
 export interface DraftRecord {

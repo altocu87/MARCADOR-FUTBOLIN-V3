@@ -623,6 +623,11 @@ Mostrar también últimos 5 resultados clasificatorios.
 
 ## 34. LOGROS
 
+**Continuación v0.5.2:** importes V2 calculados/desglosados solo en el fixture de
+revisión, con 0 XP concedido. Conserva las estrellas y su identidad de v0.5.1.
+XP V2 y récords/Hall requieren respuesta expresa del propietario; no aprobación
+registrada en esta continuación. Pruebas independientes no activan propuestas.
+
 **Decisión vigente 05, v0.5.1, 2026-10-02:** el propietario pide logros que
 suben con estrellas/tiers, una tarjeta por familia; goles en 1/5/50 y otros
 escalones/familias accesibles a criterio de implementación. Sustituye las 24
@@ -1238,11 +1243,12 @@ Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
 
-Entrega vigente v0.5.1: 03 aprobado/activo, 04 descriptivo integrado y logros
+Entrega vigente v0.5.2: 03 aprobado/activo, 04 descriptivo integrado y logros
 05 por niveles disponibles en el perfil desde historial confirmado. Nueve familias,
 45 estrellas, 0 XP extra. Recompensas V2 y récords/Hall pendientes de aprobación;
 05 no cerrado, Preview autenticada del operador no observada por el agente.
-Continuación efectiva: revisar esas propuestas y completar únicamente 05.
+Continuación efectiva: decidir esas propuestas, ahora desglosadas en el fixture,
+y completar únicamente 05. No interpretar silencio ni publicación como aprobación.
 06 condicionado al cierre de 05, no iniciado. Detalles §34–35 y ESTADO_ACTUAL;
 los pendientes históricos de 03/04 quedan sustituidos por v0.4.1.
 

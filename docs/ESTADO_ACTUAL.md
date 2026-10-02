@@ -6,6 +6,32 @@
 
 ## Punto de continuidad para conversaciones nuevas
 
+**Continuación de 05, v0.5.2, 2026-10-02.** Base sincronizada `3dffdaa` por
+fetch explícito de revisión y fast-forward; checkout inicial limpio, sin reset,
+stash ni sobrescritura. El refspec genérico solo traía main. Estrellas de v0.5.1
+conservadas: nueve familias/cinco tiers, identidad cuenta/jugador/familia/ordinal,
+historial completo confirmado y exclusión de prueba/pendientes/incompletos.
+
+La revisión aislada ahora calcula y desglosa la propuesta XP V2 por tier:
+25/25/50/75/100, máximo 275 por familia/2475 total, **0 concedido**. Corrige una
+carencia de la maqueta anterior, cuyo campo «propuesto» seguía usando 0.
+Solo tests/fixture; el bundle normal no incorpora simulación ni récords/Hall.
+Dos contratos nuevos y comparación SQL/TS verifican su impacto/reconstrucción.
+Sin cambios de XP base/curva, ELO, 04 descriptivo, motor, RLS/RPC, permisos,
+formatos ni datos; ninguna migración o cuenta/partido nuevo.
+
+**05 sigue abierto:** la petición vigente exige aprobación expresa antes de
+activar recompensas V2 y récords/Hall. Se presentaron las dos decisiones concretas
+(mantener 0 o aprobar V2; aprobar Hall o aplazarlo); todavía sin respuesta expresa.
+No interpretar publicación, silencio o este avance independiente como aprobación.
+Siguiente acción efectiva: resolver únicamente esas decisiones y completar 05,
+con perfil/histórico existentes para la observación autenticada según acceso.
+06 no iniciado ni desbloqueado por cambiar versión. Prompt vigente y resultados
+locales/SQL/Preview en [VERIFICACION_BLOQUE_05.md](VERIFICACION_BLOQUE_05.md).
+Publicación de esta continuación se anota después de comprobarla.
+
+**Registro de v0.5.1, preservado; continuidad sustituida por la entrada anterior:**
+
 **Bloque 05 parcialmente implementado, v0.5.1, 2026-10-02.** Nueva petición del
 propietario: logros que suben de nivel con estrellas/tiers, una tarjeta por
 familia; goles en 1/5/50 y otros escalones accesibles. Implementadas nueve familias
@@ -148,9 +174,10 @@ Aclaración previa a las pruebas, 2026-10-02: sesión persistente automática ya
 | A. Simulador funcional | Publicado en b10b1df |
 | B. Persistencia Supabase V1 | Validación funcional cerrada el 2026-10-02: SQL/pruebas independientes y todas las pruebas del operador OK, incluida recuperación/PWA física. En revisión, sin promoción main; correos hosted/SMTP pendientes separados |
 | C. Estadísticas, perfil y análisis de resultados | Cálculos/lecturas verificados; guardado/perfiles, alias actual y baja/reactivación confirmados por el propietario en el cierre de 01. XP/niveles aprobados e implementados en 02; SQL real y UI independiente verificados, Preview XP autenticada sin observación directa |
-| D. ELO, ranking privado y categorías | Bloque 03 implementado; SQL/RLS/UI independiente verificados. Parámetros pendientes, ELO desactivado; Preview autenticada sin acceso |
-| D. H2H, forma competitiva y previsión (04) | Diseño/tests/maqueta aislados; espera cierre de 03 y decisiones propias. Sin integración activa ni porcentajes |
-| E–J. Logros, torneos, audiovisual avanzado, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
+| D. ELO, ranking privado y categorías | Aprobado/activo desde v0.4.1; reconstrucción y SQL/RLS/UI verificados; sesión web del operador no controlada por el agente |
+| D. H2H y forma competitiva (04) | Descriptivo integrado/verificado desde v0.4.1; previsión aplazada por decisión expresa |
+| E. Logros, récords y Hall (05) | Nueve familias/45 estrellas activas; v0.5.2 verifica y desglosa XP V2 en fixture. XP extra/Hall pendientes de aprobación; 05 abierto |
+| F–J. Torneos, audiovisual avanzado, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
 
 ## Código local implementado en la fase B
 
@@ -256,7 +283,7 @@ Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida
 
 ## Bloqueo y siguiente acción exacta
 
-**Vigente tras v0.5.1:** decidir recompensas V2 y récords/Hall de CATALOGO_BLOQUE_05, integrar
+**Vigente tras v0.5.2:** decidir recompensas V2 y récords/Hall de CATALOGO_BLOQUE_05, integrar
 únicamente lo aprobado y verificarlo. Ningún premio extraordinario activado.
 Dependencias 03/04 cerradas en su alcance: ELO activo, análisis descriptivo sin
 pronóstico. No repetir cuentas/partidos del checklist de 01. El párrafo siguiente
@@ -289,6 +316,24 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Continuación 05: propuesta XP V2 desglosada, v0.5.2
+
+Preparación/verificación independiente mientras faltan decisiones expresas de
+XP V2 y récords/Hall. `tests/block05Prototype.ts` centraliza importes solo de
+propuesta; `block05Review.tsx` muestra total/desglose y 0 concedido. Dos contratos
+nuevos verifican máximos, ejemplo 3–0/+100 propuesto, salto 4→50/+75, identidad,
+retry y retirada/reaparición. Se corrigen dos expectativas históricas de 0 XP
+propuesto; el caso de récord ahora edita marcador sin añadir otra victoria que
+cruce simultáneamente un tier de racha. Nada concede XP ni activa Hall.
+
+Versión/novedades/package/lock 0.5.2; README, contexto, seguimiento, catálogo y
+verificación coherentes. Tabla de fases corrige estados históricos de 03/04 que
+contradecían las aprobaciones posteriores. Pruebas efectivas y publicación en
+VERIFICACION_BLOQUE_05; sin dependencias, migraciones/escrituras reales, nuevas
+cuentas/partidos, consultas por gol, administración, torneos, Google/Drive, SMTP,
+pagos ni promoción main. Siguiente efectivo: completar decisiones e integración
+aprobada de 05, no iniciar 06.
 
 ### 2026-10-02 — Logros progresivos por estrellas, v0.5.1
 

@@ -24,12 +24,13 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 ## Seguimiento
 
-**Vigente en v0.5.1, 2026-10-02:** 03 activo aprobado y 04 descriptivo integrado.
+**Vigente en v0.5.2, 2026-10-02:** 03 activo aprobado y 04 descriptivo integrado.
 05 tiene nueve familias de logros con cinco niveles/estrellas en el perfil,
 reconstrucción confirmada, 0 XP extraordinario. Umbrales V2 implementados por
 petición de tiers del propietario; recompensas V2 y récords/Hall siguen en
 [CATALOGO_BLOQUE_05](CATALOGO_BLOQUE_05.md) para aprobación. 05 no cerrado;
-siguiente acción revisar esas propuestas y completar solo 05. 06 no iniciado,
+Desglose XP V2 simulado verificado en fixture, 0 concedido y sin activación.
+Siguiente acción decidir esas propuestas y completar solo 05. 06 no iniciado,
 condicionado al cierre de 05. Evidencias en VERIFICACION_BLOQUE_05 y ESTADO_ACTUAL.
 
 **Punto 2 de revisión completado, 2026-10-02:** conector Vercel renovado y comprobado realmente: equipo/proyecto visibles, Preview HTTP 200 y despliegue READY de c2e217a/revisión. El 403 de las entradas anteriores queda resuelto. Punto 1 XP/bloqueo ELO ya acreditado por captura del propietario; no repetir cuentas/partidos. Sigue abierto el cierre competitivo de 03 (parámetros sin aprobación, ELO desactivado), después integración 04; 05 no iniciado. No se obtiene la sesión Supabase del operador por conectar Vercel. Evidencia/limitaciones en ESTADO_ACTUAL.
@@ -44,7 +45,7 @@ condicionado al cierre de 05. Evidencias en VERIFICACION_BLOQUE_05 y ESTADO_ACTU
 | 02 | XP y niveles | Implementado/activado el 2026-10-02 con decisiones expresas; npm test/Chromium 37/37 y SQL/RPC/RLS reales correctos. XP autenticado de Alex2 acreditado por captura humana; conector Vercel recuperado sin compartir sesión del operador | 01 cerrado; parámetros aprobados, todos los históricos. No repetir 01 ni pedir nuevos partidos: panel XP del perfil mostrado ya acreditado |
 | 03 | ELO, ranking y categorías | Aprobado/activo desde v0.4.1; SQL real y reconstrucción/RLS verificados | No reabrir reglas aprobadas; no repetir 01 |
 | 04 | Análisis competitivo descriptivo | Integrado/verificado v0.4.1: 1v1/2v2 y casual 1v2, forma/H2H; Chromium 48/48 y SQL real PASS | Previsión aplazada por decisión expresa; no bloquea 05 |
-| 05 | Logros, récords y Hall of Fame | v0.5.1: nueve familias activas, cinco tiers/45 estrellas, historial confirmado; 0 XP extra. Récords/Hall en fixture | Aprobar/corregir recompensas V2 y récords/Hall; Preview autenticada por observar. No cerrado |
+| 05 | Logros, récords y Hall of Fame | v0.5.2: revisión XP V2 desglosada en fixture; nueve familias activas, cinco tiers/45 estrellas, historial confirmado; 0 XP extra. Récords/Hall en fixture | Aprobar/corregir recompensas V2 y récords/Hall; Preview autenticada por observar. No cerrado |
 | 06 | Torneos | Propuesto, no iniciado | Cierre 05; formato/reglas/premios de torneo aprobados |
 | 07 | Sonido y pulido del uso diario | Propuesto | Flujos que se van a pulir estables |
 | 08 | Backup y restauración | Propuesto | Modelos de datos de los bloques anteriores estables |
@@ -154,7 +155,8 @@ Con 03 cerrado y reglas competitivas aprobadas, desarrolla enfrentamientos direc
 
 ## Bloque 05 — Logros, récords y Hall of Fame
 
-**Entrega vigente v0.5.1:** nueve familias de logros con cinco niveles/estrellas
+**Entrega vigente v0.5.2:** propuesta XP V2 desglosada en fixture, sin concesión
+ni aprobación registrada; estrellas de v0.5.1 conservadas. Nueve familias de logros con cinco niveles/estrellas
 en el perfil, umbrales accesibles y reconstrucción desde hechos confirmados.
 45 tiers únicos, 0 XP extra. La petición de niveles sustituye la propuesta V1;
 recompensas V2 y ocho récords/Hall siguen pendientes en CATALOGO_BLOQUE_05.

@@ -5,6 +5,16 @@ export const APP_VERSION = version
 
 export const releases = [
   {
+    version: '0.5.2',
+    title: 'Revisión de las recompensas de logros',
+    changes: [
+      'Se mantienen las nueve familias y 45 estrellas desde el historial confirmado completo.',
+      'Verificada la propuesta de experiencia por nivel con desglose en una revisión de datos simulados.',
+      'Las estrellas siguen sin añadir experiencia; se conserva el XP de los partidos.',
+    ],
+    pending: 'XP extraordinario V2, récords y Hall of Fame requieren aprobación expresa. Bloque 05 abierto; torneos sin iniciar.',
+  },
+  {
     version: '0.5.1',
     title: 'Logros que suben de nivel',
     changes: [

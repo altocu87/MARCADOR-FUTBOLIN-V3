@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { MatchSummary } from '../src/services/persistence/models'
-import { draftCatalog, reviewHonours } from './block05Prototype'
+import { draftCatalog, proposedTierXp, reviewHonours } from './block05Prototype'
 import { eloFixture, eloFixtures, eloPlayers, testEloRules } from './eloFixtures'
 import { xpFixtures, xpPlayers } from './xpFixtures'
 
@@ -10,6 +10,31 @@ const summarize = (d: ReturnType<typeof eloFixture>): MatchSummary => ({ ...d.ma
 const replay = (matches: MatchSummary[]) => reviewHonours(eloPlayers, [{ source: 'confirmed', complete: true, matches }], rules)
 const achievement = (rows: ReturnType<typeof replay>['rows'], id: string, player = 0) => rows[player].achievements.find(a => a.id === id)!
 const record = (rows: ReturnType<typeof replay>['rows'], id: string, player = 0) => rows[player].records.find(r => r.id === id)!
+
+test('V2 revisable: 275 XP por familia y 2475 máximo, sin concesión ni cobro repetido', () => {
+  assert.deepEqual(proposedTierXp, [25, 25, 50, 75, 100])
+  assert.equal(draftCatalog.reduce((sum, tier) => sum + tier.xp, 0), 2475)
+  for (const metric of new Set(draftCatalog.map(a => a.metric))) {
+    assert.equal(draftCatalog.filter(a => a.metric === metric).reduce((sum, tier) => sum + tier.xp, 0), 275)
+  }
+  const match = { ...summarize(eloFixture(0, 2, 'WHITE', 3)), match_type: 'QUICK' } as MatchSummary
+  const first = replay([match])
+  assert.equal(first.rows[0].proposedExtraXp, 100) // played, wins, team goals, clean win
+  assert.equal(first.rows[0].grantedExtraXp, 0)
+  assert.equal(first.rows[1].proposedExtraXp, 25) // played only
+  assert.deepEqual(replay([match, structuredClone(match)]), first)
+  assert.equal(replay([]).rows[0].proposedExtraXp, 0)
+})
+
+test('V2: salto de goles 4 a 50 añade solo tiers 2/3; corregir y recuperar reconstruye', () => {
+  const match = { ...summarize(eloFixture(0, 2, 'WHITE', 4)), match_type: 'QUICK' } as MatchSummary
+  const before = replay([match]).rows[0]
+  const after = replay([{ ...match, white_score: 50 }]).rows[0]
+  assert.equal(after.proposedExtraXp - before.proposedExtraXp, 75)
+  assert.deepEqual(after.achievements.map(a => a.identity), before.achievements.map(a => a.identity))
+  assert.equal(after.grantedExtraXp, 0)
+  assert.deepEqual(replay([match]).rows[0], before)
+})
 
 test('catálogo con 45 tiers únicos; ningún premio real, incluso si cumple todos los umbrales', () => {
   assert.equal(draftCatalog.length, 45)
@@ -113,7 +138,8 @@ test('edición/eliminación de fixtures recalcula; volver a cumplir no crea otro
   const full = replay(matches)
   const deleted = replay(matches.slice(0, 2))
   assert.equal(achievement(deleted.rows, 'streak:tier_2').evidence, null)
-  assert.equal(full.rows[0].proposedExtraXp - deleted.rows[0].proposedExtraXp, 0)
+  assert.equal(full.rows[0].proposedExtraXp - deleted.rows[0].proposedExtraXp, 25) // streak tier 2 proposal
+  assert.equal(full.rows[0].grantedExtraXp, 0)
   const edited = structuredClone(matches); edited[1].white_score = 0; edited[1].blue_score = 1; edited[1].winner_team = 'BLUE'
   assert.equal(achievement(replay(edited).rows, 'streak:tier_2').evidence, null)
   assert.deepEqual(replay([...matches.slice(0, 2), matches[2], matches[2]]), full)
@@ -155,9 +181,11 @@ test('todos los partidos que igualan el récord siguen como evidencia; mejorar n
   const matches = [0, 1].map(i => summarize(eloFixture(i, 2, 'WHITE', 5)))
   const before = replay(matches)
   assert.deepEqual(record(before.rows, 'biggest_margin').matchIds, matches.map(m => m.id))
-  const after = replay([...matches, summarize(eloFixture(2, 2, 'WHITE', 6))])
+  // Edit the score without also crossing a streak tier by adding a third win.
+  const improved = structuredClone(matches); improved[1].white_score = 6
+  const after = replay(improved)
   assert.equal(record(after.rows, 'biggest_margin').value, 6)
   assert.equal(after.rows[0].grantedExtraXp, 0)
-  assert.equal(after.rows[0].proposedExtraXp - before.rows[0].proposedExtraXp, 0) // badge tiers never grant XP
+  assert.equal(after.rows[0].proposedExtraXp - before.rows[0].proposedExtraXp, 0) // no tier crossed; records have no proposed XP
   assert.equal(eloFixtures().length, 17)
 })

@@ -1,4 +1,4 @@
-# Catálogo 05 — logros por niveles, v0.5.1
+# Catálogo 05 — logros por niveles y revisión V2, v0.5.2
 
 Actualizado el 2026-10-02 por petición del propietario: **una familia de logro que
 sube de nivel, con estrellas**, en lugar de tarjetas separadas para cada umbral.
@@ -64,6 +64,12 @@ ceros como hechos confirmados. Actualizar, reconectar, cambiar cuenta/jugador y
 sincronizar pendientes invalida el historial. Filtros de análisis no alteran logros.
 
 ## Recompensas extraordinarias: propuesta para aprobación
+
+Revisión v0.5.2: `/tests/ui-fixture.html?block05=review` calcula total y desglose
+V2 por tier alcanzado con datos simulados. Solo build aislado, fuera de Preview
+normal; muestra siempre 0 concedido. Dos contratos adicionales y paridad SQL/TS
+verifican ejemplos e idempotencia. Sin respuesta expresa a las decisiones
+solicitadas de XP V2/Hall; conservar 0 XP activo hasta aprobar o aplazar explícitamente.
 
 **Recompensa activa: estrellas, 0 XP adicional.** XP de partidos y curva de niveles
 aprobados permanecen intactos. No se extiende la proyección XP ni se escriben
