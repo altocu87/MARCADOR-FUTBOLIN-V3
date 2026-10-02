@@ -17,6 +17,14 @@ Actualizados mismos siete Markdown para distinguir regla aprobada de función
 activa. Verificación proporcional de enlaces/cercados/contexto 1–84/diff; no
 migraciones, datos, tests funcionales o deployment/Preview nuevos. V0.5.3 intacta.
 
+**Publicación del acuerdo y aprobación 3v3 comprobada:**
+`1cb9e72cfd930302bc65ab25c1d127b4c5aa5482`, push fast-forward
+`4813c37`→`e2a58ee`→`1cb9e72` en `codex/reliability-offline-v1`; SHA remoto
+coincidente, árbol limpio y main intacta `900e470a719bc99bee4df853f0e11301a5b6562e`.
+PASS enlaces/cercados/contexto 1–84 y diff de siete Markdown. Sin aplicación,
+SQL/datos/migraciones o UI/Preview nuevos; versión 0.5.3. Evidencia documental
+anotada después de verificar push; siguiente implementación aún no iniciada.
+
 ## Revisión de conformidad y regla nueva, 2026-10-02 — antecedente
 
 Base `4813c37cc6e2a62cc5b82787bf16feddc9a30730`, árbol limpio, fetch explícito
