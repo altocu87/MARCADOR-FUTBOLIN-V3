@@ -95,6 +95,17 @@ No se dispone de esa sesión; la UI nueva se verifica con repositorios en memori
 Para observación autenticada pendiente usar un perfil/histórico existentes; no
 pedir otra cuenta ni partidos nuevos. No retirar protección ni promover main.
 
+**Publicación funcional comprobada:**
+`e1ca891cb1a79d4845c69ac9e65b9f34557e1110`, push fast-forward
+1712e7d→e1ca891 en `codex/reliability-offline-v1`, `ls-remote` coincidente y árbol
+limpio tras commit. Main intacta `900e470a719bc99bee4df853f0e11301a5b6562e`.
+Vercel `dpl_2itmSF16318uDPN3h5hLK8N4AN3m` READY, commit/rama correctos;
+[Preview de logros por niveles](https://marcador-futbolin-v3-12g5tf9tm-altocuvlc-9686s-projects.vercel.app/)
+HTTP 200. HTML sirve `index-DrgevwC6.js`, coincidente con build local; bundle
+HTTP 200 con versión 0.5.1, catálogo tiers-v2 y tarjetas de estrellas, sin fixture.
+Sin sesión del operador ni recorrido autenticado del nuevo panel. Esta anotación
+se publica después sin modificar código/versión, y puede generar otra Preview.
+
 ## Prompt vigente: continuar solo 05
 
 ```text
