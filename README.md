@@ -14,6 +14,17 @@ ELO activo con parámetros aprobados: K40 primeras diez/K20 después, redondeo e
 
 ## Contexto y estado de la fase
 
+**v0.5.0 — preparación del bloque 05:** propuesta de 24 logros y ocho récords en
+[Catálogo para aprobación](docs/CATALOGO_BLOQUE_05.md). Catálogo y XP extraordinario
+sin aprobar ni activar. Maqueta exclusiva del build aislado en
+`/tests/ui-fixture.html?block05=review`, con datos simulados y cero premios
+concedidos; no forma parte de Preview normal. Verificación y continuación en
+[VERIFICACION_BLOQUE_05.md](docs/VERIFICACION_BLOQUE_05.md). ELO aprobado/activo y
+04 descriptivo preservados; 06 no iniciado. Ejecutar `npm run test:block05` o
+`npm test` (once grupos); prueba SQL reproducible de solo lectura:
+`node --import tsx supabase/tests/block05.ts`, ejecutar salida íntegra con su
+ROLLBACK únicamente en el proyecto autorizado. No migración ni filas nuevas.
+
 Antes de modificar código, leer `AGENTS.md`, `docs/CONTEXTO_MAESTRO.md` y `docs/ESTADO_ACTUAL.md`. Mantenerlos actualizados después de cada bloque.
 
 Persistencia V1 está en revisión en `codex/reliability-offline-v1`: **bloque 01 cerrado funcionalmente el 2026-10-02**, con todas las pruebas confirmadas por el propietario, incluida recuperación/PWA física, más pruebas independientes y SQL real. No repetir cuenta, checklist ni migraciones ya aplicadas. Evidencia en [VERIFICACION_BLOQUE_01.md](docs/VERIFICACION_BLOQUE_01.md). Bloque 02 implementado y activado con parámetros expresamente aprobados; pruebas independientes y SQL real completas, observación autenticada XP en Preview sin acceso del agente. Ver [VERIFICACION_BLOQUE_02.md](docs/VERIFICACION_BLOQUE_02.md). Bloque 03 aprobado, activo y verificado: ELO/ranking privado/categorías/máximo; ver [VERIFICACION_BLOQUE_03.md](docs/VERIFICACION_BLOQUE_03.md). 04 integrado como análisis descriptivo por aprobación expresa, sin pronósticos. Personalización de correos hosted/remitente SMTP queda como pendiente externo separado; no se promueve main.

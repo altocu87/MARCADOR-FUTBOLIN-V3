@@ -623,6 +623,18 @@ Mostrar también últimos 5 resultados clasificatorios.
 
 ## 34. LOGROS
 
+**Preparación de 05, v0.5.0, 2026-10-02:** catálogo V1 propuesto de 24 logros,
+umbrales/IDs estables y premios únicos 25/50/100 XP en
+[CATALOGO_BLOQUE_05.md](CATALOGO_BLOQUE_05.md). Aprobación solicitada, sin respuesta
+expresa registrada; no concesión ni integración activa. Referencia y maqueta solo
+tests, excluidas del build normal. Incluye históricos y propone XP derivado del
+historial vigente, que desaparece si una futura corrección deja de cumplir el
+logro; volver a cumplir contribuye una vez por cuenta/jugador/ID, sin acumular
+cobros. Primera evidencia cronológica por microsegundos/UUID; versión no crea otra
+identidad de premio. Goles de equipo, no personales; 1v2 casual premio completo,
+sin ELO. No XP/nivel como criterio circular ni secretos inventados. El objetivo
+aproximado siguiente sigue futuro; esta propuesta requiere aprobación propia.
+
 Objetivo futuro: aproximadamente 50 logros + aproximadamente 10 secretos opcionales.
 
 Categorías:
@@ -637,6 +649,16 @@ Categorías:
 Premio XP: una sola vez. No permitir farmear repetidamente un logro único.
 
 ## 35. RÉCORDS
+
+**Propuesta 05 sin activar:** ocho récords derivados (partidos, victorias, racha,
+diferencia ganadora, goles de equipo en un partido, porcentaje actual con mínimo
+20, ELO actual y máximo con al menos un Clasificatorio). Hall privado de la
+cuenta, todas las identidades empatadas, alias actual y bajas incluidas; sin
+historial, sin líder. Porcentaje compara razones exactas; presentación redondeada
+no rompe empates. Récords propuestos **0 XP** aun al mejorar/empatar/recuperar.
+Gol rápido, remontada y duración aplazados hasta tener hechos/journal/tiempos
+explícitos; nunca inferir juego efectivo restando fechas ni atribuir goles
+individuales. Catálogo/ejemplos/verificación enlazados en §34 y ESTADO_ACTUAL.
 
 Ejemplos:
 
@@ -1212,7 +1234,12 @@ Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
 
-Entrega vigente v0.4.1: 03 aprobado/activado y 04 descriptivo integrado; detalles y decisiones en §32 y ESTADO_ACTUAL. Sustituye los pendientes históricos de abajo. 05 no iniciado.
+Entrega vigente v0.5.0: 03 aprobado/activo y 04 descriptivo integrado. 05 preparado
+con catálogo/ejemplos, pruebas TS/SQL de solo lectura y maqueta aislada; aprobación
+de catálogo/XP extraordinario pendiente, sin premios ni UI real de honores. No
+cerrado; continuación efectiva aprobar e integrar 05. 06 condicionado a ese
+cierre, no iniciado. Detalles §34–35 y ESTADO_ACTUAL; los pendientes históricos
+de 03/04 de abajo quedan sustituidos por v0.4.1.
 
 
 **Registro anterior a la aprobación e integración de v0.4.1; sus pendientes competitivos quedan sustituidos por la entrega vigente.**

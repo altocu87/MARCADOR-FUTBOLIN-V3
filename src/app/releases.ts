@@ -5,6 +5,15 @@ export const APP_VERSION = version
 
 export const releases = [
   {
+    version: '0.5.0',
+    title: 'Propuesta de logros, récords y Hall of Fame',
+    changes: [
+      'Preparados un catálogo de 24 logros y ocho récords, con ejemplos para revisión.',
+      'Probados premios únicos, reconstrucción desde resultados y exclusión de prueba y pendientes con datos simulados.',
+    ],
+    pending: 'Catálogo pendiente de aprobación. Logros, récords y Hall of Fame aún no están disponibles; no se concede XP extraordinario.',
+  },
+  {
     version: '0.4.1',
     title: 'Enfrentamientos, forma y partidas 1 contra 2',
     changes: [

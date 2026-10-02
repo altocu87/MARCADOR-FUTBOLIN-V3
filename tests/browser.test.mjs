@@ -53,6 +53,55 @@ async function withPage(action) {
   finally { await context.close() }
 }
 async function visible(page, text) { await page.getByText(text, { exact: true }).waitFor({ state: 'visible' }) }
+
+test('05 propuesta aislada: 24 logros, récords, líderes, bajas y estados sin premios', async () => withPage(async (page, context) => {
+  let requests = 0
+  page.on('request', request => { if (request.url().includes('.supabase.co')) requests++ })
+  await page.goto(fixture + '?block05=review')
+  await visible(page, 'PROPUESTA V1 · Datos simulados · Premios sin activar')
+  assert.equal(await page.locator('[data-achievement]').count(), 24)
+  const xp = await page.getByTestId('proposed-xp').innerText()
+  assert.match(xp, /Concedido: 0/)
+  await page.getByRole('button', { name: 'AÑADIR PENDIENTES SIMULADOS', exact: true }).click()
+  assert.equal(await page.getByTestId('proposed-xp').innerText(), xp)
+  await page.getByRole('button', { name: 'RÉCORDS', exact: true }).click()
+  await visible(page, 'Porcentaje de victorias · mínimo 20')
+  await page.getByRole('button', { name: 'HALL OF FAME', exact: true }).click()
+  assert.equal(await page.locator('[data-record]').count(), 8)
+  await page.getByLabel('Jugador', { exact: true }).selectOption({ label: '4 · ELO 4 · Baja' })
+  await visible(page, 'Baja · conserva historial · 4 partidos simulados')
+  await page.getByLabel('Escenario', { exact: true }).selectOption('empty')
+  assert.equal(await page.getByText('Datos insuficientes', { exact: true }).count(), 8)
+  await page.getByLabel('Escenario', { exact: true }).selectOption('offline')
+  await visible(page, 'Sin conexión. No se confirman logros ni récords.')
+  assert.equal(await page.locator('[data-record]').count(), 0)
+  await page.getByLabel('Escenario', { exact: true }).selectOption('error')
+  await visible(page, 'No se ha cargado el historial completo. No se muestran totales parciales.')
+  assert.equal(requests, 0)
+  assert.deepEqual(await page.evaluate(() => Object.keys(localStorage)), [])
+  assert.deepEqual(await context.cookies(), [])
+}))
+
+test('05 revisión visual móvil, tablet, escritorio y referencia física sin scroll general', async () => withPage(async page => {
+  await mkdir('/tmp/futbolin-block05-visual', { recursive: true })
+  await page.goto(fixture + '?block05=review')
+  for (const [width, height] of [[320, 568], [390, 844], [844, 390], [768, 1024], [1440, 900], [800, 480]]) {
+    await page.setViewportSize({ width, height })
+    await page.getByRole('button', { name: 'LOGROS', exact: true }).click()
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight))
+    assert.equal(await page.locator('[data-achievement]').count(), 24)
+    assert.ok(await page.getByRole('button', { name: 'HALL OF FAME', exact: true }).evaluate(el => el.getBoundingClientRect().height >= 48))
+    await page.screenshot({ path: `/tmp/futbolin-block05-visual/achievements-${width}x${height}.png` })
+    await page.getByRole('button', { name: 'HALL OF FAME', exact: true }).click()
+    await page.screenshot({ path: `/tmp/futbolin-block05-visual/hall-${width}x${height}.png` })
+  }
+  await page.getByRole('button', { name: 'VISTA 800×480', exact: true }).click()
+  const rect = await page.locator('.fixed-canvas').boundingBox()
+  assert.equal(rect.width, 800); assert.equal(rect.height, 480)
+  await page.screenshot({ path: '/tmp/futbolin-block05-visual/hall-physical.png' })
+  await page.getByLabel('Escenario', { exact: true }).selectOption('empty')
+  await page.screenshot({ path: '/tmp/futbolin-block05-visual/empty-physical.png' })
+}))
 async function settings(page) { await page.getByRole('button', { name: 'AJUSTES', exact: true }).click() }
 async function realMode(page) {
   await settings(page)
@@ -97,10 +146,11 @@ test('versiones: historial público y offline, novedades pendientes y ambas vist
   await page.getByRole('button', { name: 'VER HISTORIAL DE VERSIONES', exact: true }).click()
   const history = page.getByRole('region', { name: 'Historial de versiones' })
   await history.waitFor()
-  assert.equal(await history.locator('.release-card').count(), 6)
+  assert.equal(await history.locator('.release-card').count(), 7)
   assert.match(await history.locator('.release-current').innerText(), new RegExp(`v${version.replaceAll('.', '\\.')}`))
-  assert.match(await history.locator('.release-card').nth(2).innerText(), /ELO sigue desactivado/)
-  assert.match(await history.locator('.release-current').innerText(), /no se calculan pronósticos/)
+  assert.match(await history.locator('.release-card').filter({ hasText: 'v0.3.0' }).innerText(), /ELO sigue desactivado/)
+  assert.match(await history.locator('.release-current').innerText(), /Catálogo pendiente de aprobación/)
+  assert.match(await history.locator('.release-card').filter({ hasText: 'v0.4.1' }).innerText(), /no se calculan pronósticos/)
   await mkdir('/tmp/futbolin-versions-visual', { recursive: true })
   for (const [width, height] of [[320, 568], [390, 844], [844, 390], [768, 1024], [1440, 900], [800, 480]]) {
     await page.setViewportSize({ width, height })

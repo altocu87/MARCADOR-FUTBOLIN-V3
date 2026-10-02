@@ -24,6 +24,14 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 ## Seguimiento
 
+**Vigente en v0.5.0, 2026-10-02:** 03 activo con reglas aprobadas; 04 descriptivo
+integrado, previsión aplazada. 05 preparado para aprobación, sin catálogo activo
+ni XP extraordinario: [CATALOGO_BLOQUE_05](CATALOGO_BLOQUE_05.md), referencia/maqueta
+aisladas y SQL de solo lectura. La siguiente acción efectiva permanece en 05:
+decidir esa V1 e integrar/probar únicamente lo aprobado. 06 no iniciado; su prompt
+queda condicionado al cierre de 05. Los pendientes competitivos históricos de los
+párrafos siguientes quedan sustituidos por v0.4.1.
+
 **Punto 2 de revisión completado, 2026-10-02:** conector Vercel renovado y comprobado realmente: equipo/proyecto visibles, Preview HTTP 200 y despliegue READY de c2e217a/revisión. El 403 de las entradas anteriores queda resuelto. Punto 1 XP/bloqueo ELO ya acreditado por captura del propietario; no repetir cuentas/partidos. Sigue abierto el cierre competitivo de 03 (parámetros sin aprobación, ELO desactivado), después integración 04; 05 no iniciado. No se obtiene la sesión Supabase del operador por conectar Vercel. Evidencia/limitaciones en ESTADO_ACTUAL.
 
 **Revisión humana posterior, 2026-10-02:** punto 1 confirmado por captura de Preview v0.4.0 autenticada: perfil Alex2 con XP 225/nivel 1/30 restantes y ELO pendiente de aprobación. No repetir cuentas/partidos; no equivale a activar ELO ni cerrar 03/04. Próximo paso del checklist: comprobar permisos del conector tras reabrir Codex; después decisiones competitivas de 03. Fuente/evidencia en ESTADO_ACTUAL y verificaciones 02/03.
@@ -34,10 +42,10 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 | --- | --- | --- | --- |
 | 01 | Consolidación y comprobación real | Cerrado funcionalmente el 2026-10-02: todas las pruebas OK según el propietario, incluidas 7/10/11; código/SQL/pruebas independientes correctos. Correos hosted/SMTP pendientes externos separados | Sin repetir pruebas ni promover main |
 | 02 | XP y niveles | Implementado/activado el 2026-10-02 con decisiones expresas; npm test/Chromium 37/37 y SQL/RPC/RLS reales correctos. XP autenticado de Alex2 acreditado por captura humana; conector Vercel recuperado sin compartir sesión del operador | 01 cerrado; parámetros aprobados, todos los históricos. No repetir 01 ni pedir nuevos partidos: panel XP del perfil mostrado ya acreditado |
-| 03 | ELO, ranking y categorías | Implementado/verificado el 2026-10-02: SQL/RLS reales con ROLLBACK, ELO/repositorio 14/14, Chromium 41/41/builds/visual. ELO desactivado; parámetros pendientes NULL. VERIFICACION_BLOQUE_03 | Obtener aprobación expresa de K/experiencia, redondeo, categorías/histéresis, margen e históricos antes de activar; Conector Vercel recuperado; captura humana del perfil acredita XP/ELO pendiente, sin repetir 01 |
-| 04 | Análisis competitivo y predicción | Preparación parcial 2026-10-02: diseño/tests/maqueta aislados, 12/12 contratos, Chromium 42/42, SQL real de solo lectura PASS; sin integración activa | Espera cierre competitivo de 03 (ELO desactivado confirmado) y aprobación propia modelo/pesos/muestra/2v2. VERIFICACION_BLOQUE_04 |
-| 05 | Logros, récords y Hall of Fame | Prompt entregado condicionado; no iniciado | Dependencias previas cerradas y progresión estable; catálogo/recompensas aprobados |
-| 06 | Torneos | Propuesto | Formato/reglas definidos; persistencia/progresión estables |
+| 03 | ELO, ranking y categorías | Aprobado/activo desde v0.4.1; SQL real y reconstrucción/RLS verificados | No reabrir reglas aprobadas; no repetir 01 |
+| 04 | Análisis competitivo descriptivo | Integrado/verificado v0.4.1: 1v1/2v2 y casual 1v2, forma/H2H; Chromium 48/48 y SQL real PASS | Previsión aplazada por decisión expresa; no bloquea 05 |
+| 05 | Logros, récords y Hall of Fame | v0.5.0 preparación revisable: 24 logros/8 récords, tests/maqueta aislados y SQL READ ONLY; sin aprobación ni premios | Aprobar/corregir CATALOGO_BLOQUE_05, integrar y verificar concesión única; no cerrado |
+| 06 | Torneos | Propuesto, no iniciado | Cierre 05; formato/reglas/premios de torneo aprobados |
 | 07 | Sonido y pulido del uso diario | Propuesto | Flujos que se van a pulir estables |
 | 08 | Backup y restauración | Propuesto | Modelos de datos de los bloques anteriores estables |
 | 09 | Firmware y entradas físicas | Propuesto | Modelos/protocolo y conexiones reales verificables |
@@ -145,6 +153,14 @@ Con 03 cerrado y reglas competitivas aprobadas, desarrolla enfrentamientos direc
 ```
 
 ## Bloque 05 — Logros, récords y Hall of Fame
+
+**Preparación vigente v0.5.0:** catálogo concreto de 24 logros/8 récords en
+CATALOGO_BLOQUE_05. Aprobación propia pendiente; reglas/XP extraordinario no
+activos. Referencia, 13 tests y maqueta bajo tests, generador SQL con diez
+escenarios CTE en READ ONLY/ROLLBACK. UI normal solo incorpora versión/novedades
+que identifican preparación. Evidencia y prompt de continuación inmediato en
+[VERIFICACION_BLOQUE_05.md](VERIFICACION_BLOQUE_05.md). Esta entrada sustituye el
+«No iniciado» del párrafo siguiente; no confundir preparación con cierre.
 
 Continuidad tras v0.4.1: 03 activo y 04 descriptivo integrado; previsión aplazada voluntariamente y no bloquea preparar 05. Usar el prompt actualizado de continuación al final de VERIFICACION_BLOQUE_04. Catálogo/umbrales/recompensas de logros y récords siguen pendientes de aprobación. No iniciado. El prompt anterior de preparación se conserva como registro histórico.
 

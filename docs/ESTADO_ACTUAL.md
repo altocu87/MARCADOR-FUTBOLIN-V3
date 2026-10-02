@@ -6,6 +6,35 @@
 
 ## Punto de continuidad para conversaciones nuevas
 
+**Bloque 05 en preparación revisable, v0.5.0, 2026-10-02.** Catálogo propuesto de
+24 logros/8 récords con umbrales, premios únicos de 25/50/100 XP, récords sin XP,
+porcentaje con mínimo 20 e históricos/recálculo explícitos en
+[CATALOGO_BLOQUE_05.md](CATALOGO_BLOQUE_05.md). Aprobación solicitada durante la
+tarea, todavía sin respuesta expresa registrada: **no catálogo activo ni XP
+extraordinario**. Referencia pura/maqueta únicamente en tests, fuera del build
+normal. 05 no está cerrado; siguiente acción efectiva: aprobar/corregir esa V1,
+después integrar servidor/UI y verificar premios reales. 06 queda condicionado
+al cierre de 05 y no se inicia. Evidencia detallada y prompts en
+[VERIFICACION_BLOQUE_05.md](VERIFICACION_BLOQUE_05.md).
+
+Base sincronizada `cd4231efb29e0792ee90e8ddf83ebb34026aaafb`, árbol inicialmente
+limpio. Se cambió de `work` a la revisión y se integraron 37 commits con
+fast-forward; rama local anterior y main conservadas. Fetch genérico solo traía
+main por su refspec; fetch explícito de revisión recuperó su punta sin reset,
+stash ni sobrescritura. Lecturas Supabase: ELO activo versión 2, XP aprobado
+activo, dos jugadores/dos Rápidos/cuatro participantes/doce eventos/cero
+Clasificatorios; ambos 225 XP/nivel 1. SQL 05 de solo lectura con ROLLBACK PASS:
+RLS/permisos/XP/ELO vigentes y diez escenarios de propuesta TS/SQL. Fixtures SQL
+solo en CTEs, sin filas, DDL, migración, cuenta o premios.
+
+Preview base `dpl_B2VF9mT5fgZUmWi5jjhS7Q88cKBY` READY/commit cd4231e y alias HTTP
+200 comprobados por conector; no sesión Supabase del operador ni recorrido
+autenticado de 05. Maqueta `/tests/ui-fixture.html?block05=review` solo en build
+aislado: logros/progreso, récords/Hall, bajas/empates, vacío/offline/error y
+pendientes simulados. Versión/novedades activas describen preparación, no
+concesión. Sin cambio de motor, RPC, RLS, XP/ELO aprobados, datos, SMTP, planes o
+main. Publicación de esta preparación se registra después de comprobar push.
+
 **Decisiones y entrega vigentes — 2026-10-02, v0.4.1.** El propietario aprueba las recomendaciones y concreta 1 contra 2 exclusivamente Rápido/Caos. Sustituye los pendientes históricos de 03/04 de abajo. ELO servidor activado: versión 2, inicio 1200, primeras 10 K40/después K20, nearest-away, categorías Bronce <1000/Plata 1000/Oro 1200/Platino 1400/Diamante 1600/Élite 1800, descenso con histéresis 25, multiplicadores todos 1 y todos los Clasificatorios históricos válidos; máximo reconstruible. No hay suelo ELO ni suma cero garantizada con K distintos.
 
 04 integrado como **análisis descriptivo**, sin índice, pronóstico, porcentajes predictivos ni confianza estimada. H2H de jugador/pareja exactos desde el historial completo confirmado, con perspectivas inversas y filtros del perfil; 1v2/2v1 agrupados como formato 1v2, separados de 1v1/2v2. Forma: últimos cinco Clasificatorios por ID, independiente de filtros, sin rellenar ausencias. Selección permite consultar enfrentamientos del modo elegido y forma de cada participante, solo al abrir el panel; consultas paralelas cancelables, error/offline no bloquean COMENZAR. Perfil reutiliza su lectura existente sin nuevas consultas.
@@ -174,6 +203,12 @@ Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida
 
 ## Bloqueo y siguiente acción exacta
 
+**Vigente tras preparación 05:** decidir la V1 de CATALOGO_BLOQUE_05, integrar
+únicamente lo aprobado y verificarlo. Ningún premio extraordinario activado.
+Dependencias 03/04 cerradas en su alcance: ELO activo, análisis descriptivo sin
+pronóstico. No repetir cuentas/partidos del checklist de 01. El párrafo siguiente
+es histórico y sus pendientes de 03 quedan sustituidos por v0.4.1.
+
 **Vigente tras 03:** implementación ELO/ranking/categorías comprobada en SQL/RLS reales y UI independiente; ELO no activado. Obtener únicamente K/experiencia, redondeo, categorías/histéresis, multiplicador e históricos pendientes, con ejemplos ya preparados en VERIFICACION_BLOQUE_03. Probar valores aprobados y aplicar activación servidor revisada. Vercel 403 de alcance/proxy y falta de sesión impiden observación directa XP/ELO en Preview; usar historial existente cuando haya acceso, sin reabrir 01 ni pedir partidos. Entregar 04 no lo inicia: exige cierre competitivo de 03 y aprobación propia de §32–33. Las anotaciones siguientes conservan la cronología histórica y no sustituyen este punto operativo.
 
 Bloque 01 sobre la rama real `codex/reliability-offline-v1`: primera sincronización por objetos GitHub verificados desde 472f945; fetch posterior integró los commits 0cb5dec/4e840b5/0a6f993/f9ebe15 que fijan AMBAS V4 y GOALS sin partes. Main permanece 900e470. Publicación comprobada: **eb0f098** contiene las correcciones; **e164b5b** añade la prueba RPC reproducible y contexto. Push fast-forward correcto y `git ls-remote` confirma `e164b5bc67c062465410b032a8f661e25e580a23`; main sigue `900e470`. Esta anotación documental se versiona después, sin incrustar su propio hash. La rama alternativa local de jugadores no se fusiona ni migra datos del navegador.
@@ -201,6 +236,43 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Preparación independiente del bloque 05, v0.5.0
+
+Propuesta concreta CATALOGO_BLOQUE_05: 24 IDs de logro inmutables, umbrales y XP
+único por jugador, 8 récords sin XP y líderes compartidos, porcentaje actual con
+mínimo 20, todos los históricos y recálculo que puede retirar XP si dejan de
+cumplirse hechos. Ejemplos de partido/bonificación y política de corrección
+preparados antes de solicitar aprobación. No respuesta expresa registrada;
+silencio y publicación no aprueban reglas. Objetivo futuro 50/10 no se rellena con
+logros arbitrarios, torneos, goles individuales o tiempos ausentes.
+
+Referencia tests/block05Prototype, maqueta block05Review y 13 contratos unitarios;
+fixture uiFixture incorpora ruta exclusiva de revisión. Deduplicación/conflictos,
+procedencia confirmada/lectura completa, microsegundos/UUID, primera evidencia,
+identidad estable, equipo 2v2/1v2, tandas/empates/rachas, bajas/alias, recálculo y
+porcentajes racionales exactos. Detectado/corregido empate bigint contra cero
+number antes de verificar; detectados/corregidos nombres accesibles de selectores
+y expectativas históricas de versión en navegador. No imports de producción a
+catálogo/prototipo, grantedExtraXp constante 0. UI normal solo cambia versión/log.
+Metadatos package/lock 0.5.0, sin dependencia nueva. SQL generador block05 y
+block05_readonly: transacción REPEATABLE READ READ ONLY/ROLLBACK, diez escenarios
+paridad TS/CTE, sin tablas/filas/DDL ni mutación de reglas. Primer SELECT exploratorio
+usó player_id en la vista XP cuyo campo es id; corregido, sin escrituras.
+
+Verificación: once grupos npm test, nuevos contratos 13/13, TypeScript de app y
+tests/generador, builds normal/aislado correctos. Revisión visual móvil vertical y
+horizontal/tablet/escritorio/referencia exacta 800×480, scroll interno, controles
+48 px; cuatro recorridos focalizados correctos y batería Chromium completa
+**50/50**, cero fallos/omitidos. Auditoría de producción **0 vulnerabilidades**,
+diff/enlaces/84 apartados correctos. Resultado final de publicación se registra
+tras comprobar push. React: hooks incondicionales, derivación por ID sin efectos/red,
+texto escapado, estilos acotados y ninguna persistencia. Guías cloud/Supabase,
+Postgres/React/browser y Vercel consultadas. agent-browser ausente, fallback a
+Playwright/Chromium existentes; changelog Supabase HTTP 403, sin bypass;
+documentación RLS vigente por search_docs. Preview base READY/HTTP 200 no prueba
+Auth del operador. Sin cuentas/partidos/correos nuevos, migraciones, XP extra,
+motor, administración, torneos, Google/Drive, SMTP, pagos o promoción main.
 
 ### 2026-10-02 — Aprobar ELO e integrar 04 descriptivo con 1v2 casual
 

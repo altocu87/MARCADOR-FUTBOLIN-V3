@@ -2,6 +2,7 @@ import { approvedXpRules, rebuildProgression } from '../src/progression/xp'
 import { rebuildCompetition } from '../src/competition/elo'
 import { eloFixtures, eloPlayers, testEloRules } from './eloFixtures'
 import { Block04Review } from './block04Review'
+import { Block05Review } from './block05Review'
 /** Development-only fixture. No authentication or data requests to Supabase.
  * Open /tests/ui-fixture.html under Vite. Not an input to the production build.
  */
@@ -132,4 +133,4 @@ const services: ApplicationServices = {
     async getMatchById(id) { const doc = matches.get(id); if (!doc) throw new Error('No encontrado'); return structuredClone(doc) },
   },
 }
-createRoot(document.getElementById('root')!).render(<StrictMode>{new URLSearchParams(location.search).get('block04') === 'review' ? <Block04Review /> : <App services={services} />}</StrictMode>)
+createRoot(document.getElementById('root')!).render(<StrictMode>{new URLSearchParams(location.search).get('block05') === 'review' ? <Block05Review /> : new URLSearchParams(location.search).get('block04') === 'review' ? <Block04Review /> : <App services={services} />}</StrictMode>)
