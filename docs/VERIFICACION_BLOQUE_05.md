@@ -114,6 +114,17 @@ Supabase del operador: no se afirma recorrido autenticado de 05. La maqueta no
 se sirve desde el build normal; un READY posterior solo verifica publicación de
 versión/log y código previo. No retirar protección ni pedir cuentas/partidos.
 
+**Publicación de la preparación comprobada:**
+`4c6a913682cf514c91f989d9fc26fb94ef888392`, push fast-forward cd4231e→4c6a913 y
+ls-remote coincidente; árbol limpio tras commit, main sigue
+`900e470a719bc99bee4df853f0e11301a5b6562e`. Vercel
+`dpl_2tdrmHHS2bzjj3R9Mewk3EbSGme5` READY/commit/rama correctos;
+[Preview de la preparación](https://marcador-futbolin-v3-a5s6i8dfv-altocuvlc-9686s-projects.vercel.app/)
+HTTP 200 y bundle index-CHFHhPDb.js coincide con el build local. Catálogo/prototipo
+fuera del bundle, versión/log 0.5.0 pendientes de aprobación; sin sesión del
+operador ni logros reales. Esta evidencia se versiona después en una anotación
+documental, sin cambiar versión/código ni inferir su futuro despliegue.
+
 ## Continuación efectiva: terminar 05
 
 ```text

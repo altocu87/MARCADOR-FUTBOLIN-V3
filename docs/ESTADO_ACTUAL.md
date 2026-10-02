@@ -33,7 +33,14 @@ autenticado de 05. Maqueta `/tests/ui-fixture.html?block05=review` solo en build
 aislado: logros/progreso, récords/Hall, bajas/empates, vacío/offline/error y
 pendientes simulados. Versión/novedades activas describen preparación, no
 concesión. Sin cambio de motor, RPC, RLS, XP/ELO aprobados, datos, SMTP, planes o
-main. Publicación de esta preparación se registra después de comprobar push.
+main. **Publicación comprobada:** `4c6a913682cf514c91f989d9fc26fb94ef888392`, push
+fast-forward cd4231e→4c6a913 en codex/reliability-offline-v1, referencia remota
+coincidente y árbol limpio tras commit. Main intacta
+`900e470a719bc99bee4df853f0e11301a5b6562e`. Preview de esta entrega
+`dpl_2tdrmHHS2bzjj3R9Mewk3EbSGme5` READY, commit/rama correctos, HTML HTTP 200
+y bundle `index-CHFHhPDb.js` coincidente con build local. No recorrido autenticado
+de honores: siguen sin catálogo activo. Esta anotación documental se publica
+después, sin cambio de versión; puede generar otra Preview del mismo código.
 
 **Decisiones y entrega vigentes — 2026-10-02, v0.4.1.** El propietario aprueba las recomendaciones y concreta 1 contra 2 exclusivamente Rápido/Caos. Sustituye los pendientes históricos de 03/04 de abajo. ELO servidor activado: versión 2, inicio 1200, primeras 10 K40/después K20, nearest-away, categorías Bronce <1000/Plata 1000/Oro 1200/Platino 1400/Diamante 1600/Élite 1800, descenso con histéresis 25, multiplicadores todos 1 y todos los Clasificatorios históricos válidos; máximo reconstruible. No hay suelo ELO ni suma cero garantizada con K distintos.
 
