@@ -164,6 +164,20 @@ export type Database = {
             foreignKeyName: "match_participants_player_id_owner_id_fkey"
             columns: ["player_id", "owner_id"]
             isOneToOne: false
+            referencedRelation: "player_achievement_tiers_v1"
+            referencedColumns: ["player_id", "owner_id"]
+          },
+          {
+            foreignKeyName: "match_participants_player_id_owner_id_fkey"
+            columns: ["player_id", "owner_id"]
+            isOneToOne: false
+            referencedRelation: "player_honour_results_v1"
+            referencedColumns: ["player_id", "owner_id"]
+          },
+          {
+            foreignKeyName: "match_participants_player_id_owner_id_fkey"
+            columns: ["player_id", "owner_id"]
+            isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id", "owner_id"]
           },
@@ -342,9 +356,52 @@ export type Database = {
       }
     }
     Views: {
+      player_achievement_tiers_v1: {
+        Row: {
+          family: string | null
+          finished_at: string | null
+          granted_xp: number | null
+          match_id: string | null
+          owner_id: string | null
+          player_id: string | null
+          threshold: number | null
+          tier: number | null
+          tier_xp: number | null
+          value: number | null
+        }
+        Relationships: []
+      }
+      player_honour_results_v1: {
+        Row: {
+          best_streak: number | null
+          clean_win: number | null
+          extra_win: number | null
+          finished_at: string | null
+          ga: number | null
+          gap: number | null
+          gf: number | null
+          match_id: string | null
+          match_type: string | null
+          owner_id: string | null
+          penalty_win: number | null
+          played: number | null
+          player_id: string | null
+          ranked_played: number | null
+          ranked_wins: number | null
+          streak: number | null
+          team_goals: number | null
+          went_to_extra_time: boolean | null
+          went_to_penalties: boolean | null
+          wins: number | null
+          won: boolean | null
+        }
+        Relationships: []
+      }
       player_progression_v1: {
         Row: {
+          achievement_xp: number | null
           active: boolean | null
+          base_xp: number | null
           confirmed_matches: number | null
           current_threshold: number | null
           enabled: boolean | null
@@ -363,6 +420,7 @@ export type Database = {
     }
     Functions: {
       get_competition_snapshot_v1: { Args: never; Returns: Json }
+      get_honours_snapshot_v1: { Args: never; Returns: Json }
       get_ranking_v1: {
         Args: never
         Returns: {

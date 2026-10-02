@@ -21,6 +21,7 @@ export interface PlayerProgression {
   playerId: string; xp: number; level: number; currentThreshold: number
   nextThreshold: number | null; maxLevel: number; confirmedMatches: number
   rulesVersion: number; enabled: boolean
+  baseXp?: number; achievementXp?: number
 }
 const integer = (value: number) => Number.isSafeInteger(value) && value >= 0
 export function validateXpRules(rules: XpRules): void {

@@ -1,3 +1,5 @@
+import type { HonoursRepository } from '../honours/model'
+import { SupabaseHonoursRepository } from '../services/supabase/honours'
 import type { ProgressionRepository } from '../services/persistence/ProgressionRepository'
 import type { CompetitionRepository } from '../services/persistence/CompetitionRepository'
 import { SupabaseCompetitionRepository } from '../services/supabase/competition'
@@ -13,6 +15,7 @@ export interface ApplicationServices {
   players: PlayerRepository
   matches: MatchRepository
   progression?: ProgressionRepository
+  honours?: HonoursRepository
   competition?: CompetitionRepository
   namespace: string
 }
@@ -22,5 +25,6 @@ export const services: ApplicationServices | null = supabase ? {
   matches: new SupabaseMatchRepository(supabase),
   progression: new SupabaseProgressionRepository(supabase),
   competition: new SupabaseCompetitionRepository(supabase),
+  honours: new SupabaseHonoursRepository(supabase),
   namespace: new URL(import.meta.env.VITE_SUPABASE_URL as string).hostname,
 } : null

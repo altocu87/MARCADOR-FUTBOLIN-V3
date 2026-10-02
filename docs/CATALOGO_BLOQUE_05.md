@@ -1,18 +1,16 @@
-# Catálogo 05 — logros por niveles y revisión V2, v0.5.2
+# Catálogo 05 — aprobado y activo, v0.5.3
 
-Actualizado el 2026-10-02 por petición del propietario: **una familia de logro que
-sube de nivel, con estrellas**, en lugar de tarjetas separadas para cada umbral.
-Pidió goles en niveles 1, 5 y 50 y delegó elegir familias y escalones accesibles.
-Esta decisión sustituye la propuesta V1 de 24 tarjetas independientes de v0.5.0.
-No aprueba importes de XP extraordinario ni el catálogo de récords/Hall.
+Aprobación expresa del propietario, 2026-10-02: «Apruebo XP V2 por tier,
+incluidos históricos y recálculo, y los ocho récords/Hall privados con empates
+compartidos y 0 XP por récord». Sustituye la propuesta pendiente de v0.5.2.
+Las nueve familias/cinco tiers de v0.5.1 conservan umbrales e identidad.
+El catálogo V1 de 24 tarjetas y sus 1250 XP nunca se concedieron.
 
-## Logros implementados
+## Familias y 45 estrellas
 
-Nueve familias, cinco niveles cada una: **45 estrellas posibles**. Una tarjeta
-por familia; nivel 0 antes del primer umbral, estrellas acumuladas, valor total,
-siguiente umbral y cantidad que falta. Se pueden consultar todos los niveles y
-la fecha/UUID del primer hecho confirmado que permitió alcanzarlos. Al superar
-varios umbrales en un partido se consiguen todos los niveles correspondientes.
+Una tarjeta por familia, nivel 0 antes del primer umbral, cinco estrellas,
+progreso al siguiente escalón, umbrales y primera evidencia confirmada.
+Superar varios escalones en un partido concede todos los tiers cumplidos.
 
 | ID estable / familia | Nivel 1 | Nivel 2 | Nivel 3 | Nivel 4 | Nivel 5 |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -26,100 +24,72 @@ varios umbrales en un partido se consiguen todos los niveles correspondientes.
 | `extra_win` · Resuelve en prórroga | 1 | 3 | 5 | 10 | 25 |
 | `penalty_win` · Gana en penaltis | 1 | 3 | 5 | 10 | 25 |
 
-Partidos y victorias cuentan todos los modos admitidos; una tanda cuenta como
-victoria. Empate o derrota interrumpe la racha; el logro conserva la mejor racha
-reconstruida, no exige mantener la racha actual. Clasificatorio solo 1v1/2v2.
-Victoria a cero exige ganar con al menos un gol de campo y ninguno recibido;
-0–0 ganado en tanda no cumple. Prórroga exige bandera confirmada y ausencia de
-tanda; penaltis exige tanda confirmada, sin inferir minutos ni duración.
 
-Goles son **del equipo en los partidos del jugador**, nunca goles individuales.
-En 2v2 ambos compañeros progresan por los goles de su equipo; los penaltis no
-suman goles de campo. 1v2 solo Rápido/Caos, mismas estrellas para cada participante
-que cumpla los hechos, XP de partido completo y ningún ELO.
+Victorias incluyen tandas; empate/derrota corta racha. Mejor racha histórica
+vigente, no la racha actual. Clasificatorio solo 1v1/2v2. Victoria a cero exige
+ganar con gol de campo y ninguno recibido: 0–0 ganado en tanda no cumple.
+Prórroga exige bandera confirmada y ausencia de tanda; penaltis exige tanda.
+Goles de equipo compartidos por participantes, nunca goles individuales.
+Penaltis no suman goles. 1v2 solo Rápido/Caos, XP completo por jugador y sin ELO.
 
-**Gana torneos** queda previsto para 06: propuesta de 1/3/5/10/25 campeonatos.
-No tarjeta activa, ganador ficticio ni progreso calculado antes de que exista
-un resultado de torneo confirmado y reglas aprobadas. No se inicia 06.
+## XP V2 aprobado, históricos y recálculo
 
-## Reconstrucción e identidad implementadas
+**25 / 25 / 50 / 75 / 100 XP** por tiers 1–5, contribución única por identidad.
+Máximo **275/familia, 2475/nueve familias**. Total de experiencia = XP base
+aprobado de partidos + tiers vigentes; curva de niveles y reglas base intactas.
+Récords siempre 0 XP. No logros basados en XP/nivel que creen ciclos.
 
-Catálogo `src/achievements/catalog.ts`, versión de metadato `tiers-v2`.
-Identidad: cuenta + UUID del jugador + ID de familia + ordinal `tier_1`…`tier_5`.
-El umbral, versión, alias/nombre o actividad no forman parte de la identidad.
-No hay concesión incremental, contador persistido ni premio fantasma.
+Identidad: cuenta + UUID jugador + familia + ordinal `tier_1`…`tier_5`.
+Umbral/versión/alias/actividad no cambian la identidad ni permiten otro cobro.
+Catálogo de metadatos `tiers-v2`. Recarga/retry/reconexión/renombrado/baja no
+suman otra vez. Corregir/eliminar hechos retira tiers que dejan de cumplirse;
+recuperarlos reconstruye la misma contribución una vez. No se crea UI de edición.
 
-`rebuildAchievements` requiere procedencia confirmada y lectura completa. El
-perfil reutiliza todas las páginas de su repositorio privado bajo RLS; no usa
-cola local ni checkpoint. Prueba y partidos sin finalizar quedan excluidos.
-Un final local no demuestra confirmación. Conflictos de UUID invalidan la
-reconstrucción; orden por finalización/microsegundos/UUID para la primera evidencia.
-La fecha mostrada es la del hecho, no una concesión retroactiva ejecutada ese día.
+Servidor SECURITY INVOKER/RLS reconstruye desde todos los resultados confirmados
+completos, sin cola local/checkpoint. Prueba/incompletos/pendientes no conceden.
+No contadores, ledger, concesión incremental ni XP escrito por cliente.
+Primera evidencia ordenada por finalización/microsegundos/UUID; su fecha es el
+hecho original, no una fecha de pago retroactivo. Snapshot scalar completo sin
+cap de filas; error/otra cuenta/offline retiran confirmación y no falsean ceros.
+Actualizar/reconectar/cambiar identidad/sync invalida; filtros solo afectan análisis.
 
-Recarga/retry/reconexión/renombrado/baja no duplican estrellas. Una futura edición
-que deje de cumplir un umbral retira esa estrella al reconstruir. Volver a cumplir
-recupera la misma identidad, sin otro cobro. No se implementa administración.
-Sin conexión/error/lectura parcial el perfil oculta cifras de logros; no muestra
-ceros como hechos confirmados. Actualizar, reconectar, cambiar cuenta/jugador y
-sincronizar pendientes invalida el historial. Filtros de análisis no alteran logros.
+Ejemplos aprobados:
 
-## Recompensas extraordinarias: propuesta para aprobación
+- Primer Rápido 3–0 ganado: base 150 + tiers 1 de partidos/victorias/goles/victoria
+  a cero (4×25) = **250 XP**, sin repetir al recargar.
+- Goles de equipo 4→50: tiers 2/3 añaden **25+50=75 XP**, sin otro tier 1.
+- 0–0 Rápido ganado en tanda: base 175 + partidos/victorias/penaltis (75) = **250 XP**;
+  sin goles/victoria a cero/prórroga sin tanda.
+- Dos Rápidos reales existentes, una victoria y una derrota por jugador:
+  **225 base + 100 logros = 325 XP/nivel 2**, cuatro estrellas; solo derivación.
 
-Revisión v0.5.2: `/tests/ui-fixture.html?block05=review` calcula total y desglose
-V2 por tier alcanzado con datos simulados. Solo build aislado, fuera de Preview
-normal; muestra siempre 0 concedido. Dos contratos adicionales y paridad SQL/TS
-verifican ejemplos e idempotencia. Sin respuesta expresa a las decisiones
-solicitadas de XP V2/Hall; conservar 0 XP activo hasta aprobar o aplazar explícitamente.
+## Ocho récords personales y Hall privado
 
-**Recompensa activa: estrellas, 0 XP adicional.** XP de partidos y curva de niveles
-aprobados permanecen intactos. No se extiende la proyección XP ni se escriben
-columnas reservadas. El cliente solo presenta badges desde hechos confirmados;
-no es una autoridad de concesión de experiencia.
-
-Propuesta concreta V2, todavía sin activar: **25 / 25 / 50 / 75 / 100 XP** por
-alcanzar respectivamente niveles 1–5, una única contribución por identidad del
-nivel. Máximo 275 XP por familia, 2475 XP para las nueve familias. Reemplaza los
-1250 XP del catálogo V1, que nunca se concedieron. Torneos excluidos de esa suma.
-Récords propuestos: 0 XP. No logros por XP/nivel que creen un ciclo de recompensas.
-
-Ejemplos para aprobar/corregir:
-
-- Primer Rápido ganado 3–0: estrellas nivel 1 en partidos, victorias, goles de
-  equipo y victoria a cero; **150 XP de partido hoy**. Con esta propuesta serían
-  150 + 4×25 = 250 XP, sin repetir el pago al recargar.
-- Goles de equipo pasan de 4 a 50: la misma tarjeta pasa de nivel 1 a nivel 3,
-  consigue niveles 2 y 3. Hoy 0 XP adicional; propuesta 25 + 50 = 75 XP únicos.
-- Un 0–0 ganado por tanda desbloquea partidos, victorias y penaltis nivel 1;
-  no goles ni victoria a cero. Hoy **175 XP Rápido**, propuesta +75 = 250 XP.
-- Dos Rápidos históricos con una victoria y una derrota conservan los **225 XP**
-  aprobados. Las estrellas que cumplan se muestran sin alterar esa experiencia.
-
-Si se aprueba XP: derivación servidor bajo RLS por cuenta/jugador/familia/tier,
-reconstrucción desde hechos vigentes, suma única y desglose separado de XP base.
-Eliminar el cumplimiento retira su contribución; recuperarlo la suma una vez.
-Versión/umbral nunca permiten otro cobro por el mismo tier. Verificar contrato,
-paridad y aislamiento antes de aplicar migraciones o conceder XP.
-
-## Récords y Hall of Fame: propuesta sin activar
-
-Hall privado de la cuenta, todos los líderes empatados, alias actual y bajas
-incluidas. Sin historial, sin récord/líder. **0 XP** por mejorar/empatar/recuperar.
+Todos los líderes empatados, alias actual, incluidos inactivos. Sin historial,
+sin marca/líder. **0 XP** al mejorar/empatar/recuperar cualquier récord.
 
 | ID | Regla y ejemplo |
 | --- | --- |
 | `most_played` | Más partidos confirmados: 24 supera 23 |
 | `most_wins` | Más victorias: 12 supera 11 |
 | `best_streak` | Mejor racha: G/G/E/G → 2 |
-| `biggest_margin` | Mayor diferencia ganadora: 5–1 → 4; empate y tanda → 0 |
+| `biggest_margin` | Mayor diferencia ganadora: 5–1 → 4; empate sin ganador no elegible; victoria en tanda → 0 |
 | `most_team_goals` | Más goles de equipo en un partido: 5–4 → 5 |
 | `best_win_rate` | Victorias/partidos actuales, mínimo 20: 15/20 → 75% |
 | `current_elo` | ELO actual con al menos un Clasificatorio, snapshot aprobado |
 | `max_elo` | Máximo ELO reconstruido con al menos un Clasificatorio |
 
-Comparar fracciones exactas (15/20 = 30/40), no el redondeo visible. UUID organiza
-empates, no rompe el empate deportivo. Récord de marcador referencia todos los
-partidos que lo igualan. Inicial 1200 sin Clasificatorio no crea líder.
 
-Gol más rápido, remontada y duración siguen aplazados: faltan journal/tiempos
-explícitos validados. No restar fechas como tiempo jugado ni atribuir goles
-individuales. UI de récords/Hall solo en fixture de revisión, fuera de producción.
+Porcentaje actual, mínimo 20; no conserva máximo histórico del porcentaje.
+Fracciones exactas (15/20=30/40), no redondeo visible. UUID solo ordena líderes,
+no rompe empates. Las marcas de marcador referencian todos los partidos que las
+igualan. Inicial ELO 1200 sin Clasificatorio no crea líder.
+
+Perfil → RÉCORDS PERSONALES; HISTORIAL → HALL OF FAME. No datos públicos.
+Gol rápido, remontada y duración siguen aplazados: sin hechos/tiempos explícitos
+validados no se restan fechas para inferir juego efectivo ni se inventan goles.
+
+Gana torneos (1/3/5/10/25 propuesto) queda previsto para 06, sin tarjeta, hechos,
+premios o progreso activos. 06 no iniciado. Código/migración/SQL/UI y límite de
+sesión del operador en [VERIFICACION_BLOQUE_05.md](VERIFICACION_BLOQUE_05.md);
+estado operativo en [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md).

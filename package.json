@@ -1,7 +1,7 @@
 {
   "name": "marcador-futbolin-v3",
   "private": true,
-  "version": "0.5.2",
+  "version": "0.5.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -21,7 +21,7 @@
     "build:test-offline": "vite build --mode offline-test",
     "preview:test-offline": "vite preview --outDir tmp/pwa-test --host 127.0.0.1 --port 5188 --strictPort",
     "test": "npm run test:engine && npm run test:persistence && npm run test:recovery && npm run test:offline && npm run test:layout && npm run test:auth && npm run test:statistics && npm run test:xp && npm run test:elo && npm run test:block04 && npm run test:block05",
-    "test:block05": "tsx --test tests/block05.test.ts && tsx --test tests/achievements.test.ts"
+    "test:block05": "tsx --test tests/block05.test.ts && tsx --test tests/achievements.test.ts tests/honours.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2",

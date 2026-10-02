@@ -19,7 +19,7 @@
 .player-search { font-size: 12px; display: grid; gap: 6px; }
 .profile-content { padding: 4px; }
 .profile-actions { flex-shrink: 0; flex-wrap: wrap; }
-.physical-canvas .statistics-grid > div { padding: 8px 12px; }
+.physical-canvas :is(.statistics-grid, .records-grid) > div { padding: 8px 12px; }
 .physical-canvas .profile-identity { margin-bottom: 8px; }
 .profile-identity { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
 .profile-identity > div:last-child { min-width: 0; overflow-wrap: anywhere; }
@@ -27,9 +27,9 @@
 .profile-identity p { margin: 4px 0; }.profile-identity span { color: #b2cae4; font-size: 11px; }
 .profile-avatar { position: relative; flex-shrink: 0; width: 56px; height: 56px; border-radius: 14px; overflow: hidden; background: #173963; display: grid; place-items: center; font-size: 26px; font-weight: 800; }
 .profile-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.statistics-grid { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.statistics-grid > div { padding: 14px; background: #112c4c; border: 1px solid #30577a; border-radius: 10px; min-width: 0; }
-.statistics-grid dt { color: #b2cae4; font-size: 10px; overflow-wrap: anywhere; }.statistics-grid dd { margin: 8px 0 0; font-size: 26px; font-weight: 800; }
+:is(.statistics-grid, .records-grid) { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+:is(.statistics-grid, .records-grid) > div { padding: 14px; background: #112c4c; border: 1px solid #30577a; border-radius: 10px; min-width: 0; }
+:is(.statistics-grid, .records-grid) dt { color: #b2cae4; font-size: 10px; overflow-wrap: anywhere; }:is(.statistics-grid, .records-grid) dd { margin: 8px 0 0; font-size: 26px; font-weight: 800; }
 .analysis-filters { border: 1px solid #30577a; border-radius: 10px; padding: 0 12px; margin-bottom: 12px; }
 .analysis-filters summary, .evolution-values summary { cursor: pointer; padding: 12px 0; min-height: 44px; font-size: 13px; font-weight: 700; }
 .analysis-filters form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding-bottom: 12px; }
@@ -297,3 +297,10 @@ button:focus-visible,input:focus-visible { outline: 2px solid #86ebff; outline-o
 .achievement-tiers ol { padding-left: 24px; line-height: 1.7; }
 .achievement-tiers li { margin-bottom: 12px; }
 .achievement-evidence { display: block; overflow-wrap: anywhere; color: #b6c8d8; font-size: 11px; }
+
+/* Private honours retain readable marks/evidence on phones and physical display. */
+.hall-content { padding: 1rem; }
+.hall-content .achievement-card button { display: block; width: 100%; margin-top: .5rem; min-height: 48px; }
+.records-panel dd { font-size: 1.15rem; }
+.records-panel details { grid-column: 1 / -1; }
+.records-panel details p { overflow-wrap: anywhere; font-size: .85rem; }

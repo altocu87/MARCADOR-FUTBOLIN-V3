@@ -6,6 +6,49 @@
 
 ## Punto de continuidad para conversaciones nuevas
 
+**Entrega 05 v0.5.3, 2026-10-02.** Aprobación expresa del propietario:
+«Apruebo XP V2 por tier, incluidos históricos y recálculo, y los ocho
+récords/Hall privados con empates compartidos y 0 XP por récord».
+Sustituye los pendientes de decisión de v0.5.2; no quedan reglas de 05 por decidir.
+Sincronización explícita de main/revisión sobre `837f3e7`, árbol limpio y 0/0,
+sin sobrescritura, stash ni promoción de main.
+
+Implementados y activos nueve familias/cinco tiers/45 estrellas con
+25/25/50/75/100 XP únicos por tier (275/familia, 2475 máximo), reconstruidos
+desde historial completo confirmado. Identidad cuenta/jugador/familia/ordinal,
+primer hecho por finalización/microsegundos/UUID, históricos incluidos;
+corregir/eliminar cumplimiento retira contribución y recuperarlo suma una vez.
+Sin contadores/ledger ni escrituras de XP por cliente, prueba, pendientes o
+incompletos. XP base y curva aprobados, ELO, RLS, guardado idempotente, motor,
+formatos y 04 descriptivo conservados.
+
+Migración **`20261002161602_approved_block05_honours_xp_v2.sql` aplicada**
+únicamente en `unemjyfhzljcdjcbiiwh`, versión confirmada en registro remoto.
+CLI Supabase no disponible: aplicada mediante conector y archivo nombrado con
+la versión real, sin reejecutar migraciones históricas. Vistas SECURITY INVOKER
+para resultados/tiers y extensión compatible de `player_progression_v1`
+(total = base_xp + achievement_xp). RPC scalar privada
+`get_honours_snapshot_v1()` completa, estable, invoker, sin límite de filas
+PostgREST, sin permiso anon; tipos regenerados.
+
+Perfil: estrellas/progreso/evidencia/XP por tier y ocho récords personales.
+XP separa partidos/logros. HISTORIAL → HALL OF FAME muestra todos los líderes
+privados empatados, alias actual e inactivos, 0 XP por récord. Porcentaje compara
+fracciones exactas y requiere 20 partidos; ELO exige un Clasificatorio real.
+Sin conexión/error/otra cuenta no se confirma una cifra parcial. Filtros no
+alteran honores; actualizar/reconectar/cambiar jugador/cuenta/sync invalidan lectura.
+
+Código y SQL verificados según acceso; la observación web de 05 en la sesión
+Supabase del operador sigue sin acceso del agente y no se presenta como completada.
+No repetir cuentas/partidos del checklist cerrado. Única comprobación humana
+restante de esta entrega: abrir v0.5.3 en la sesión existente, perfil Alex2 o Vicky
+(225 XP partidos + 100 logros = 325, nivel 2, cuatro estrellas) y Hall.
+No es otra aprobación de reglas ni obliga a crear datos. 06 no iniciado.
+[Pruebas/publicación](VERIFICACION_BLOQUE_05.md) y
+[siguiente prompt completo](PROMPT_SIGUIENTE_BLOQUE.md).
+
+**Registro histórico de v0.5.2, sustituido por v0.5.3:**
+
 **Continuación de 05, v0.5.2, 2026-10-02.** Base sincronizada `3dffdaa` por
 fetch explícito de revisión y fast-forward; checkout inicial limpio, sin reset,
 stash ni sobrescritura. El refspec genérico solo traía main. Estrellas de v0.5.1
@@ -185,7 +228,7 @@ Aclaración previa a las pruebas, 2026-10-02: sesión persistente automática ya
 | C. Estadísticas, perfil y análisis de resultados | Cálculos/lecturas verificados; guardado/perfiles, alias actual y baja/reactivación confirmados por el propietario en el cierre de 01. XP/niveles aprobados e implementados en 02; SQL real y UI independiente verificados, Preview XP autenticada sin observación directa |
 | D. ELO, ranking privado y categorías | Aprobado/activo desde v0.4.1; reconstrucción y SQL/RLS/UI verificados; sesión web del operador no controlada por el agente |
 | D. H2H y forma competitiva (04) | Descriptivo integrado/verificado desde v0.4.1; previsión aplazada por decisión expresa |
-| E. Logros, récords y Hall (05) | Nueve familias/45 estrellas activas; v0.5.2 verifica y desglosa XP V2 en fixture. XP extra/Hall pendientes de aprobación; 05 abierto |
+| E. Logros, récords y Hall (05) | v0.5.3 aprobado/activo: tiers XP V2, ocho récords/Hall privados; código/UI aislada/SQL comprobados. Observación web autenticada del operador pendiente según acceso |
 | F–J. Torneos, audiovisual avanzado, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
 
 ## Código local implementado en la fase B
@@ -261,6 +304,8 @@ Migraciones **ya aplicadas remotamente**, cuyos archivos forman parte de la rama
 5. `20261002073605_activate_approved_xp_v1.sql`: activación de parámetros expresamente aprobados después de la prueba real con ROLLBACK.
 6. `20261002081345_elo_ranking_v1.sql`: configuración ELO desactivada y reconstrucción privada, sin activación de propuestas.
 7. `20261002084915_competition_snapshot_v1.sql`: instantánea escalar completa, sin límite de filas/páginas mixtas.
+8. `20261002140820_casual_1v2_and_approved_elo.sql`: 1v2 casual y activación ELO aprobado, aplicada en 04.
+9. `20261002161602_approved_block05_honours_xp_v2.sql`: tiers/XP V2 y snapshot de ocho récords/Hall privado aprobados, aplicada en 05.
 
 Inspección del registro remoto en 03: las tres migraciones iniciales figuran con versiones **20261001053428**, **20261001055234** y **20261001055716**, respectivamente. Sus archivos locales conservan los nombres históricos de la lista; no reejecutarlos por esa diferencia ni renombrarlos dentro de 03. Las cuatro versiones de 02/03 sí coinciden con el registro remoto. Contrastar ambas fuentes antes de cualquier futuro db push; no reparar ni sobrescribir historial remoto por rutina.
 
@@ -292,8 +337,9 @@ Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida
 
 ## Bloqueo y siguiente acción exacta
 
-**Vigente tras v0.5.2:** decidir recompensas V2 y récords/Hall de CATALOGO_BLOQUE_05, integrar
-únicamente lo aprobado y verificarlo. Ningún premio extraordinario activado.
+**Vigente tras v0.5.3:** no quedan decisiones propias de 05 pendientes. Verificar visualmente
+perfil/Hall existentes en la sesión habitual según acceso; propuesta de 06 solo en una conversación nueva.
+XP V2 y ocho récords/Hall expresamente aprobados/activos; no volver a pedir aprobación.
 Dependencias 03/04 cerradas en su alcance: ELO activo, análisis descriptivo sin
 pronóstico. No repetir cuentas/partidos del checklist de 01. El párrafo siguiente
 es histórico y sus pendientes de 03 quedan sustituidos por v0.4.1.
@@ -325,6 +371,20 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — 05 aprobado y activado: XP V2, récords/Hall privados, v0.5.3
+
+Aprobación literal y migración registradas en continuidad. Nuevos módulos
+`src/honours`, repositorio Supabase, HonoursPanel/HallScreen; extensión XP con
+desglose y servicios/rutas. Catálogo/estrellas preservados; sin cambios de motor,
+ELO/XP base, configuración de Auth, datos de partidos o dependencias.
+Tests de contrato/repo/Hall/V2, fixtures nuevos `honours=active/error` y SQL
+que reutiliza las consultas exactas de migración con tablas JSON/CTEs (READ ONLY,
+ROLLBACK). El prototipo viejo continúa aislado como evidencia histórica; no concede
+XP ni forma parte del bundle normal. Versión/package/lock/novedades 0.5.3.
+Documentación/contexto/seguimiento/siguiente prompt actualizados. Evidencia final
+y publicación en VERIFICACION_BLOQUE_05. 06, torneos, pagos, Google/Drive,
+SMTP, administración y main fuera del alcance.
 
 ### 2026-10-02 — Continuación 05: propuesta XP V2 desglosada, v0.5.2
 

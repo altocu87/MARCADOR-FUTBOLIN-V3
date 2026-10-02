@@ -623,12 +623,17 @@ Mostrar también últimos 5 resultados clasificatorios.
 
 ## 34. LOGROS
 
-**Continuación v0.5.2:** importes V2 calculados/desglosados solo en el fixture de
-revisión, con 0 XP concedido. Conserva las estrellas y su identidad de v0.5.1.
-XP V2 y récords/Hall requieren respuesta expresa del propietario; no aprobación
-registrada en esta continuación. Pruebas independientes no activan propuestas.
+**Aprobación expresa y entrega v0.5.3, 2026-10-02:** XP V2 por tier,
+25/25/50/75/100, incluidos históricos y recálculo, y ocho récords/Hall privados,
+empates compartidos y 0 XP por récord. Sustituye la falta de aprobación de v0.5.2.
+Servidor reconstruye por cuenta/jugador/familia/ordinal, bajo RLS; total de XP
+separa base de partidos y contribución única de tiers vigentes. Correcciones
+pueden reducirla; recuperarla conserva identidad. No contadores/client grants,
+ni XP circular. Vistas invoker y snapshot scalar completo con catálogo `tiers-v2`.
+Perfil y Hall activos; prueba/pendientes/incompletos fuera. Reglas/datos XP base,
+ELO y motor preservados. Verificación y límites en ESTADO_ACTUAL/VERIFICACION_BLOQUE_05.
 
-**Decisión vigente 05, v0.5.1, 2026-10-02:** el propietario pide logros que
+**Decisión de familias v0.5.1, conservada:** el propietario pide logros que
 suben con estrellas/tiers, una tarjeta por familia; goles en 1/5/50 y otros
 escalones/familias accesibles a criterio de implementación. Sustituye las 24
 tarjetas independientes propuestas en v0.5.0. Nueve familias activas, cinco
@@ -640,8 +645,7 @@ identidad cuenta/jugador/familia/ordinal de tier, primera evidencia por
 microsegundos/UUID, sin contadores/escrituras. Retry/recarga no duplican estrellas;
 corregir hechos recalcula y puede retirarlas. Prueba/cola/incompletos excluidos,
 sin conexión/error no se confirman cifras. Goles de equipo, nunca individuales.
-**0 XP extraordinario activo**; propuesta V2 25/25/50/75/100 por tier pendiente de
-aprobación, sin tocar XP/ELO aprobados. No catálogo circular por XP/nivel.
+**XP V2 25/25/50/75/100 por tier activo**, sin modificar XP base/curva ni ELO aprobados. No catálogo circular por XP/nivel.
 Gana torneos previsto para 06 (1/3/5/10/25 propuesto), sin hechos ni UI activa.
 
 Objetivo futuro: aproximadamente 50 logros + aproximadamente 10 secretos opcionales.
@@ -659,12 +663,12 @@ Premio XP: una sola vez. No permitir farmear repetidamente un logro único.
 
 ## 35. RÉCORDS
 
-**Propuesta 05 sin activar:** ocho récords derivados (partidos, victorias, racha,
+**05 aprobado/activo, v0.5.3:** ocho récords derivados (partidos, victorias, racha,
 diferencia ganadora, goles de equipo en un partido, porcentaje actual con mínimo
 20, ELO actual y máximo con al menos un Clasificatorio). Hall privado de la
 cuenta, todas las identidades empatadas, alias actual y bajas incluidas; sin
 historial, sin líder. Porcentaje compara razones exactas; presentación redondeada
-no rompe empates. Récords propuestos **0 XP** aun al mejorar/empatar/recuperar.
+no rompe empates. Récords **0 XP** aun al mejorar/empatar/recuperar.
 Gol rápido, remontada y duración aplazados hasta tener hechos/journal/tiempos
 explícitos; nunca inferir juego efectivo restando fechas ni atribuir goles
 individuales. Catálogo/ejemplos/verificación enlazados en §34 y ESTADO_ACTUAL.
@@ -683,7 +687,7 @@ Ejemplos:
 - mejor porcentaje de victorias;
 - máximo ELO histórico.
 
-Habrá un futuro HALL OF FAME con líderes visuales.
+HALL OF FAME privado con todos los líderes empatados disponible desde HISTORIAL; no ranking público.
 
 Un récord puede cambiar múltiples veces. Pero no debe conceder XP ilimitado por cada actualización salvo reglas explícitas.
 

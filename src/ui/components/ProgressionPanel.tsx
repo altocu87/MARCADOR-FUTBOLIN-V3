@@ -21,6 +21,7 @@ export function ProgressionPanel({ repository, playerId, online, revision }: {
   return <section className="xp-panel" aria-label="Experiencia y nivel">
     {value?.enabled ? <>
       <div className="xp-heading"><strong>NIVEL {value.level}</strong><span>{value.xp.toLocaleString('es-ES')} XP CONFIRMADOS</span></div>
+      {value.baseXp !== undefined && <p>Partidos: {value.baseXp.toLocaleString('es-ES')} XP · Logros: {value.achievementXp!.toLocaleString('es-ES')} XP</p>}
       <progress aria-label="Progreso al siguiente nivel" max={value.nextThreshold === null ? 1 : value.nextThreshold - value.currentThreshold} value={value.nextThreshold === null ? 1 : value.xp - value.currentThreshold} />
       <p>{value.nextThreshold === null ? `NIVEL MÁXIMO ${value.maxLevel} · Los XP siguen acumulándose.` : `${(value.nextThreshold - value.xp).toLocaleString('es-ES')} XP para nivel ${value.level + 1} · Umbral total ${value.nextThreshold.toLocaleString('es-ES')} XP`}</p>
       <p className="statistics-note">{value.confirmedMatches} partidos confirmados · Progresión total, independiente de los filtros del análisis. Prueba y pendientes no conceden XP.</p>

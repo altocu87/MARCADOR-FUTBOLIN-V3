@@ -1,3 +1,4 @@
+import { tierXp } from '../../honours/model'
 import { useMemo } from 'react'
 import { rebuildAchievements, type AchievementSnapshot } from '../../achievements/rebuild'
 import type { MatchSummary } from '../../services/persistence/models'
@@ -14,7 +15,7 @@ export function AchievementCards({ snapshot }: { snapshot: AchievementSnapshot }
       <progress aria-label={`${family.title}: progreso al nivel ${family.next.level}`} value={family.value} max={family.next.threshold} />
     </> : <p className="achievement-progress">Todos los niveles completados · {family.value.toLocaleString('es-ES')}</p>}
     <details className="achievement-tiers"><summary>VER NIVELES</summary><ol>{family.tiers.map(tier => <li key={tier.id} data-tier={tier.id}>
-      <strong>Nivel {tier.level} · {tier.threshold.toLocaleString('es-ES')}</strong> — {tier.evidence ? 'Conseguido' : 'En progreso'}
+      <strong>Nivel {tier.level} · {tier.threshold.toLocaleString('es-ES')}</strong> — {tier.evidence ? 'Conseguido' : 'En progreso'} · {tierXp[tier.level - 1]} XP
       {tier.evidence && <span className="achievement-evidence">Hecho confirmado: {new Date(tier.evidence.finishedAt).toLocaleDateString('es-ES')} · Partido {tier.evidence.matchId}</span>}
     </li>)}</ol></details>
   </article>)}</div>
@@ -30,6 +31,6 @@ export function AchievementsPanel({ accountId, playerId, matches, online, busy, 
   }, [accountId, playerId, matches, online, busy, message])
   return <details className="achievements-panel"><summary>LOGROS{review.snapshot && ` · ${review.snapshot.stars}/45 estrellas`}</summary>
     <p>Una familia, cinco niveles. Progreso de todos tus partidos confirmados, independiente de los filtros.</p>
-    {review.snapshot ? <><AchievementCards snapshot={review.snapshot} /><p className="statistics-note">Las estrellas no añaden XP. Prueba y pendientes excluidos. Los goles corresponden a tu equipo.</p></> : <p role="status">{!online ? 'Sin conexión. Conecta para consultar tus logros confirmados.' : busy ? 'Consultando el historial completo…' : review.error || (message ? 'No se ha podido consultar el historial completo. Actualiza para ver los logros.' : 'Preparando consulta…')}</p>}
+    {review.snapshot ? <><AchievementCards snapshot={review.snapshot} /><p className="statistics-note">XP de logros: consulta confirmada del servidor necesaria. Prueba y pendientes excluidos. Los goles corresponden a tu equipo.</p></> : <p role="status">{!online ? 'Sin conexión. Conecta para consultar tus logros confirmados.' : busy ? 'Consultando el historial completo…' : review.error || (message ? 'No se ha podido consultar el historial completo. Actualiza para ver los logros.' : 'Preparando consulta…')}</p>}
   </details>
 }

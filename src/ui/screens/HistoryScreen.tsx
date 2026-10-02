@@ -17,10 +17,10 @@ function conditionLabel(document: MatchDocument): string {
   return `${match.victory_condition === 'GOALS' ? 'POR GOLES' : 'AMBAS'} · Reglas anteriores · ${match.goal_limit} goles sumados por parte${match.victory_condition === 'BOTH' ? ` / ${time(match.time_limit_seconds)}` : ' · Sin límite de tiempo'}`
 }
 
-export function HistoryScreen({ repository, players, userId, online, playerId, playerName, onBack, onStatistics, onRanking, filteredMatches, filterLabel }: {
+export function HistoryScreen({ repository, players, userId, online, playerId, playerName, onBack, onStatistics, onRanking, onHall, filteredMatches, filterLabel }: {
   repository: MatchRepository | null; userId: string | null; online: boolean; playerId?: string; playerName?: string
   players: readonly Player[]
-  onBack?: () => void; onStatistics?: () => void; onRanking?: () => void
+  onBack?: () => void; onStatistics?: () => void; onRanking?: () => void; onHall?: () => void
   filteredMatches?: readonly MatchSummary[]; filterLabel?: string
 }) {
   const [matches, setMatches] = useState<MatchSummary[]>([])
@@ -56,7 +56,7 @@ export function HistoryScreen({ repository, players, userId, online, playerId, p
     } catch (error) { if (!controller.signal.aborted && detailRequest.current === controller) setMessage(errorMessage(error)) } finally { if (!controller.signal.aborted && detailRequest.current === controller) setBusy(false) }
   }
   const singleGoalDetail = detail ? singleGoalMatch(detail) : false
-  return <section className="data-screen"><header className="data-heading"><h1>{detail ? 'DETALLE DEL PARTIDO' : 'HISTORIAL'}</h1><div>{onRanking && <button type="button" onClick={onRanking}>CLASIFICACIÓN</button>}{onStatistics && <button type="button" onClick={onStatistics}>ESTADÍSTICAS</button>}{onBack && <button type="button" onClick={onBack}>VOLVER AL PERFIL</button>}{(!filteredMatches || detail) && <button type="button" disabled={busy} onClick={() => detail ? setDetail(null) : setVersion(value => value + 1)}>{detail ? 'VOLVER' : 'ACTUALIZAR'}</button>}</div></header>
+  return <section className="data-screen"><header className="data-heading"><h1>{detail ? 'DETALLE DEL PARTIDO' : 'HISTORIAL'}</h1><div>{onHall && <button type="button" onClick={onHall}>HALL OF FAME</button>}{onRanking && <button type="button" onClick={onRanking}>CLASIFICACIÓN</button>}{onStatistics && <button type="button" onClick={onStatistics}>ESTADÍSTICAS</button>}{onBack && <button type="button" onClick={onBack}>VOLVER AL PERFIL</button>}{(!filteredMatches || detail) && <button type="button" disabled={busy} onClick={() => detail ? setDetail(null) : setVersion(value => value + 1)}>{detail ? 'VOLVER' : 'ACTUALIZAR'}</button>}</div></header>
     {playerName && <p className="history-player-label">JUGADOR · {playerName}</p>}
     {filterLabel && <p className="analysis-scope">{filterLabel} · Para actualizar los resultados, vuelve al perfil.</p>}
     {!userId ? <div className="empty-state">Inicia sesión en AJUSTES para consultar tus partidos.</div> : detail ? <>

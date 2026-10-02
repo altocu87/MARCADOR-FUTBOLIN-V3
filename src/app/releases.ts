@@ -5,6 +5,17 @@ export const APP_VERSION = version
 
 export const releases = [
   {
+    version: '0.5.3',
+    title: 'Experiencia de logros y récords privados',
+    changes: [
+      'Cada nivel de logro añade una vez 25, 25, 50, 75 o 100 XP, también desde tu historial anterior.',
+      'El perfil separa el XP de partidos y logros y muestra ocho récords personales.',
+      'Hall of Fame privado con marcas compartidas entre jugadores empatados, incluidos inactivos. Los récords dan 0 XP.',
+      'La experiencia y las marcas se recalculan desde los partidos confirmados; prueba y pendientes no cuentan.',
+    ],
+    pending: 'Torneos sin iniciar.',
+  },
+  {
     version: '0.5.2',
     title: 'Revisión de las recompensas de logros',
     changes: [

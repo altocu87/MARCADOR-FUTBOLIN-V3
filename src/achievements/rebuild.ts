@@ -61,4 +61,4 @@ export function rebuildAchievements(history: AchievementHistory) {
     stars: families.reduce((total, family) => total + family.level, 0), grantedExtraXp: 0 as const }
 }
 
-export type AchievementSnapshot = ReturnType<typeof rebuildAchievements>
+export type AchievementSnapshot = Omit<ReturnType<typeof rebuildAchievements>, 'grantedExtraXp'> & { grantedExtraXp: number }

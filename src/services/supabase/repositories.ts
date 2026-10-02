@@ -89,13 +89,15 @@ export function mapProgression(row: {
   id: string | null; xp: number | null; level: number | null; current_threshold: number | null
   next_threshold: number | null; max_level: number | null; confirmed_matches: number | null
   rules_version: number | null; enabled: boolean | null
+  base_xp?: number | null; achievement_xp?: number | null
 }): PlayerProgression {
   const valid = (n: number | null): n is number => n !== null && Number.isSafeInteger(n) && n >= 0
   if (!row.id || !valid(row.xp) || !valid(row.level) || !valid(row.current_threshold)
     || !valid(row.max_level) || !valid(row.confirmed_matches) || !valid(row.rules_version) || row.rules_version < 1
     || typeof row.enabled !== 'boolean' || row.level > row.max_level || row.current_threshold > row.xp
     || (row.level === row.max_level ? row.next_threshold !== null : !valid(row.next_threshold) || row.next_threshold <= row.xp)) throw new Error('Progresión XP incompatible. No se muestran cifras parciales.')
-  return { playerId: row.id, xp: row.xp, level: row.level, currentThreshold: row.current_threshold,
+  if ((row.base_xp !== undefined || row.achievement_xp !== undefined) && (!valid(row.base_xp ?? null) || !valid(row.achievement_xp ?? null) || row.base_xp! + row.achievement_xp! !== row.xp)) throw new Error('Desglose XP incompatible.')
+  return { ...(row.base_xp !== undefined ? { baseXp: row.base_xp!, achievementXp: row.achievement_xp! } : {}), playerId: row.id, xp: row.xp, level: row.level, currentThreshold: row.current_threshold,
     nextThreshold: row.next_threshold, maxLevel: row.max_level, confirmedMatches: row.confirmed_matches,
     rulesVersion: row.rules_version, enabled: row.enabled }
 }

@@ -7,7 +7,7 @@ export interface AchievementFamily {
 }
 
 // Family and ordinal identify a tier; changing a threshold/version cannot create
-// a second award. Stars are badges; extraordinary XP has not been approved.
+// a second award. XP V2 is expressly approved; production awards are derived by the server.
 export const ACHIEVEMENT_CATALOG_VERSION = 'tiers-v2'
 export const achievementCatalog: readonly AchievementFamily[] = Object.freeze([
   { id: 'played', title: 'Juega partidos', description: 'Completa partidos en cualquier modo.', thresholds: [1, 5, 25, 100, 250] },

@@ -1,4 +1,87 @@
-# Bloque 05 — continuación de revisión, v0.5.2, 2026-10-02
+# Bloque 05 — aprobado/activo v0.5.3, 2026-10-02
+
+Aprobación expresa registrada en ESTADO_ACTUAL y CATALOGO_BLOQUE_05: XP V2 por tier,
+históricos/recálculo, ocho récords/Hall privados, empates compartidos, 0 XP por récord.
+No quedan decisiones funcionales de 05. 06 no iniciado. Las secciones anteriores
+de v0.5.2/0.5.1/0.5.0 conservadas debajo son históricas: sus prompts no son vigentes.
+
+## Implementación y migración realmente aplicada
+
+- Sincronización explícita main/revisión sobre `837f3e7`, árbol limpio, 0/0.
+- `20261002161602_approved_block05_honours_xp_v2.sql`, aplicada mediante conector
+  solo a `unemjyfhzljcdjcbiiwh`; `list_migrations` confirma versión/nombre.
+  Sin CLI Supabase disponible; no db push ni repetir versiones históricas.
+- Tres vistas SECURITY INVOKER: perspectivas/rachas completas, 45 tiers por jugador
+  con primera evidencia y XP único, XP total con base_xp/achievement_xp añadidos
+  conservando el contrato anterior. No tablas/ledgers/counters ni escrituras de XP.
+- RPC scalar `get_honours_snapshot_v1`, STABLE/invoker/search_path vacío, solo
+  authenticated, sin paginación/cap PostgREST. Una lectura completa de cuenta,
+  incluidos inactivos, badges/records/evidencia/XP y ELO aprobado sin alterarlo.
+- Repositorio tipado valida cuenta, integridad, 45 tiers, evidence, XP exacto y
+  coherencia de marcas; falla sin ceros/lecturas parciales. Tipos remotos regenerados.
+- Perfil presenta XP base/logros, tiers/evidencia y ocho récords; navegación
+  HISTORIAL → HALL, empates por fracción exacta, alias actual y bajas.
+  AbortController e identidad/revisión invalidan lecturas tras cambios/sync;
+  no storage nuevo ni consultas por gol. Revisados hooks/keys/accesibilidad React.
+
+## Verificación independiente y SQL real
+
+- Once grupos `npm test`, contratos 05: 15 históricos + 6 badges + 6 aprobados.
+  Typecheck explícito fixture/repositorios/tests/generador SQL correcto.
+  Builds normal/aislado y diff-check correctos. **Chromium completo 57/57**, cero
+  fallos/omitidos (131 s); revisión focalizada final **6/6** tras mejora de capturas
+  y referencia física del perfil aprobado. Capturas inspeccionadas móvil 390×844
+  (perfil/Hall) y física 800×480, controles/scroll sin desbordamiento; también
+  medidos 320×568, 800×480 y 1440×900. Sin errores JS.
+- Fixtures `honours=active/error`, nunca importados por build normal: XP desglosado,
+  tiers, récords/Hall con bajas/empates/sin historial, filtros/refresco, offline,
+  fallo, navegación/cierre de sesión, pendiente→sync una vez y prueba excluida.
+  Tráfico Supabase bloqueado; no login/cuentas/partidos reales.
+- SQL **PASS**: invoker/RLS/permisos/retry/desglose instalados y **19 escenarios**
+  contra las consultas SELECT exactas extraídas de la migración, sustituyendo solo
+  tablas por JSON/CTEs. Incluye 250 históricos, corrección/eliminación/retry,
+  1v2 Caos sin ELO, microsegundos, vacío/prueba, prórroga/tanda/empate y fronteras
+  de goles hasta 1000. Compara tiers/primera evidencia/fechas/XP/records/empates
+  de partidos con referencia TS. ELO en fixtures usa referencia aprobada; su RPC
+  instalada/configuración se verifican aparte, sin reescribir ni activar otra regla.
+- Script reproducible `supabase/tests/block05_approved.ts`: REPEATABLE READ,
+  READ ONLY, ROLLBACK. Sin INSERT/UPDATE/DELETE/DDL/Auth ni partidos nuevos.
+  Correcciones sintéticas no implementan administración. Los fallos iniciales
+  del arnés (rol heredado y precedencia JSON) corregidos; ejecución final PASS.
+- Datos reales intactos: 2 jugadores/2 Rápidos/4 participantes/12 eventos,
+  0 Clasificatorios. Lectura bajo rol authenticated, identidad existente simulada
+  solo en transacción: ambos **225 XP base + 100 logros = 325 XP, nivel 2**, cuatro
+  estrellas, 2 confirmados. Consulta SQL no equivale a inicio de sesión en Preview.
+- El mapper TypeScript aplicado también al snapshot SQL real valida ambos jugadores:
+  325 XP, base 225, logros 100, nivel 2, cuatro estrellas. Solo lectura, sin sesión web.
+- Advisors sin problemas nuevos de RLS/vistas: aviso Auth histórico
+  [protección de contraseñas filtradas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)
+  e INFO histórico [índice events_owner_idx sin uso](https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index).
+  No se cambia Auth ni se elimina índice fuera de 05.
+
+## Publicación y observación autenticada
+
+Código de esta entrega todavía en árbol local al escribir este apartado;
+migración aplicada por separado. Registrar commit/push y despliegue tras comprobarlos,
+no inferir READY desde build local. Rama de revisión autorizada, main sin promoción.
+
+Sin sesión web Supabase del operador accesible al agente. Al abrir el build v0.5.3
+en la sesión habitual, comprobar únicamente perfil existente (Alex2 o Vicky):
+325 XP/nivel 2, desglose 225 + 100, cuatro estrellas y ocho récords; desde HISTORIAL,
+Hall privado compartido en partidos/victorias/racha. Sin ELO elegible ni porcentaje
+hasta disponer de Clasificatorios/20 partidos. No crear cuentas/partidos ni reabrir 01.
+Esta observación humana queda pendiente según acceso; código/UI aislada/SQL y
+READY del deployment se informan por separado.
+
+## Siguiente conversación
+
+[Prompt completo de propuesta 06](PROMPT_SIGUIENTE_BLOQUE.md), sin ejecutar 06 ahora.
+Formato/equipos/byes/empates/premios/elegibilidad de torneo pendientes de decisión
+propia. No volver a solicitar aprobación XP V2/Hall ni iniciar servicios excluidos.
+
+---
+
+# Registro histórico — revisión v0.5.2, sustituida por v0.5.3
 
 **No cerrado; pendiente de decisión expresa de XP V2 y récords/Hall.** La petición
 vigente mantiene ese requisito. Dos preguntas concretas enviadas durante el

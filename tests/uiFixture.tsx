@@ -1,3 +1,4 @@
+import { honoursFixture, honoursAccount } from './honoursFixtures'
 import { approvedXpRules, rebuildProgression } from '../src/progression/xp'
 import { rebuildCompetition } from '../src/competition/elo'
 import { eloFixtures, eloPlayers, testEloRules } from './eloFixtures'
@@ -70,7 +71,8 @@ if (new URLSearchParams(location.search).get('elo') === 'seed') {
   players = structuredClone(eloPlayers)
   for (const doc of eloFixtures()) matches.set(doc.match.id, doc)
 }
-let fixtureIdentity = guest ? null : { id: 'fixture', email: 'operator@example.invalid', displayName: 'OPERADOR UI LOCAL', emailVerified: true, pendingEmail: '' }
+const honoursMode = new URLSearchParams(location.search).get('honours')
+let fixtureIdentity = guest ? null : { id: honoursMode ? honoursAccount : 'fixture', email: 'operator@example.invalid', displayName: 'OPERADOR UI LOCAL', emailVerified: true, pendingEmail: '' }
 const identityListeners = new Set<(user: typeof fixtureIdentity) => void>()
 const accountCalls = { profile: 0, email: 0, password: 0, resend: 0, reauthenticate: 0, logout: [] as string[] }
 Object.defineProperty(window, 'fixtureAccountCalls', { value: accountCalls })
@@ -103,6 +105,7 @@ const services: ApplicationServices = {
     async getPlayerProgression(id, signal) {
       await requireNetwork(); signal?.throwIfAborted()
       if (new URLSearchParams(location.search).get('xp') === 'error') throw new Error('Error XP simulado')
+      if (honoursMode) return honoursFixture(players,[...matches.values()].map(d=>({...d.match,participants:d.participants}))).rows.find(r=>r.player.id===id)!.progression
       return rebuildProgression([...matches.values()].map(d => ({ ...d.match, participants: d.participants })), id, approvedXpRules)
     },
   },
@@ -114,6 +117,11 @@ const services: ApplicationServices = {
       return rebuildCompetition(players, [...matches.values()].map(d => ({ ...d.match, participants: d.participants })), { ...testEloRules, enabled: mode !== 'disabled' }).rows
     },
   },
+  ...(honoursMode ? { honours: { async getSnapshot(accountId: string, signal?: AbortSignal) {
+    await requireNetwork(); signal?.throwIfAborted()
+    if (honoursMode === 'error') throw new Error('Error de honores simulado')
+    return honoursFixture(players,[...matches.values()].map(d=>({...d.match,participants:d.participants})),accountId)
+  } } } : {}),
   matches: {
     async saveMatch(document) {
       await requireNetwork()
