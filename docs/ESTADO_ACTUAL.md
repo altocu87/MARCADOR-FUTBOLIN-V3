@@ -6,6 +6,39 @@
 
 ## Punto de continuidad para conversaciones nuevas
 
+**Continuación vigente: preparación exclusivamente documental de 06, 2026-10-02.**
+Petición posterior a 05: preparar propuesta revisable, ejemplos y decisiones;
+no implementar/activar torneos o premios. Sincronizado sobre `ecb3a2d`, árbol limpio,
+fetch explícito main/revisión 0/0 y fast-forward ya actualizado. No sobrescritura.
+
+[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) recomienda D1 eliminación directa,
+2–16 equipos fijos 1v1/2v2, sorteo/byes sin partido/premio, desempate vigente,
+recuperación/cancelación detalladas; D2 modo fijo Rápido/Caos/Clasificatorio con
+XP/logros normales y ELO solo Clasificatorio; D3 trofeo privado con **0 XP adicional**,
+sin nueva familia/estrellas/récords. Alternativas: liguilla (requiere V2), limitar
+modalidades casuales o ampliar «Gana torneos» con aprobación propia. **D1/D2/D3 no
+aprobadas**; recomendaciones no se activan por publicar documentos.
+
+Ejemplos: cuatro equipos/tres partidos; cinco equipos/cuatro partidos/tres byes.
+Offline: cuadro provisional con dependencias; solo resultados confirmados permiten
+avance/campeón oficial, sin doble guardado ni cobros. Cancelar conserva partidos
+confirmados/XP/ELO y no inventa victoria por abandono. Propuesta para implementar,
+no mecanismo que ya exista.
+
+Aplicación **v0.5.3**, menú TORNEO provisional, sin nueva versión/novedad funcional.
+Solo Markdown: contexto/estado/seguimiento/README, propuesta, verificación y prompt.
+Sin código, migraciones/consultas SQL, datos, cuentas/partidos, servicios o reglas
+activas modificadas. Verificaciones proporcionales documentadas en
+[VERIFICACION_BLOQUE_06.md](VERIFICACION_BLOQUE_06.md); publicación se registra tras
+confirmar push. 05 sigue aprobado/activo como se describe debajo, su observación
+humana en sesión existente permanece separada según acceso, sin reabrir 01.
+
+**Siguiente acción efectiva:** resolver D1/D2/D3 de 06 con la propuesta concreta,
+registrar respuesta y después continuar 06 mediante
+[PROMPT_SIGUIENTE_BLOQUE.md](PROMPT_SIGUIENTE_BLOQUE.md). No implementar torneos hasta
+aprobar esas reglas; no iniciar 07. Las entradas siguientes conservan la entrega
+05 y su evidencia histórica; no requieren volver a pedir sus aprobaciones.
+
 **Entrega 05 v0.5.3, 2026-10-02.** Aprobación expresa del propietario:
 «Apruebo XP V2 por tier, incluidos históricos y recálculo, y los ocho
 récords/Hall privados con empates compartidos y 0 XP por récord».
@@ -240,7 +273,8 @@ Aclaración previa a las pruebas, 2026-10-02: sesión persistente automática ya
 | D. ELO, ranking privado y categorías | Aprobado/activo desde v0.4.1; reconstrucción y SQL/RLS/UI verificados; sesión web del operador no controlada por el agente |
 | D. H2H y forma competitiva (04) | Descriptivo integrado/verificado desde v0.4.1; previsión aplazada por decisión expresa |
 | E. Logros, récords y Hall (05) | v0.5.3 aprobado/activo: tiers XP V2, ocho récords/Hall privados; código/UI aislada/SQL comprobados. Observación web autenticada del operador pendiente según acceso |
-| F–J. Torneos, audiovisual avanzado, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
+| F. Torneos (06) | Propuesta documental revisable D1/D2/D3; sin aprobación ni funciones activadas |
+| G–J. Audiovisual avanzado, backup, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
 
 ## Código local implementado en la fase B
 
@@ -348,6 +382,13 @@ Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida
 
 ## Bloqueo y siguiente acción exacta
 
+**Vigente: propuesta 06 publicada para decidir D1/D2/D3.** No implementación ni
+activación de torneos/premios. Continuar 06 únicamente tras registrar aprobación
+expresa de sus opciones. 05 conserva sus aprobaciones y límite de observación
+autenticada, que no bloquea esta preparación autorizada. No reabrir 01 ni iniciar 07.
+
+**Continuidad anterior, conservada:**
+
 **Vigente tras v0.5.3:** no quedan decisiones propias de 05 pendientes. Verificar visualmente
 perfil/Hall existentes en la sesión habitual según acceso; propuesta de 06 solo en una conversación nueva.
 XP V2 y ocho récords/Hall expresamente aprobados/activos; no volver a pedir aprobación.
@@ -382,6 +423,18 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Preparación documental 06, propuesta pendiente de decisión
+
+Autorización vigente limitada a propuesta revisable. Crear PROPUESTA_BLOQUE_06 y
+VERIFICACION_BLOQUE_06; actualizar contexto §36, continuidad/seguimiento, README
+y prompt siguiente. Tres decisiones propias D1/D2/D3, ejemplos de cuadro/liguilla,
+byes sin premios, desempates existentes, offline/confirmación, conflicto/cancelación,
+trofeo sin XP adicional recomendado y alternativa de nueva familia no aprobada.
+Referencias de arquitectura contrastadas con código existente, sin implementarlo.
+Version/package/lock/releases 0.5.3 intactos. Verificación de documentos/enlaces,
+aritmética y referencias XP existente; no nueva batería de tests/UI/SQL reales.
+Publicación en revisión anotada tras push; no main, datos o servicios externos.
 
 ### 2026-10-02 — 05 aprobado y activado: XP V2, récords/Hall privados, v0.5.3
 

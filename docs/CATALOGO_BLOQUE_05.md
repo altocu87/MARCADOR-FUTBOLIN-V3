@@ -90,6 +90,6 @@ Gol rápido, remontada y duración siguen aplazados: sin hechos/tiempos explíci
 validados no se restan fechas para inferir juego efectivo ni se inventan goles.
 
 Gana torneos (1/3/5/10/25 propuesto) queda previsto para 06, sin tarjeta, hechos,
-premios o progreso activos. 06 no iniciado. Código/migración/SQL/UI y límite de
+premios o progreso activos. Implementación 06 no iniciada; propuesta posterior en [PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md), sin activar familia/premios. Código/migración/SQL/UI y límite de
 sesión del operador en [VERIFICACION_BLOQUE_05.md](VERIFICACION_BLOQUE_05.md);
 estado operativo en [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md).

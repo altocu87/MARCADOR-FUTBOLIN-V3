@@ -14,6 +14,13 @@ ELO activo con parámetros aprobados: K40 primeras diez/K20 después, redondeo e
 
 ## Contexto y estado de la fase
 
+**Preparación 06, solo documentación:** propuesta de formato/equipos/cuadro/byes,
+empates, offline/cancelación, premio y elegibilidad XP/ELO. Tres decisiones D1/D2/D3
+pendientes en [Propuesta 06](docs/PROPUESTA_BLOQUE_06.md). No código/migraciones ni
+funciones de torneos/premios; versión **0.5.3** intacta. Evidencia de revisión
+proporcional en [Verificación 06](docs/VERIFICACION_BLOQUE_06.md). Siguiente paso:
+responder las decisiones y usar el prompt condicionado, sin iniciar 07.
+
 **v0.5.3 — 05 aprobado/activo:** nueve familias con cinco tiers/45 estrellas.
 XP único 25/25/50/75/100 por tier, históricos/recálculo incluidos, derivado en
 servidor bajo RLS; perfil separa XP de partidos/logros. Ocho récords personales
@@ -21,7 +28,7 @@ y HISTORIAL → HALL OF FAME privado, todos los líderes empatados e inactivos,
 0 XP por récord. Prueba/pendientes/incompletos excluidos; sin goles individuales
 ni tiempos inventados. ELO, XP base/curva, motor y 04 descriptivo preservados.
 [Catálogo](docs/CATALOGO_BLOQUE_05.md), [verificación](docs/VERIFICACION_BLOQUE_05.md)
-y [siguiente prompt](docs/PROMPT_SIGUIENTE_BLOQUE.md). Torneos/06 no iniciados.
+y [siguiente prompt](docs/PROMPT_SIGUIENTE_BLOQUE.md). Torneos sin activar. 06 tiene propuesta documental pendiente de decisión.
 Migración `20261002161602_approved_block05_honours_xp_v2.sql` aplicada al proyecto
 autorizado; observación web en sesión Supabase del operador pendiente según acceso.
 `npm test` / `npm run test:browser`; prueba SQL sin filas nuevas:

@@ -24,6 +24,14 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 ## Seguimiento
 
+**Continuación autorizada 06, 2026-10-02:** solo propuesta documental revisable,
+D1 formato/operativa, D2 modalidades/puntuación, D3 premios de campeonato.
+Recomendaciones y ejemplos en [PROPUESTA_BLOQUE_06](PROPUESTA_BLOQUE_06.md);
+aplicación sigue v0.5.3, torneos/premios sin activar. No volver a pedir aprobaciones
+02–05, no repetir cuentas/partidos ni tratar esta preparación como cierre de 06.
+[Verificación documental](VERIFICACION_BLOQUE_06.md) y
+[prompt siguiente condicionado](PROMPT_SIGUIENTE_BLOQUE.md), sin iniciar 07.
+
 **Vigente v0.5.3, 2026-10-02:** 05 aprobado/activo: nueve familias/cinco tiers,
 XP V2 históricos/recálculo y ocho récords/Hall privados, empates compartidos,
 0 XP por récord. Código/UI aislada/SQL real verificados; observación web autenticada
@@ -45,7 +53,7 @@ Evidencia operativa en ESTADO_ACTUAL/VERIFICACION_BLOQUE_05.
 | 03 | ELO, ranking y categorías | Aprobado/activo desde v0.4.1; SQL real y reconstrucción/RLS verificados | No reabrir reglas aprobadas; no repetir 01 |
 | 04 | Análisis competitivo descriptivo | Integrado/verificado v0.4.1: 1v1/2v2 y casual 1v2, forma/H2H; Chromium 48/48 y SQL real PASS | Previsión aplazada por decisión expresa; no bloquea 05 |
 | 05 | Logros, récords y Hall of Fame | v0.5.3 aprobado/activo: nueve familias/45 tiers XP V2 históricos/recálculo, ocho récords/Hall privados con empates y 0 XP por récord; servidor/UI/SQL verificados | No decisiones pendientes. Observación de perfil/Hall en sesión existente pendiente según acceso |
-| 06 | Torneos | Propuesto, no iniciado | Cierre 05; formato/reglas/premios de torneo aprobados |
+| 06 | Torneos | Propuesta documental publicada para decidir D1/D2/D3; sin implementación/activación | Registrar decisiones de formato/operativa, modos/elegibilidad y premios antes de implementar |
 | 07 | Sonido y pulido del uso diario | Propuesto | Flujos que se van a pulir estables |
 | 08 | Backup y restauración | Propuesto | Modelos de datos de los bloques anteriores estables |
 | 09 | Firmware y entradas físicas | Propuesto | Modelos/protocolo y conexiones reales verificables |
@@ -183,7 +191,11 @@ Con dependencias cerradas y progresión estable, implementa desde un catálogo a
 
 ## Bloque 06 — Torneos
 
-No iniciado en 05. Usar primero [propuesta revisable de 06](PROMPT_SIGUIENTE_BLOQUE.md); su formato y premios requieren decisión propia.
+**Estado vigente:** [propuesta 06 V1](PROPUESTA_BLOQUE_06.md) preparada por petición
+expresa del propietario. D1/D2/D3 sin respuesta aprobatoria; no funciones de torneo
+ni nuevas recompensas. [VERIFICACION_BLOQUE_06](VERIFICACION_BLOQUE_06.md) distingue
+verificación documental de la implementación pendiente. El prompt original de
+abajo es histórico; usar [prompt condicionado vigente](PROMPT_SIGUIENTE_BLOQUE.md).
 
 **Agente:** crear torneo del formato aprobado, participantes/equipos, programación/cuadro, avance desde resultados, recuperación y clasificación final. **Propietario:** decidir formato, número de equipos, empates/byes y premios; el apartado 36 los deja pendientes.
 

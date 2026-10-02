@@ -2,7 +2,8 @@
 
 Aprobación expresa registrada en ESTADO_ACTUAL y CATALOGO_BLOQUE_05: XP V2 por tier,
 históricos/recálculo, ocho récords/Hall privados, empates compartidos, 0 XP por récord.
-No quedan decisiones funcionales de 05. 06 no iniciado. Las secciones anteriores
+No quedan decisiones funcionales de 05. Implementación 06 no iniciada; su preparación
+documental posterior se verifica en [VERIFICACION_BLOQUE_06.md](VERIFICACION_BLOQUE_06.md). Las secciones anteriores
 de v0.5.2/0.5.1/0.5.0 conservadas debajo son históricas: sus prompts no son vigentes.
 
 ## Implementación y migración realmente aplicada

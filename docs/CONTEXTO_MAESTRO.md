@@ -695,6 +695,17 @@ Un récord puede cambiar múltiples veces. Pero no debe conceder XP ilimitado po
 
 Existe opción TORNEO en menú. Funcionalidad detallada: PENDIENTE.
 
+**Preparación documental autorizada de 06, 2026-10-02:**
+[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) presenta D1 formato/operativa,
+D2 modos/elegibilidad y D3 premio. Recomendación: eliminación directa, 2–16 equipos
+fijos 1v1/2v2, byes sin partidos/premios, un partido por cruce y desempate del motor;
+modo fijo con XP/logros normales confirmados, ELO solo Clasificatorio; título privado
+con 0 XP adicional. Alternativas de liguilla/modalidades casuales/familia «Gana torneos»
+requieren elección expresa. **Todas pendientes de aprobación**, sin implementación,
+migración, ganador o premio activo. Offline/recuperación/cancelación se describen
+como diseño propuesto, no capacidad nueva. Aplicación sigue v0.5.3 y 05 aprobado.
+Estado/verificación y siguientes decisiones en ESTADO_ACTUAL/VERIFICACION_BLOQUE_06.
+
 No inventar reglas complejas todavía. La arquitectura sí debe permitir añadir torneos posteriormente.
 
 ## 37. ARQUITECTURA DEL SOFTWARE
