@@ -118,6 +118,116 @@ test('modo prueba: partido completo sin cola ni checkpoint', async () => withPag
   await visible(page, 'No hay partidos guardados.')
 }))
 
+test('nuevo partido: confirmación, No reanuda y Sí cancela sin generar resultado', async () => withPage(async page => {
+  await page.clock.install()
+  await page.goto(fixture); await realMode(page); await selection(page, 2, 5); await start(page)
+  await whiteGoal(page)
+  const original = JSON.parse((await matchStorage(page)).find(([key]) => key.includes(':active-match:'))[1])
+  await page.getByRole('button', { name: 'NUEVO PARTIDO', exact: true }).click()
+  await page.getByRole('dialog').waitFor()
+  await page.getByRole('heading', { name: 'Hay un partido en curso. ¿Deseas cancelarlo?' }).waitFor()
+  await page.clock.runFor(20_000)
+  const paused = JSON.parse((await matchStorage(page)).find(([key]) => key.includes(':active-match:'))[1])
+  assert.equal(paused.checkpoint.state.status, 'PAUSED'); assert.equal(paused.id, original.id)
+  assert.equal(paused.checkpoint.state.elapsedSeconds, original.checkpoint.state.elapsedSeconds)
+  await page.getByRole('button', { name: 'NO, CONTINUAR PARTIDO' }).click()
+  await page.clock.runFor(1_100)
+  assert.equal(await page.locator('.pause-overlay').count(), 0)
+  const resumed = JSON.parse((await matchStorage(page)).find(([key]) => key.includes(':active-match:'))[1])
+  assert.equal(resumed.id, original.id); assert.equal(resumed.checkpoint.state.whiteGoals, 1)
+  assert.equal(resumed.checkpoint.state.status, 'PLAYING')
+  await page.getByRole('button', { name: 'NUEVO PARTIDO', exact: true }).click()
+  for (const [width, height] of [[320, 568], [390, 844], [800, 480]]) {
+    await page.setViewportSize({ width, height }); await page.clock.runFor(100); await noOverflow(page)
+    const dialog = await page.getByRole('dialog').boundingBox()
+    assert.ok(dialog.x >= 0 && dialog.y >= 0 && dialog.x + dialog.width <= width && dialog.y + dialog.height <= height)
+    await page.screenshot({ path: `/tmp/futbolin-cancel-${width}.png` })
+  }
+  await page.getByRole('button', { name: 'SÍ, CANCELAR PARTIDO' }).click()
+  await page.getByRole('button', { name: /PARTIDO RÁPIDO/ }).waitFor()
+  assert.equal((await matchStorage(page)).filter(([, value]) => value).length, 0)
+  await page.reload(); assert.equal(await page.getByRole('button', { name: 'RECUPERAR PARTIDO' }).count(), 0)
+  await page.getByRole('button', { name: 'RANKING', exact: true }).click(); await visible(page, 'No hay partidos guardados.')
+}))
+
+test('nuevo partido en prueba ON: cancelar countdown no guarda ni deja reloj activo', async () => withPage(async page => {
+  await page.clock.install(); await page.goto(fixture); await selection(page, 2, 5)
+  await page.getByRole('button', { name: /COMENZAR/ }).click()
+  await page.getByRole('button', { name: 'NUEVO PARTIDO', exact: true }).click()
+  await page.clock.runFor(10_000)
+  assert.deepEqual(await matchStorage(page), [])
+  await page.getByRole('button', { name: 'NO, CONTINUAR PARTIDO' }).click()
+  await page.locator('.match-board').waitFor()
+  assert.equal(await page.locator('.pause-overlay').count(), 0)
+  await page.getByRole('button', { name: 'NUEVO PARTIDO', exact: true }).click()
+  await page.getByRole('button', { name: 'SÍ, CANCELAR PARTIDO' }).click()
+  await page.clock.runFor(100_000)
+  await page.getByRole('button', { name: /PARTIDO RÁPIDO/ }).waitFor()
+  assert.deepEqual(await matchStorage(page), [])
+  assert.equal(await page.getByText('FINAL DEL PARTIDO', { exact: true }).count(), 0)
+}))
+
+test('recuperación: descarte confirmado conserva otras cuentas, jugadores y pendientes', async () => withPage(async page => {
+  await page.goto(fixture); await realMode(page); await selection(page, 2, 5); await start(page); await whiteGoal(page)
+  await page.reload(); await page.getByRole('button', { name: 'RECUPERAR PARTIDO' }).waitFor()
+  for (const [width, height] of [[320, 568], [390, 844], [800, 480]]) {
+    await page.setViewportSize({ width, height }); await noOverflow(page)
+    const discard = page.getByRole('button', { name: 'DESCARTAR PARTIDO', exact: true })
+    await discard.scrollIntoViewIfNeeded()
+    assert.equal(await discard.evaluate(el => { const box = el.getBoundingClientRect(); return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2) === el }), true)
+    await page.screenshot({ path: `/tmp/futbolin-discard-recovery-${width}.png` })
+  }
+  await settings(page); await page.getByRole('button', { name: 'PANTALLA 800×480' }).click(); await page.reload()
+  const physicalDiscard = page.getByRole('button', { name: 'DESCARTAR PARTIDO', exact: true })
+  await physicalDiscard.scrollIntoViewIfNeeded()
+  assert.equal(await physicalDiscard.evaluate(el => { const box = el.getBoundingClientRect(); return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2) === el }), true, 'Descarte accesible en referencia física')
+  const recoveryPlayers = page.locator('.recovery-players')
+  await recoveryPlayers.scrollIntoViewIfNeeded()
+  assert.ok((await recoveryPlayers.boundingBox()).height > 0, 'Los participantes no se comprimen hasta desaparecer')
+  await physicalDiscard.scrollIntoViewIfNeeded()
+  await page.screenshot({ path: '/tmp/futbolin-discard-recovery-physical.png' })
+  await page.evaluate(() => {
+    const key = Object.keys(localStorage).find(key => key.includes(':active-match:'))
+    const copy = JSON.parse(localStorage.getItem(key)); copy.ownerId = 'other-owner'
+    localStorage.setItem(key.replace(/:[^:]+$/, ':other-owner'), JSON.stringify(copy))
+    localStorage.setItem('unrelated:pending:other-owner', 'preserved-pending')
+    localStorage.setItem('unrelated:players:other-owner', 'preserved-players')
+  })
+  const before = await page.evaluate(() => Object.fromEntries(Object.keys(localStorage).map(key => [key, localStorage.getItem(key)])))
+  await page.getByRole('button', { name: 'DESCARTAR PARTIDO', exact: true }).click()
+  await page.getByRole('button', { name: 'NO, CONSERVAR PARTIDO' }).click()
+  assert.deepEqual(await page.evaluate(() => Object.fromEntries(Object.keys(localStorage).map(key => [key, localStorage.getItem(key)]))), before)
+  await page.getByRole('button', { name: 'DESCARTAR PARTIDO', exact: true }).click()
+  await page.getByRole('button', { name: 'SÍ, DESCARTAR PARTIDO' }).click()
+  await page.getByRole('button', { name: /PARTIDO RÁPIDO/ }).waitFor()
+  const after = await page.evaluate(() => Object.fromEntries(Object.keys(localStorage).map(key => [key, localStorage.getItem(key)])))
+  for (const [key, value] of Object.entries(before)) {
+    if (key.includes(':active-match:') && !key.endsWith(':other-owner')) assert.equal(after[key], '')
+    else assert.equal(after[key], value, key + ' preserved')
+  }
+  await page.reload(); assert.equal(await page.getByRole('button', { name: 'RECUPERAR PARTIDO' }).count(), 0)
+}))
+
+test('cancelación: fallo de almacenamiento conserva el partido y permite continuar', async () => withPage(async page => {
+  await page.goto(fixture); await realMode(page); await selection(page, 2, 5); await start(page); await whiteGoal(page)
+  await page.getByRole('button', { name: 'NUEVO PARTIDO', exact: true }).click()
+  const before = await matchStorage(page)
+  await page.evaluate(() => {
+    window.originalStorageSet = Storage.prototype.setItem
+    Storage.prototype.setItem = function(key, value) {
+      if (key.includes(':active-match:') && value === '') throw new Error('No se pudo escribir la copia local.')
+      return window.originalStorageSet.call(this, key, value)
+    }
+  })
+  await page.getByRole('button', { name: 'SÍ, CANCELAR PARTIDO' }).click()
+  await page.getByRole('alert').filter({ hasText: 'El partido se conserva.' }).waitFor()
+  assert.deepEqual(await matchStorage(page), before)
+  await page.evaluate(() => { Storage.prototype.setItem = window.originalStorageSet })
+  await page.getByRole('button', { name: 'NO, CONTINUAR PARTIDO' }).click()
+  assert.equal(await page.locator('.match-board').count(), 1)
+  await page.reload(); await page.getByRole('button', { name: 'RECUPERAR PARTIDO' }).waitFor()
+}))
+
 test('por goles: objetivo por equipo, cronómetro sin límite, sin partes y detalle guardado', async () => withPage(async page => {
   await page.clock.install()
   await page.goto(fixture)
@@ -536,6 +646,8 @@ test('cuenta: cierre global explícito; partido en curso bloquea cambios y manti
   assert.equal(after.id, before.id); assert.deepEqual(after.players, before.players); assert.equal(after.checkpoint.state.whiteGoals, before.checkpoint.state.whiteGoals); assert.equal(after.checkpoint.state.blueGoals, before.checkpoint.state.blueGoals); assert.deepEqual(after.checkpoint.state.goals, before.checkpoint.state.goals); assert.deepEqual(after.checkpoint.state.events.slice(0, before.checkpoint.state.events.length), before.checkpoint.state.events)
   assert.equal(after.checkpoint.state.status, 'PAUSED')
   await page.getByRole('button', { name: 'NUEVO PARTIDO', exact: true }).click()
+  await page.getByRole('button', { name: 'NO, CONTINUAR PARTIDO' }).click()
+  await page.getByRole('button', { name: 'VOLVER AL PARTIDO' }).click()
   await page.locator('.pause-overlay').waitFor()
 }))
 

@@ -17,7 +17,7 @@ Rama `codex/reliability-offline-v1`, entorno local Windows. Función autorizada:
 - El tiempo que estuvo cerrada la app no se añade al reloj. El plazo de bloqueo central sí expira con tiempo real; una recarga inmediata no evita los tres segundos de protección.
 - El ID del partido y contador de IDs de goles se mantienen, incluso tras anulaciones. El guardado final utiliza el mismo UUID y los reintentos siguen siendo idempotentes.
 - Solo se libera la copia activa después de conservar el resultado en la cola final durable o confirmar guardado remoto. Si la cola no puede escribirse, se conserva el checkpoint y se impide abandonar el resumen.
-- Ante fallo de almacenamiento, la UI avisa que no se cierre/recargue y el motor sigue funcionando en memoria. No se borra una copia inválida para empezar otro partido real; no se implementa descarte destructivo.
+- Ante fallo de almacenamiento, la UI avisa que no se cierre/recargue y el motor sigue funcionando en memoria. No se borra una copia inválida para empezar otro partido real; el bloque original no incluía descarte. Ampliación expresa del 2026-10-02: descarte confirmado de un partido sin terminar, nunca copia inválida o resultado final; ver continuación abajo.
 
 ## Pruebas automatizadas
 
@@ -57,3 +57,11 @@ La CLI agent-browser no está instalada. Verificación equivalente mediante el n
 - Una única pestaña activa. Se rechazan journals antiguos/divergentes, pero no hay bloqueo distribuido ni coordinación de juego simultáneo entre pestañas.
 - No se han aplicado migraciones ni cambiado servicios externos. Falta recorrido Auth/partido/historial contra Supabase real con cuenta introducida por el propietario, y posteriormente revisión/promoción a main.
 - No se activan XP, ELO, logros, estadísticas, ESP32 ni infraestructura de pago.
+
+## Continuación autorizada — 2026-10-02
+
+DESCARTAR PARTIDO se ofrece para una copia válida sin terminar y pide confirmación. NUEVO PARTIDO durante juego pregunta si se desea cancelarlo: «NO» conserva UUID/marcador/journal y reanuda solo si esa confirmación pausó el juego; «SÍ» verifica cuenta, UUID y estado vigente, descarta solo esa copia y reinicia el motor en IDLE sin fabricar eventos/resultado. En una cuenta atrás, la confirmación pausa al comenzar el juego. No reinicia un reloj oculto tras cancelar.
+
+ActiveMatchStore.discard valida y compara la copia completa antes de escribir; rechaza finales, copias ajenas/divergentes/dañadas. Un fallo de escritura mantiene la copia y el juego; el diálogo explica el error y permite continuar. No usa localStorage.clear ni borra resultados remotos, pendientes, jugadores o claves de otra cuenta. Sigue siendo una sola pestaña activa, sin garantía de coordinación entre procesos concurrentes.
+
+Pruebas independientes nuevas: cancelación en countdown/PLAYING/PAUSED, estado IDLE estable, bloqueo no heredado; descarte aislado y rechazo de final/cuenta/journal/cuota/copia rota. Chromium cubre NO/SÍ, reloj congelado, contador/marcador original, PRUEBA ON, preservación de otras claves y fallo de escritura recuperable; diseño a 320×568/390×844/800×480. Evidencia final y publicación en ESTADO_ACTUAL. El propietario confirma ver recuperación en su dispositivo; no equivale a toda la reanudación/sincronización offline real.

@@ -13,6 +13,7 @@ import { PasswordRecoveryScreen } from '../ui/screens/PasswordRecoveryScreen'
 import { SettingsScreen } from '../ui/screens/SettingsScreen'
 import { HistoryScreen } from '../ui/screens/HistoryScreen'
 import { StatisticsScreen } from '../ui/screens/StatisticsScreen'
+import { CancelMatchDialog } from '../ui/components/CancelMatchDialog'
 import { RecoveryScreen } from '../ui/screens/RecoveryScreen'
 import { PendingMatchesScreen } from '../ui/screens/PendingMatchesScreen'
 import { useConnection } from '../system/useConnection'
@@ -30,6 +31,7 @@ import { mapMatch, participantsFor } from '../services/persistence/mapMatch'
 const menuItems: MenuItem[] = [{ id: 'new-match', label: 'NUEVO PARTIDO' }, { id: 'tournament', label: 'TORNEO' }, { id: 'ranking', label: 'RANKING' }, { id: 'settings', label: 'AJUSTES' }]
 type Screen = 'account' | 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'statistics' | 'placeholder' | 'recovery' | 'pending'
 const browserStorage: KeyValueStorage = { getItem: key => localStorage.getItem(key), setItem: (key, value) => localStorage.setItem(key, value) }
+type CancelRequest = { kind: 'active'; id: string; pausedByDialog: boolean } | { kind: 'recovery'; copy: ActiveMatchCopy }
 const noRecovery = () => false
 const noRecoverySubscription = () => () => {}
 const practicePlayers: Player[] = ['PRUEBA BLANCO', 'PRUEBA AZUL'].map((name, i) => ({ id: 'practice-' + i, name, nickname: null, photoUrl: null, active: true, level: 0 }))
@@ -61,6 +63,8 @@ export function App({ services }: { services: ApplicationServices | null }) {
     }, browserStorage, services.namespace + ':pending:v1:' + userId)
   }, [services, userId, connection.monitor])
   const activeStore = useMemo(() => services && userId ? new ActiveMatchStore(browserStorage, services.namespace, userId) : null, [services, userId])
+  const [cancelRequest, setCancelRequest] = useState<CancelRequest | null>(null)
+  const [cancelError, setCancelError] = useState('')
   const [recovery, setRecovery] = useState<ActiveMatchCopy | null>(null)
   const [accessLinkError] = useState(() => passwordRecoveryLinkError(window.location.href))
   const [activeMenu, setActiveMenu] = useState(accessLinkError ? 'account' : 'new-match')
@@ -105,6 +109,14 @@ export function App({ services }: { services: ApplicationServices | null }) {
 
   useEffect(() => { const timer = window.setInterval(() => engine.tick(), 100); return () => window.clearInterval(timer) }, [engine])
 
+  // A confirmation opened during countdown also pauses once play begins.
+  useEffect(() => {
+    if (cancelRequest?.kind === 'active' && run.current?.id === cancelRequest.id && state.status === 'PLAYING') {
+      input.emit('PAUSA')
+      setCancelRequest(current => current?.kind === 'active' ? { ...current, pausedByDialog: true } : current)
+    }
+  }, [cancelRequest, state.status, input])
+
   async function persist(context: RunContext, document: MatchDocument) {
     setSaving(true); setCanLeave(false); setSaveMessage('Guardando resultado…')
     try {
@@ -130,17 +142,64 @@ export function App({ services }: { services: ApplicationServices | null }) {
   }, [state])
 
   function openAccount(mode: AccessMode = 'login') {
-    if (accountBusy || passwordRecovery) return
+    if (accountBusy || passwordRecovery || cancelRequest) return
     if (state.status === 'MATCH_END' && (!canLeave || saving)) { setNotice('Espera al guardado o reintenta en el resultado.'); return }
     if (state.status === 'PLAYING') input.emit('PAUSA')
     setAccessMode(mode); setAccessRevision(value => value + 1); setActiveMenu('account'); setScreen('account'); setNotice('')
   }
   function selectMenu(id: string) {
-    if (accountBusy || passwordRecovery) return
+    if (accountBusy || passwordRecovery || cancelRequest) return
     if (state.status === 'MATCH_END' && (!canLeave || saving)) { setNotice('Espera al guardado o reintenta en el resultado.'); return }
+    if (id === 'new-match') {
+      if (run.current && state.status !== 'MATCH_END') { requestCancellation(); return }
+      if (run.current) { newMatch(); return }
+      if (recovery && recovery.checkpoint.state.status !== 'MATCH_END') { requestCancellation(); return }
+    }
     if (state.status === 'PLAYING') input.emit('PAUSA')
     setActiveMenu(id); setNotice('')
     setScreen(id === 'settings' ? 'settings' : id === 'ranking' ? 'history' : id === 'new-match' ? matchOpen ? 'match' : recovery ? 'recovery' : 'new' : 'placeholder')
+  }
+  function requestCancellation() {
+    if (cancelRequest || saving || passwordRecovery || accountBusy) return
+    setCancelError('')
+    const context = run.current
+    if (context) {
+      const pausedByDialog = engine.getState().status === 'PLAYING'
+      if (pausedByDialog) input.emit('PAUSA')
+      // Pausing settles the clock; it may have naturally ended the match.
+      if (engine.getState().status === 'MATCH_END' || handledId.current === context.id) { setNotice('Conserva el resultado antes de iniciar otro partido.'); return }
+      setCancelRequest({ kind: 'active', id: context.id, pausedByDialog })
+    } else if (recovery && recovery.checkpoint.state.status !== 'MATCH_END') {
+      setCancelRequest({ kind: 'recovery', copy: recovery })
+    }
+  }
+  function keepMatch() {
+    if (cancelRequest?.kind === 'active' && cancelRequest.pausedByDialog && run.current?.id === cancelRequest.id && engine.getState().status === 'PAUSED') input.emit('CONTINUAR')
+    setCancelRequest(null); setCancelError('')
+  }
+  function discardMatch() {
+    if (!cancelRequest || saving) return
+    try {
+      if (cancelRequest.kind === 'active') {
+        const context = run.current
+        if (!context || context.id !== cancelRequest.id || context.ownerId !== userId || handledId.current === context.id || engine.getState().status === 'MATCH_END') throw new Error('El partido cambió o ya terminó. No se ha descartado.')
+        if (!context.testMode) {
+          if (!context.activeStore) throw new Error('No se puede comprobar la copia local. El partido se conserva.')
+          const copy = context.activeStore.load()
+          const checkpoint = engine.getCheckpoint()
+          if (copy && (copy.id !== context.id || JSON.stringify(copy.checkpoint.state) !== JSON.stringify(checkpoint.state) || copy.checkpoint.goalSequence !== checkpoint.goalSequence || copy.checkpoint.completedTimeSeconds !== checkpoint.completedTimeSeconds)) throw new Error('La copia cambió en otra pestaña. No se ha descartado ningún partido.')
+          if (copy) context.activeStore.discard(copy)
+        }
+        run.current = null
+        engine.cancelMatch()
+      } else {
+        if (!activeStore || cancelRequest.copy.ownerId !== userId) throw new Error('Accede con la cuenta del partido para descartarlo.')
+        activeStore.discard(cancelRequest.copy)
+      }
+      finalDocument.current = null; handledId.current = null
+      setRecovery(null); setPlayers([]); setConfiguration(null); setCanLeave(true); setSaveMessage('')
+      setCancelRequest(null); setCancelError(''); setNotice(''); setActiveMenu('new-match'); setScreen('new')
+    } catch (error) { setCancelError(errorMessage(error) + ' El partido se conserva.') }
   }
   function openStatistics(playerId: string | null = null) {
     setProfilePlayerId(playerId); setActiveMenu('ranking'); setScreen('statistics')
@@ -193,7 +252,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
       {passwordRecovery && services ? <PasswordRecoveryScreen auth={services.auth} online={online && !data.localIdentity} onCheck={() => void connection.monitor.check()} onDone={() => { services.auth.finishPasswordRecovery(); setActiveMenu('account'); setScreen('account') }} /> : <>
       {screen === 'account' && <AccountScreen key={`${userId ?? 'guest'}:${accessRevision}`} services={services} user={data.user} initialMode={accessMode} online={online && !data.localIdentity} locked={matchOpen && (state.status !== 'MATCH_END' || !canLeave || saving)} onSignedOut={() => { data.signedOut(); setAccessMode('login'); setAccessRevision(value => value + 1) }} onCheck={() => void connection.monitor.check()} onBusy={setAccountBusy} initialMessage={notice} />}
       {screen === 'new' && <NewMatchScreen onSelect={nextMode => { setMode(nextMode); setScreen('configuration') }} />}
-      {screen === 'recovery' && recovery && <RecoveryScreen copy={recovery} onRecover={recoverMatch} />}
+      {screen === 'recovery' && recovery && <RecoveryScreen copy={recovery} onRecover={recoverMatch} onDiscard={requestCancellation} />}
       {screen === 'configuration' && <MatchConfigurationScreen mode={mode} onContinue={next => { setConfiguration(next); setScreen('players') }} onBack={() => setScreen('new')} />}
       {screen === 'players' && <PlayerSelectionScreen key={userId ?? 'practice'} availablePlayers={availablePlayers} testMode={testMode} onStart={start} onBack={() => setScreen('configuration')} />}
       {screen === 'match' && <MatchFlow state={state} engine={engine} input={input} players={players} onNewMatch={newMatch} saveMessage={saveMessage} canLeave={canLeave && !saving} onRetry={() => { if (!saving && run.current && finalDocument.current) void persist(run.current, finalDocument.current) }} />}
@@ -206,5 +265,6 @@ export function App({ services }: { services: ApplicationServices | null }) {
       </>}
     </section>
     <footer className="system-status" role="status"><span className={`status-dot ${online ? '' : 'status-offline'}`} /><span>{connection.state === 'online' ? 'SISTEMA ONLINE' : connection.state === 'offline' ? 'SIN CONEXIÓN' : 'COMPROBANDO CONEXIÓN'} · {(run.current?.testMode ?? testMode) ? 'PRUEBA ON' : 'PRUEBA OFF'} · {data.user ? data.localIdentity || !online ? 'SESIÓN LOCAL' : 'SESIÓN ACTIVA' : 'SIN SESIÓN'}{pendingCount > 0 && ` · ${pendingCount} PENDIENTES`}</span>{(recoveryWarning || notice && screen !== 'settings' && screen !== 'account') && <span className="status-warning">{recoveryWarning || notice}</span>}{matchOpen && screen !== 'match' && <button type="button" onClick={() => { setActiveMenu('new-match'); setScreen('match') }}>VOLVER AL PARTIDO</button>}</footer>
+    {cancelRequest && <CancelMatchDialog recovering={cancelRequest.kind === 'recovery'} error={cancelError} onKeep={keepMatch} onDiscard={discardMatch} />}
   </main></FixedCanvas>
 }

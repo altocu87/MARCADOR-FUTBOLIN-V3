@@ -22,6 +22,14 @@ node tooling/auth-email-config.mjs > /tmp/marcador-auth-email-config.json
 
 Destino documentado: `PATCH https://api.supabase.com/v1/projects/unemjyfhzljcdjcbiiwh/config/auth`. El JSON contiene solo los 26 campos de asunto/cuerpo; no realiza una petición ni habilita notificaciones. Antes de aplicarlo, leer los valores actuales, respaldar únicamente esos campos, comprobar compatibilidad con el proyecto y comparar después los campos escritos. Utilizar la credencial de gestión exclusivamente en un entorno seguro; no incluirla en VITE, Git o chat. Si el panel no expone alguna notificación, este payload queda listo para aplicar con acceso Management API autorizado.
 
+## Nombre y dirección del remitente
+
+El propietario confirma el 2026-10-02 que la recuperación funciona, pero el mensaje llega con remitente Supabase. Esa cabecera no se define en estas plantillas HTML. Para mostrar **Marcador Futbolín** hace falta configurar SMTP propio en Authentication → SMTP Settings, con un proveedor autorizado y dirección/dominio de envío verificados: nombre del remitente Marcador Futbolín, dirección de envío, host/puerto y credenciales privadas del proveedor. Conservar copia de la configuración anterior y comprobar entrega/retorno después de aplicar únicamente esos campos. No cambiar confirmación, políticas, URLs o flags de notificación.
+
+Sigue pendiente: no hay edición Auth/SMTP disponible en el conector ni credencial de gestión/panel; tampoco remitente/proveedor autorizado configurado para esta tarea. No se ha contratado nada ni se ha cambiado la configuración del proyecto. Configurar las credenciales solo en el panel/entorno seguro, nunca en el cliente VITE, Git o chat. El generador de HTML no incluye campos SMTP ni modifica el remitente. La recuperación real ya confirmada no necesita repetirse por rutina; comprobar el nuevo remitente cuando se haga la configuración.
+
+Referencia: [Custom SMTP de Supabase](https://supabase.com/docs/guides/auth/auth-smtp).
+
 ## Conservación de los flujos
 
 Los correos con acción mantienen `{{ .ConfirmationURL }}` tanto en botón como en enlace alternativo. El correo de reautenticación mantiene `{{ .Token }}`. No construir URLs de verificación propias, cambiar el tipo de token ni introducir enlaces de seguimiento. Las variables de texto de notificaciones/cambio de correo usan el escape `html` de Go Templates; no se incluyen metadatos editables de usuario.

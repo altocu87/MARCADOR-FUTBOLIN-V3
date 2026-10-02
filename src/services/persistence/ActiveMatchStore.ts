@@ -48,6 +48,15 @@ export class ActiveMatchStore {
     const current = this.load()
     if (current?.id === id) this.storage.setItem(this.key, '')
   }
+  /** Explicit user discard: never removes a final, foreign or changed copy. */
+  discard(expected: ActiveMatchCopy): void {
+    this.validate(expected)
+    if (expected.checkpoint.state.status === 'MATCH_END') throw new Error('Un resultado terminado debe guardarse; no se puede descartar.')
+    const current = this.load()
+    if (!current) return
+    if (JSON.stringify(current) !== JSON.stringify(expected)) throw new Error('La copia cambió en otra pestaña. No se ha descartado ningún partido.')
+    this.storage.setItem(this.key, '')
+  }
   private validate(value: unknown): asserts value is ActiveMatchCopy {
     if (!object(value) || value.version !== 1 || typeof value.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.id) || value.ownerId !== this.ownerId || value.testMode !== false || !Array.isArray(value.players) || !value.players.every(player)) throw new Error('Copia inválida')
     participantsFor(value.players)

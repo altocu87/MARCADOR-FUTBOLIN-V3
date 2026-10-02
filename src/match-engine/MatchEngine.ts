@@ -61,6 +61,15 @@ export class MatchEngine {
     this.emit()
   }
 
+  /** Clears only the unfinished in-memory game after explicit UI confirmation. */
+  cancelMatch(): void {
+    if (this.state.status === 'MATCH_END') throw new Error('No se puede cancelar un resultado terminado.')
+    this.goalLockUntil = 0; this.countdownUntil = 0; this.clockStartedAt = 0
+    this.sequence = 0; this.completedTimeSeconds = 0
+    this.state = this.createIdleState()
+    this.emit()
+  }
+
   dispatch(event: MatchEvent): void {
     switch (event) {
       case 'GOL_BLANCO': this.registerGoal('WHITE'); return

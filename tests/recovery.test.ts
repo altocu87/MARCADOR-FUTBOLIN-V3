@@ -291,6 +291,50 @@ store.save({ ...copy, testMode: true }); assert.equal(storage.getItem(activeKey)
 storage.values.set(activeKey, previousRaw!)
 assert.throws(() => store.save({ ...copy, ownerId: 'owner-b' }))
 
+// Explicit cancellation isolates unfinished copies and fails closed on conflicts.
+{
+  const local = new MemoryStorage()
+  const active = new ActiveMatchStore(local, 'project-a', 'owner-a')
+  const other = new ActiveMatchStore(local, 'project-a', 'owner-b')
+  active.save(copy); other.save({ ...copy, ownerId: 'owner-b' })
+  local.setItem('pending', 'durable-final'); local.setItem('players', 'cached-players')
+  const untouched = new Map(local.values)
+  assert.throws(() => active.discard({ ...copy, id: '00000000-0000-4000-8000-000000000011' }), /cambió/)
+  assert.throws(() => active.discard({ ...copy, ownerId: 'owner-b' }))
+  assert.deepEqual(local.values, untouched)
+  active.save({ ...copy, checkpoint: restoredEngine.getCheckpoint() })
+  assert.throws(() => active.discard(copy), /cambió/)
+  const latest = active.load()!
+  const noWrite: KeyValueStorage = { getItem: key => local.getItem(key), setItem() { throw new Error('quota') } }
+  assert.throws(() => new ActiveMatchStore(noWrite, 'project-a', 'owner-a').discard(latest), /quota/)
+  assert.deepEqual(active.load(), latest)
+  active.discard(latest)
+  assert.equal(active.load(), null)
+  assert.deepEqual(other.load(), { ...copy, ownerId: 'owner-b' })
+  assert.equal(local.getItem('pending'), 'durable-final'); assert.equal(local.getItem('players'), 'cached-players')
+  active.save({ ...copy, checkpoint: finalCopy })
+  assert.throws(() => active.discard(active.load()!), /terminado/)
+  assert.equal(active.load()!.checkpoint.state.status, 'MATCH_END')
+  local.values.set(activeKey, '{broken')
+  assert.throws(() => active.discard(copy), /No se ha borrado/)
+  assert.equal(local.getItem(activeKey), '{broken')
+}
+// In-memory cancellation stops clocks/locks and never manufactures a result.
+for (const phase of ['COUNTDOWN', 'PLAYING', 'PAUSED'] as const) {
+  let clock = 0
+  const match = new MatchEngine(() => clock)
+  match.createMatch(config)
+  if (phase !== 'COUNTDOWN') { match.skipCountdown(); match.dispatch('GOL_BLANCO') }
+  if (phase === 'PAUSED') match.dispatch('PAUSA')
+  match.cancelMatch(); clock = 90_000; match.tick()
+  assert.equal(match.getState().status, 'IDLE'); assert.equal(match.getState().whiteGoals, 0)
+  assert.deepEqual(match.getState().events, [])
+  match.createMatch(config); match.skipCountdown(); match.dispatch('GOL_BLANCO')
+  assert.equal(match.getState().whiteGoals, 1, 'El siguiente partido no hereda el bloqueo anterior')
+}
+assert.throws(() => phases.cancelMatch(), /terminado/)
+assert.equal(phases.getState().status, 'MATCH_END')
+
 // Final result handoff: preserve recovery until write-ahead queue succeeds.
 const final: ActiveMatchCopy = { ...copy, checkpoint: finalCopy }
 store.clear(id); store.save(final)

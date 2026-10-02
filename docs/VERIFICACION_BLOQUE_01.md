@@ -68,12 +68,12 @@ Verificación de esta continuación: npm test, siete grupos correctos (estadíst
 | Prueba del checklist entregado | Estado / siguiente paso |
 | --- | --- |
 | 1 · GOALS | Confirmada por el propietario; no repetir |
-| 2 · TIME | Bug corregido y verificado localmente; confirmar solo final directo en Preview actualizada, con prueba ON |
+| 2 · TIME | Delegada expresamente al agente el 2026-10-02; simulación Chromium TIME/AMBAS correcta, final directo; no repetir por rutina. No acredita despliegue autenticado |
 | 3 · AMBAS entre partes | Simulación automatizada correcta; no pedir repetirla manualmente por rutina |
 | 4 · AMBAS final en primera | Simulación automatizada correcta; no pedir repetirla manualmente por rutina |
 | 5 · Prórroga/penaltis | Simulación automatizada correcta para TIME/AMBAS; no pedir repetirla manualmente por rutina |
 | 6 · Guardado/historial/perfiles | Confirmada OK por el propietario; no repetir |
-| 7 · Recuperación tras recarga | Aclarada: se hizo con PRUEBA ON, volver al inicio es lo esperado. Sigue pendiente recuperación real con OFF desde el inicio |
+| 7 · Recuperación tras recarga | 2026-10-02: propietario confirma que aparece recuperar partido. Falta confirmar reanudación completa; descarte solicitado y añadido con confirmación |
 | 8 · Pendiente offline/reconexión | Falta recorrido desde el origen real; mismo ID, un solo resultado |
 | 9 · Prueba ON sin incremento | Falta contraste de historial/perfiles reales antes/después |
 | 10 · Alias/baja lógica | Falta comprobación desde UI real; no borrar jugadores |
@@ -121,14 +121,26 @@ El conector Vercel deniega el equipo `altocuvlc-9686s-projects` con 403 de autor
 
 En la [Preview estable de esta rama](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app), usando la cuenta existente y una sola pestaña:
 
-1. Cuando Vercel muestre la actualización, cerrar/reabrir sin borrar almacenamiento. Con prueba ON, confirmar únicamente el arreglo de la prueba 2: al acabar la segunda parte con marcador desigual aparece directamente FINAL DEL PARTIDO y ganador, sin VER RESULTADO. GOALS ya confirmado; simulaciones 3–5 a cargo del agente, no repetirlas por rutina.
-2. Guardado/historial/perfiles (prueba 6) ya confirmados; no repetirlos. Pendiente solo prueba 10 de edición de alias/desactivar/reactivar, conservando identidad e historial. No intentar borrar jugadores reales para probar protección.
-3. Prueba 7 estaba ON, no guardaba copia: comportamiento esperado. Para verificar recuperación real cuando se retomen las pruebas: seleccionar OFF antes de iniciar un partido nuevo, POR GOLES objetivo 5, un gol (1–0), recargar la misma pestaña/origen sin finalizar y comprobar recuperación en pausa. Después, terminar sin conexión, consultar pendiente, recargar y reconectar. Debe quedar un único resultado y la cola vacía. Ese resultado también se conserva como dato real.
-4. Repetir un partido con prueba ON: no aumenta historial/perfiles/partidos/eventos ni crea pendientes/checkpoint. Comparar antes/después; comunicar solo resultados o errores, sin credenciales.
-5. Acceso nuevo: comprobar INICIAR SESIÓN/REGISTRO en la esquina superior y MI CUENTA tras entrar con la cuenta existente. Guardar el nombre de cuenta; comprobar que jugadores/historial siguen vinculados. Seguridad/sesiones/cambio de correo: probar únicamente acciones reales que se deseen efectuar, pues modifican credenciales o envían correos. No crear otra cuenta. Aplicar las plantillas siguiendo supabase/templates/README.md y previsualizar confirmación/variantes en el panel. Comprobar recepción/render/enlace en el correo real de recuperación; nunca enviar contraseña/token al agente.
-6. Si el operador quiere recuperar su contraseña, INICIAR SESIÓN (esquina superior) → RECUPERAR CONTRASEÑA → correo de su cuenta existente → ENVIAR ENLACE. Abrir el enlace más reciente, comprobar NUEVA CONTRASEÑA, introducirla dos veces y guardar; comprobar acceso posterior con ella y conservación de jugadores/historial. No repetir registros. La prueba cambia la contraseña real solo por acción del operador y puede esperar hasta que quiera utilizarla. Si no llega, comunicar el aviso y revisar spam/límite de envío; no volver a configurar Auth por rutina.
-7. En el teléfono real, preparar OFFLINE DISPONIBLE e instalar/abrir la PWA, comprobar reapertura offline y actualización detrás de la protección Vercel. La emulación local no cierra esta comprobación física.
+1. Cuando Vercel muestre la actualización, cerrar/reabrir sin borrar almacenamiento. Pruebas 1 y 6 ya confirmadas; 2–5 asumidas y simuladas por el agente, no repetir por rutina. Recuperación de contraseña real confirmada por el propietario el 2026-10-02: no volver a registrar ni cambiarla para repetir la prueba.
+2. Recuperación del partido (7): la oferta ya aparece en el dispositivo del operador. Falta confirmar que RECUPERAR PARTIDO conserva marcador/jugadores y CONTINUAR reanuda; se puede enlazar con la prueba 8. Si no desea conservar ese juego sin terminar, DESCARTAR PARTIDO → confirmación. NUEVO PARTIDO durante juego pide cancelar: «NO» conserva/reanuda si estaba jugando, «SÍ» abre el menú nuevo. La cancelación ya tiene pruebas independientes; observar la UI publicada basta, sin fabricar más resultados reales.
+3. Prueba 8, móvil: seguir los pasos específicos de abajo. Resultado OFF real que se desea conservar; verificar el mismo ID/un único resultado y retorno de pendientes al contador inicial.
+4. Prueba 9: un partido ON no incrementa historial/perfiles/partidos/eventos ni crea pendientes/checkpoint. Prueba 10: editar alias/desactivar/reactivar desde UI conservando identidad/historial; no borrar jugadores. Son comprobaciones reales todavía pendientes.
+5. MI CUENTA: nombre de operador y conservación de vínculos con cuenta existente. Seguridad/sesiones/cambio de correo se prueban solo cuando se desee efectuar esas acciones reales. No crear otra cuenta. Plantillas y remitente: instrucciones en supabase/templates/README.md; aplicación hosted/SMTP autorizada pendientes, no resueltos mediante Git.
+6. Prueba 11: OFFLINE DISPONIBLE, instalación/reapertura offline de la PWA y actualización detrás de protección en el teléfono real. La emulación no acredita ese dispositivo.
+
+### Prueba 8 en el móvil — pendiente offline y reconexión
+
+1. Con Internet, abrir la misma Preview/navegador con la cuenta existente. AJUSTES → MODO PRUEBA OFF **antes** de iniciar. Anotar contador de pendientes/historial; para probar la recarga sin red, esperar también **OFFLINE DISPONIBLE**. Si no aparece, se puede comprobar terminar/sincronizar manteniendo la app abierta, pero la reapertura offline sigue pendiente.
+2. Recuperar el partido ya ofrecido, si se desea terminar y guardar, o iniciar uno OFF que se quiera conservar. Dar un gol, sin llegar todavía al objetivo.
+3. Apagar **Wi‑Fi y datos móviles**; se puede usar modo avión, asegurando Wi‑Fi apagado. Volver al marcador y esperar **SIN CONEXIÓN**. No cerrar sesión, cambiar de navegador/dirección ni borrar almacenamiento.
+4. Terminar el partido. El resumen debe indicar **PENDIENTE EN ESTE DISPOSITIVO**. AJUSTES → VER PENDIENTES: aparece ese resultado/jugadores/eventos, y el contador aumenta en uno respecto al inicial.
+5. Solo si se preparó OFFLINE DISPONIBLE en el paso 1, recargar la misma página/app sin conexión: el resultado permanece en VER PENDIENTES. Esta parte prueba la reapertura/PWA del móvil real; no usar navegación privada.
+6. Activar Wi‑Fi o datos y volver al marcador. Esperar SISTEMA ONLINE; se reintenta fuera de un partido en curso. Si hace falta, AJUSTES → REINTENTAR. En RANKING debe haber **un solo resultado nuevo** y pendientes vuelven al contador inicial (cero si antes era cero). Comunicar únicamente si apareció pendiente, si sobrevivió la recarga y si se guardó una sola vez.
 
 Si se desea observación directa del agente, reconectar Vercel con alcance al proyecto/equipo correcto y compartir acceso interactivo autorizado al navegador, sin enviar contraseñas. Esto no es necesario para las pruebas humanas anteriores. No volver a configurar Redirect URLs por rutina: el login ya está conseguido.
 
 Bloque 02 (XP/niveles) queda condicionado al cierre de estas comprobaciones y a aprobar parámetros/curva/históricos. No se inicia en esta entrega. Seguimiento y prompt: [BLOQUES_DESARROLLO.md](BLOQUES_DESARROLLO.md).
+
+## Feedback y cancelación — 2026-10-02
+
+El propietario confirma recuperación de contraseña funcional con remitente Supabase y oferta de recuperar partido; delega prueba 2 y solicita descarte/confirmación de NUEVO PARTIDO. Implementados dentro del bloque 01, con protección de finales y datos ajenos. Prueba 2 simulada de nuevo con reloj controlado (TIME dos partes, 2–1; AMBAS por reloj sin objetivo, ganador directo), sin delegarla otra vez al operador. Supabase docs confirma remitente propio mediante SMTP; sin acceso de edición Auth/SMTP ni proveedor/remitente configurado, continúa pendiente. No hay correos/cuentas/migraciones/escrituras remotas en esta continuación. npm test siete grupos correctos (estadísticas/análisis 41/41), TypeScript/builds normal y aislado correctos, Chromium 32/32 sin omitidos/pageerror y focalizadas finales tras pulido de recuperación 4/4, incluyendo móvil y referencia física con participantes/control visibles. Capturas locales revisadas a 320×568/390×844/800×480, botones accesibles. Fixtures/SDK aislados con Supabase bloqueado; servidor de PWA apagado realmente. No acredita Preview/SMTP/dispositivo del operador. Publicación vigente en ESTADO_ACTUAL.
