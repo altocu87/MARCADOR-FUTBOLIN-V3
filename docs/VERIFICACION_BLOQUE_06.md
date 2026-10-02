@@ -34,7 +34,13 @@ Sin servicios excluidos, administración, Google/Drive, SMTP, pagos o main.
 
 ## Publicación y continuación
 
-Publicación V2 se registra después de verificar push. No se inspecciona deployment
+**Publicación V2 comprobada:** `9e57ceb1150d47fe642b28776c6df9b4a130dc3b`,
+push fast-forward `491838a`→`9e57ceb` en `codex/reliability-offline-v1`;
+`git ls-remote` coincide, árbol limpio y main intacta en
+`900e470a719bc99bee4df853f0e11301a5b6562e`. Solo nueve documentos,
+sin cambio funcional ni deployment/Preview de pool inspeccionados.
+Esta anotación de evidencia se publica después, sin cambiar versión.
+ No se inspecciona deployment
 automático de esta entrega documental; no afirmar UI de pool disponible en Preview.
 Aclarar significado 3v3/4v4 y rotación de cinco, después acordar solo reglas
 necesarias, mediante [prompt vigente](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07.

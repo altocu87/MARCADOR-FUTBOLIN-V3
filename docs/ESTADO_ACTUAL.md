@@ -35,7 +35,14 @@ migraciones/consultas SQL, datos, cuentas/partidos o servicios. La propuesta de
 recuperación/rotación atómica es diseño futuro, no garantía ya implementada.
 
 Verificación proporcional en [VERIFICACION_BLOQUE_06.md](VERIFICACION_BLOQUE_06.md).
-Publicación V2 se registra después de comprobar push. La V1 y su comprobación
+**Publicación V2 comprobada:** `9e57ceb1150d47fe642b28776c6df9b4a130dc3b`,
+push fast-forward `491838a`→`9e57ceb` en `codex/reliability-offline-v1`;
+`git ls-remote` coincide, árbol limpio y main intacta en
+`900e470a719bc99bee4df853f0e11301a5b6562e`. Solo nueve documentos,
+sin cambio funcional ni deployment/Preview de pool inspeccionados.
+Esta anotación de evidencia se publica después, sin cambiar versión.
+
+La V1 y su comprobación
 `de3f9b3`/`491838a` permanecen como antecedentes de Git. No se ha inspeccionado
 un deployment de la revisión documental ni UI de pool en Preview; la evidencia
 funcional de 05 y su observación autenticada pendiente siguen independientes.
