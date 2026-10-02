@@ -46,10 +46,16 @@ datos o XP/ELO/logros activos. No administración, pagos, Google/Drive, SMTP o m
 
 ## Publicación
 
-Trabajo documental local al redactar; publicar en la revisión autorizada y
-registrar commit/push después de obtenerlos. Un eventual deploy automático de
-Markdown reutiliza el código v0.5.3: no acredita torneo ni ejecución de pruebas
-06 en Preview. No cambiar protección ni promover producción.
+**Publicación de la propuesta comprobada:** `de3f9b3b300b5295eb4087648cd5b5ef173662c7`,
+push fast-forward ecb3a2d→de3f9b3 en `codex/reliability-offline-v1`, SHA remoto
+coincidente y árbol limpio. Main sigue `900e470a719bc99bee4df853f0e11301a5b6562e`.
+Solo nueve documentos; fuentes/package/migraciones no cambian. No se inspecciona
+el deployment automático de este commit documental ni se acredita torneo/UI
+06 en Preview. La última evidencia funcional 05 permanece independiente.
+Esta anotación se publica después, sin cambiar aplicación o versión.
+
+Un eventual deploy automático de Markdown reutiliza el código v0.5.3; no
+acredita torneos ni pruebas 06. Sin cambio de protección o promoción.
 
 La observación del perfil/Hall 05 en la sesión Supabase habitual del operador
 sigue separada y pendiente según acceso. No se reabre ni repite el checklist 01.
