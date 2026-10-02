@@ -61,9 +61,17 @@ de v0.5.2/0.5.1/0.5.0 conservadas debajo son históricas: sus prompts no son vig
 
 ## Publicación y observación autenticada
 
-Código de esta entrega todavía en árbol local al escribir este apartado;
-migración aplicada por separado. Registrar commit/push y despliegue tras comprobarlos,
-no inferir READY desde build local. Rama de revisión autorizada, main sin promoción.
+**Publicación funcional comprobada:** `3e9f61814f507b6704cd9479045c6aa4651f8434`,
+push fast-forward 837f3e7→3e9f618 en `codex/reliability-offline-v1`, referencia
+remota coincidente; main intacta `900e470a719bc99bee4df853f0e11301a5b6562e`.
+Vercel `dpl_3WGacRJm8WZF5W3vf8UYjbFi8qUX` **READY**, commit/rama correctos,
+Preview, target null. [Preview v0.5.3](https://marcador-futbolin-v3-3sdqjkdww-altocuvlc-9686s-projects.vercel.app/)
+HTML/bundle **HTTP 200** mediante conector autorizado; `index-BoENQV3h.js`
+coincide exactamente con build local, 365801 caracteres, versión 0.5.3, RPC de
+honores/Hall activo y sin fixture. No sesión web Supabase del operador ni
+recorrido autenticado real. Esta anotación documental se publica después con
+el mismo código, sin acreditar de antemano READY de su propio commit.
+
 
 Sin sesión web Supabase del operador accesible al agente. Al abrir el build v0.5.3
 en la sesión habitual, comprobar únicamente perfil existente (Alex2 o Vicky):

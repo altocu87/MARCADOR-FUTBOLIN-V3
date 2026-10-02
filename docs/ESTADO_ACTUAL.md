@@ -47,6 +47,17 @@ No es otra aprobación de reglas ni obliga a crear datos. 06 no iniciado.
 [Pruebas/publicación](VERIFICACION_BLOQUE_05.md) y
 [siguiente prompt completo](PROMPT_SIGUIENTE_BLOQUE.md).
 
+**Publicación funcional comprobada:** `3e9f61814f507b6704cd9479045c6aa4651f8434`,
+push fast-forward 837f3e7→3e9f618 en `codex/reliability-offline-v1`, referencia
+remota coincidente; main intacta `900e470a719bc99bee4df853f0e11301a5b6562e`.
+Vercel `dpl_3WGacRJm8WZF5W3vf8UYjbFi8qUX` **READY**, commit/rama correctos,
+Preview, target null. [Preview v0.5.3](https://marcador-futbolin-v3-3sdqjkdww-altocuvlc-9686s-projects.vercel.app/)
+HTML/bundle **HTTP 200** mediante conector autorizado; `index-BoENQV3h.js`
+coincide exactamente con build local, 365801 caracteres, versión 0.5.3, RPC de
+honores/Hall activo y sin fixture. No sesión web Supabase del operador ni
+recorrido autenticado real. Esta anotación documental se publica después con
+el mismo código, sin acreditar de antemano READY de su propio commit.
+
 **Registro histórico de v0.5.2, sustituido por v0.5.3:**
 
 **Continuación de 05, v0.5.2, 2026-10-02.** Base sincronizada `3dffdaa` por
