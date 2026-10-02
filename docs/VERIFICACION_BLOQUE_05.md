@@ -85,8 +85,9 @@ READY del deployment se informan por separado.
 ## Siguiente conversación
 
 [Prompt completo de propuesta 06](PROMPT_SIGUIENTE_BLOQUE.md), sin ejecutar 06 ahora.
-Formato/equipos/byes/empates/premios/elegibilidad de torneo pendientes de decisión
-propia. No volver a solicitar aprobación XP V2/Hall ni iniciar servicios excluidos.
+06 V2 se orienta a pool pequeña por petición posterior: cola/rotación, formatos
+y modo/cierre por concretar; la V1 de cuadro/byes ya no es la recomendación vigente.
+No volver a solicitar aprobación XP V2/Hall ni iniciar servicios excluidos.
 
 ---
 

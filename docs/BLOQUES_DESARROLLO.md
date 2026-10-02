@@ -191,11 +191,14 @@ Con dependencias cerradas y progresión estable, implementa desde un catálogo a
 
 ## Bloque 06 — Torneos
 
-**Estado vigente:** [propuesta 06 V1](PROPUESTA_BLOQUE_06.md) preparada por petición
-expresa del propietario. D1/D2/D3 sin respuesta aprobatoria; no funciones de torneo
-ni nuevas recompensas. [VERIFICACION_BLOQUE_06](VERIFICACION_BLOQUE_06.md) distingue
-verificación documental de la implementación pendiente. El prompt original de
-abajo es histórico; usar [prompt condicionado vigente](PROMPT_SIGUIENTE_BLOQUE.md).
+**Estado vigente:** [propuesta 06 V2](PROPUESTA_BLOQUE_06.md), pool sencilla para
+cuatro a seis personas, preferencia por parejas, cola y rotación. Orientación del
+propietario reemplaza eliminación directa V1. Pendiente aclarar 3v3/4v4 y rotación
+de cinco, luego acordar modo/cierre. No activación de pool o premios.
+[VERIFICACION_BLOQUE_06](VERIFICACION_BLOQUE_06.md) separa documentos de pruebas
+funcionales. El prompt y criterios originales de campeonato debajo son históricos:
+adaptar cierre a la sesión acordada, sin inventar campeón. Usar
+[prompt vigente](PROMPT_SIGUIENTE_BLOQUE.md); no iniciar 07.
 
 **Agente:** crear torneo del formato aprobado, participantes/equipos, programación/cuadro, avance desde resultados, recuperación y clasificación final. **Propietario:** decidir formato, número de equipos, empates/byes y premios; el apartado 36 los deja pendientes.
 

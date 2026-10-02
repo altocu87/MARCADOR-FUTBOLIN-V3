@@ -14,12 +14,13 @@ ELO activo con parámetros aprobados: K40 primeras diez/K20 después, redondeo e
 
 ## Contexto y estado de la fase
 
-**Preparación 06, solo documentación:** propuesta de formato/equipos/cuadro/byes,
-empates, offline/cancelación, premio y elegibilidad XP/ELO. Tres decisiones D1/D2/D3
-pendientes en [Propuesta 06](docs/PROPUESTA_BLOQUE_06.md). No código/migraciones ni
-funciones de torneos/premios; versión **0.5.3** intacta. Evidencia de revisión
-proporcional en [Verificación 06](docs/VERIFICACION_BLOQUE_06.md). Siguiente paso:
-responder las decisiones y usar el prompt condicionado, sin iniciar 07.
+**Preparación 06 V2, solo documentación:** el propietario orienta a pool sencilla
+para cuatro a seis personas, preferentemente parejas, con cola y cambio de
+compañero. Sustituye eliminación directa V1. Ejemplos y detalles pendientes en
+[Propuesta 06](docs/PROPUESTA_BLOQUE_06.md): aclarar 3v3/4v4 y rotación de cinco;
+después acordar modo/cierre, sin campeonato o premios implícitos. No código,
+migraciones ni funciones de pool; versión **0.5.3** intacta. Evidencia en
+[Verificación 06](docs/VERIFICACION_BLOQUE_06.md). Continuar 06, sin iniciar 07.
 
 **v0.5.3 — 05 aprobado/activo:** nueve familias con cinco tiers/45 estrellas.
 XP único 25/25/50/75/100 por tier, históricos/recálculo incluidos, derivado en

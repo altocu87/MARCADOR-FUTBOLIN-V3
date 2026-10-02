@@ -695,16 +695,26 @@ Un récord puede cambiar múltiples veces. Pero no debe conceder XP ilimitado po
 
 Existe opción TORNEO en menú. Funcionalidad detallada: PENDIENTE.
 
-**Preparación documental autorizada de 06, 2026-10-02:**
-[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) presenta D1 formato/operativa,
-D2 modos/elegibilidad y D3 premio. Recomendación: eliminación directa, 2–16 equipos
-fijos 1v1/2v2, byes sin partidos/premios, un partido por cruce y desempate del motor;
-modo fijo con XP/logros normales confirmados, ELO solo Clasificatorio; título privado
-con 0 XP adicional. Alternativas de liguilla/modalidades casuales/familia «Gana torneos»
-requieren elección expresa. **Todas pendientes de aprobación**, sin implementación,
-migración, ganador o premio activo. Offline/recuperación/cancelación se describen
-como diseño propuesto, no capacidad nueva. Aplicación sigue v0.5.3 y 05 aprobado.
-Estado/verificación y siguientes decisiones en ESTADO_ACTUAL/VERIFICACION_BLOQUE_06.
+**Reorientación documental de 06 V2, 2026-10-02:** el propietario indica que
+normalmente son cuatro a seis personas, prefieren parejas y buscan una pool/ronda
+de pista sencilla: perdedores salen y entran quienes esperan; variante con cambio
+de compañero para cinco personas y posibilidad 1v1. Torneos no vitales; pocos pasos.
+Reemplaza la recomendación V1 de eliminación directa/2–16 equipos. No volver a
+pedir escoger cuadro/liguilla como si no hubiera expresado esta preferencia.
+
+[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) contiene ejemplos de seis con tres
+parejas y cinco con una reserva. Cola/rotación concreta, modos/elegibilidad y cierre
+abierto sin campeón/premio adicional siguen **propuestas por acordar**, no activación.
+Gana torneos queda aparcado; ganar/terminar una pool no crea un título por defecto.
+No otra aprobación de XP V2/Hall: 05 sigue activo e intacto, v0.5.3.
+
+3v3/4v4 mencionado por propietario: **pendiente aclarar parejas en cola frente a
+jugadores simultáneos por equipo**; segunda lectura amplía formatos/motor/SQL/XP/ELO
+aprobados. También aclarar si en cinco permanece junta ganadora o se mezcla.
+No descartar petición ni implementar formatos mayores por interpretación.
+Recuperación, confirmación/rotación atómica y cancelación son diseño futuro; sin
+código/migración/UI de pool o premios. Seguimiento y evidencia en ESTADO_ACTUAL y
+VERIFICACION_BLOQUE_06; siguiente conversación sigue en 06, sin iniciar 07.
 
 No inventar reglas complejas todavía. La arquitectura sí debe permitir añadir torneos posteriormente.
 

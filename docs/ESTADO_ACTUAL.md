@@ -6,46 +6,44 @@
 
 ## Punto de continuidad para conversaciones nuevas
 
-**Continuación vigente: preparación exclusivamente documental de 06, 2026-10-02.**
-Petición posterior a 05: preparar propuesta revisable, ejemplos y decisiones;
-no implementar/activar torneos o premios. Sincronizado sobre `ecb3a2d`, árbol limpio,
-fetch explícito main/revisión 0/0 y fast-forward ya actualizado. No sobrescritura.
+**Continuación vigente: revisión exclusivamente documental de 06, 2026-10-02.**
+El propietario concreta uso habitual: cuatro a seis personas, preferencia por
+parejas, pool/ronda de pista con ganadores que siguen y perdedores que rotan;
+variante de cinco personas con cambio de compañero. Busca pocos pasos, sin
+campeonato elaborado. Esta orientación reemplaza la recomendación V1 de
+eliminación directa/2–16 equipos. No volver a pedir eliminación o liguilla.
 
-[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) recomienda D1 eliminación directa,
-2–16 equipos fijos 1v1/2v2, sorteo/byes sin partido/premio, desempate vigente,
-recuperación/cancelación detalladas; D2 modo fijo Rápido/Caos/Clasificatorio con
-XP/logros normales y ELO solo Clasificatorio; D3 trofeo privado con **0 XP adicional**,
-sin nueva familia/estrellas/récords. Alternativas: liguilla (requiere V2), limitar
-modalidades casuales o ampliar «Gana torneos» con aprobación propia. **D1/D2/D3 no
-aprobadas**; recomendaciones no se activan por publicar documentos.
+[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) **V2** contiene ejemplos con
+seis personas/tres parejas y cinco/persona en espera. Propone cola fija, cambio
+de un perdedor, 1v1 opcional, sesión abierta sin campeón/premio extra, XP/logros
+normales por partidos confirmados y ELO solo si Clasificatorio. **Los detalles
+son propuestas pendientes**, no funciones ni aprobación implícita de premios.
+«Gana torneos» queda aparcado: cerrar una pool no es ganar un campeonato.
 
-Ejemplos: cuatro equipos/tres partidos; cinco equipos/cuatro partidos/tres byes.
-Offline: cuadro provisional con dependencias; solo resultados confirmados permiten
-avance/campeón oficial, sin doble guardado ni cobros. Cancelar conserva partidos
-confirmados/XP/ELO y no inventa victoria por abandono. Propuesta para implementar,
-no mecanismo que ya exista.
+**Aclaraciones inmediatas solicitadas:** si 3v3/4v4 significa parejas en cola o
+jugadores simultáneos por equipo; si ganadores siguen juntos en rotación de
+cinco o también se mezclan. No se rechaza la petición de formatos mayores,
+pero tampoco se amplían motor, servidor o XP/ELO por una mención ambigua.
+Después cerrar solo cola/rotación, modo/elegibilidad y cierre de sesión necesarios.
+No pedir otra vez aprobaciones de 02–05. Sin respuesta expresa no activar 06.
 
-Aplicación **v0.5.3**, menú TORNEO provisional, sin nueva versión/novedad funcional.
-Solo Markdown: contexto/estado/seguimiento/README, propuesta, verificación y prompt.
-Sin código, migraciones/consultas SQL, datos, cuentas/partidos, servicios o reglas
-activas modificadas. Verificaciones proporcionales documentadas en
-[VERIFICACION_BLOQUE_06.md](VERIFICACION_BLOQUE_06.md); publicación se registra tras
-confirmar push. 05 sigue aprobado/activo como se describe debajo, su observación
-humana en sesión existente permanece separada según acceso, sin reabrir 01.
+Sincronización de esta revisión: base `491838aa60b2963f5c14af1af0d47ebba7cdfe23`,
+árbol limpio, fetch explícito main/revisión y divergencia 0/0. Main permanece
+`900e470a719bc99bee4df853f0e11301a5b6562e`. Sin sobrescritura/reset/stash.
+Aplicación **v0.5.3** intacta; TORNEO provisional. Solo Markdown, sin código,
+migraciones/consultas SQL, datos, cuentas/partidos o servicios. La propuesta de
+recuperación/rotación atómica es diseño futuro, no garantía ya implementada.
 
-**Siguiente acción efectiva:** resolver D1/D2/D3 de 06 con la propuesta concreta,
-registrar respuesta y después continuar 06 mediante
-[PROMPT_SIGUIENTE_BLOQUE.md](PROMPT_SIGUIENTE_BLOQUE.md). No implementar torneos hasta
-aprobar esas reglas; no iniciar 07. Las entradas siguientes conservan la entrega
-05 y su evidencia histórica; no requieren volver a pedir sus aprobaciones.
+Verificación proporcional en [VERIFICACION_BLOQUE_06.md](VERIFICACION_BLOQUE_06.md).
+Publicación V2 se registra después de comprobar push. La V1 y su comprobación
+`de3f9b3`/`491838a` permanecen como antecedentes de Git. No se ha inspeccionado
+un deployment de la revisión documental ni UI de pool en Preview; la evidencia
+funcional de 05 y su observación autenticada pendiente siguen independientes.
 
-**Publicación de la propuesta comprobada:** `de3f9b3b300b5295eb4087648cd5b5ef173662c7`,
-push fast-forward ecb3a2d→de3f9b3 en `codex/reliability-offline-v1`, SHA remoto
-coincidente y árbol limpio. Main sigue `900e470a719bc99bee4df853f0e11301a5b6562e`.
-Solo nueve documentos; fuentes/package/migraciones no cambian. No se inspecciona
-el deployment automático de este commit documental ni se acredita torneo/UI
-06 en Preview. La última evidencia funcional 05 permanece independiente.
-Esta anotación se publica después, sin cambiar aplicación o versión.
+**Siguiente acción efectiva:** aclarar estas dos preguntas, revisar reglas de
+pool con ejemplos y registrar respuesta antes de implementar, mediante
+[PROMPT_SIGUIENTE_BLOQUE.md](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07 ni servicios
+excluidos; no repetir checklist 01. Lo siguiente conserva el historial de 05.
 
 **Entrega 05 v0.5.3, 2026-10-02.** Aprobación expresa del propietario:
 «Apruebo XP V2 por tier, incluidos históricos y recálculo, y los ocho
@@ -281,7 +279,7 @@ Aclaración previa a las pruebas, 2026-10-02: sesión persistente automática ya
 | D. ELO, ranking privado y categorías | Aprobado/activo desde v0.4.1; reconstrucción y SQL/RLS/UI verificados; sesión web del operador no controlada por el agente |
 | D. H2H y forma competitiva (04) | Descriptivo integrado/verificado desde v0.4.1; previsión aplazada por decisión expresa |
 | E. Logros, récords y Hall (05) | v0.5.3 aprobado/activo: tiers XP V2, ocho récords/Hall privados; código/UI aislada/SQL comprobados. Observación web autenticada del operador pendiente según acceso |
-| F. Torneos (06) | Propuesta documental revisable D1/D2/D3; sin aprobación ni funciones activadas |
+| F. Torneos (06) | Propuesta V2: pool pequeña con cola/rotación; aclaraciones pendientes, sin funciones activadas |
 | G–J. Audiovisual avanzado, backup, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
 
 ## Código local implementado en la fase B
@@ -390,9 +388,9 @@ Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida
 
 ## Bloqueo y siguiente acción exacta
 
-**Vigente: propuesta 06 publicada para decidir D1/D2/D3.** No implementación ni
-activación de torneos/premios. Continuar 06 únicamente tras registrar aprobación
-expresa de sus opciones. 05 conserva sus aprobaciones y límite de observación
+**Vigente: propuesta 06 V2 de pool pequeña, sustituye eliminación V1.** Aclarar
+3v3/4v4 y rotación de cinco; acordar reglas necesarias antes de implementar.
+Sin activación de torneos/premios. 05 conserva sus aprobaciones y límite de observación
 autenticada, que no bloquea esta preparación autorizada. No reabrir 01 ni iniciar 07.
 
 **Continuidad anterior, conservada:**
@@ -431,6 +429,19 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Reorientación 06 V2: pool para cuatro a seis personas
+
+Petición posterior del propietario sustituye propuesta de eliminación directa
+por pool/ronda de pista, parejas fijas o cambio de un perdedor, 1v1 opcional.
+Ejemplos de seis/cinco personas; 3v3/4v4 ambiguo, pendiente aclaración antes de
+ampliar formatos. Cierre abierto sin campeón ni premio extra recomendado,
+no aprobado; Gana torneos aparcado. No confundir ganar partido/seguir en mesa
+con título. Contexto §36, estado, seguimiento, README, catálogo/enlace 05,
+verificación 06 y prompt actualizados. Solo documentos; versión 0.5.3 y reglas
+activas intactas. Verificación de enlaces/integridad/diff y ejemplos manuales;
+no tests de código/UI/SQL ni datos remotos. Publicación en revisión tras comprobar
+push, sin main. Continuación sigue en 06, no iniciar 07.
 
 ### 2026-10-02 — Preparación documental 06, propuesta pendiente de decisión
 

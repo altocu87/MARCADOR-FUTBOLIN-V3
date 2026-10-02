@@ -1,3 +1,49 @@
+# Verificación 06 V2 — revisión de pool sencilla, 2026-10-02
+
+## Alcance vigente
+
+El propietario orienta 06 a pool para cuatro/seis personas, parejas preferentes,
+cola y rotación. Reemplaza recomendación de eliminación directa V1. Detalles
+por acordar; 3v3/4v4 y cambio de pareja pendientes de aclaración. No activación
+ni aprobación implícita de premios, modos o nuevas reglas de XP/ELO.
+[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) V2 es la referencia vigente.
+
+Entorno cloud `/workspace/MARCADOR-FUTBOLIN-V3`, misma rama de revisión.
+Base `491838aa60b2963f5c14af1af0d47ebba7cdfe23`, árbol limpio antes de editar,
+fetch explícito main/revisión, divergencia 0/0. Main `900e470a719bc99bee4df853f0e11301a5b6562e`.
+Sin sobrescribir trabajo local, reset/stash o promoción.
+
+## Verificación proporcional de esta revisión
+
+Solo nueve documentos Markdown: revisión de enlaces, bloques cercados,
+contexto consecutivo 1–84 y `git diff --check`; inspección de alcance para
+asegurar que no cambia aplicación, SQL, tests, versión o novedades funcionales.
+Revisados ejemplos de seis/cinco personas, a mano y con una comprobación
+simbólica aislada de su secuencia: solo dos parejas en mesa,
+resto en cola, sale perdedor y vuelve después, ganadores conservados según
+propuesta, cambio de ganador y saliente distinto al repetirse derrotas.
+Resultados **PASS** de enlaces/bloques, numeración 1–84, alcance solo Markdown,
+consistencia de secuencias y `git diff --check`. La comprobación simbólica no usa
+motor, repositorio ni módulo de pool: **no verifica código/UI/SQL de pool**.
+
+No nueva batería de tests/build/navegador, SQL, migraciones, cuentas/partidos ni
+recorrido de Preview autenticada. No repetir checklist cerrado. Pruebas de V1
+con fixtures XP y aritmética de cuadro son antecedentes y no prueban pool V2.
+Versión **0.5.3** intacta; 05 aprobado/activo, código TORNEO provisional.
+Sin servicios excluidos, administración, Google/Drive, SMTP, pagos o main.
+
+## Publicación y continuación
+
+Publicación V2 se registra después de verificar push. No se inspecciona deployment
+automático de esta entrega documental; no afirmar UI de pool disponible en Preview.
+Aclarar significado 3v3/4v4 y rotación de cinco, después acordar solo reglas
+necesarias, mediante [prompt vigente](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07.
+
+---
+
+Registro histórico V1, sustituido por orientación V2; no usar sus preguntas
+D1/D2/D3 ni pruebas de cuadro como alcance actual:
+
 # Verificación 06 — preparación documental, 2026-10-02
 
 ## Alcance autorizado y resultado

@@ -1,225 +1,189 @@
-# Propuesta 06 — torneos V1 para decidir
+# Propuesta 06 V2 — pool sencilla para grupos pequeños
 
-Fecha: **2026-10-02**. Estado: **propuesta documental, sin aprobación ni activación**.
-Petición vigente: preparar exclusivamente formato/equipos/cuadro/liguilla/byes,
-empates, recuperación, cancelación, premios y elegibilidad XP/ELO.
-La aplicación sigue en **v0.5.3** y TORNEO conserva su pantalla provisional.
-No código de torneos, esquema/migraciones, partidos, cuentas o premios nuevos.
+Fecha: **2026-10-02**. Estado: **propuesta revisada, sin activación**.
+Aplicación **v0.5.3**; TORNEO conserva su pantalla provisional. Sin código,
+esquema, migraciones, cuentas, partidos ni premios nuevos.
 
-05 aprobado/activo se conserva: nueve familias, 45 tiers, identidad
-cuenta/jugador/familia/tier y XP V2 histórico/recalculable; ocho récords/Hall
-privados con empates compartidos y 0 XP por récord. Las tres decisiones de abajo
-son propias de 06 y no vuelven a pedir aprobación de 02–05.
+## Orientación expresada por el propietario
 
-## Las tres decisiones solicitadas
+Normalmente juegan **cuatro a seis personas**, preferentemente por parejas.
+Los torneos no son vitales: interesa una pool/ronda de pista sencilla, donde
+quien pierde sale y entra quien espera; también cambiar compañeros para cinco
+personas. Se puede contemplar 1v1. Evitar gestionar un campeonato elaborado.
 
-| Decisión | Recomendación concreta | Alternativa |
-| --- | --- | --- |
-| D1 · Formato y reglas operativas | Eliminación directa, 2–16 equipos fijos, torneo 1v1 o 2v2, sorteo único/byes, un partido por cruce, sin tercer puesto. Recuperación y cancelación como se detallan debajo | Liguilla de una vuelta: más partidos; preparar V2 con desempates de clasificación antes de aprobar/implementar |
-| D2 · Modos y puntuación de partidos | Elegir Rápido, Caos o Clasificatorio al crear y conservarlo en todos los cruces. XP/logros normales confirmados; ELO aprobado solo si el modo es Clasificatorio | Torneos solo Rápido/Caos: mismo XP/logros, sin ELO; Clasificatorio queda disponible fuera del torneo |
-| D3 · Premio de campeonato | Trofeo/título privado para el campeón y sus miembros, **0 XP adicional**, sin nuevas estrellas ni récords/Hall | Añadir familia nueva «Gana torneos»: 1/3/5/10/25 títulos, tiers 25/25/50/75/100 XP. Es otra ampliación pendiente, no parte de los 45 tiers aprobados |
+Esto **sustituye la recomendación V1 de eliminación directa, 2–16 equipos**.
+Cuadro, liguilla, sorteo de cruces y byes dejan de ser el alcance inicial propuesto.
+La V1 queda en Git como antecedente, no como opción vigente a implementar.
 
-Para aprobar la recomendación completa bastará una respuesta explícita indicando
-D1/D2/D3. Elegir «liguilla» pide otra propuesta, no autoriza un formato indefinido.
-Un cambio parcial debe registrarse aquí antes de programar la implementación.
-Este documento no aprueba ninguna opción por defecto.
+La mención **3v3/4v4** requiere aclaración: ¿tres/cuatro parejas que se turnan o
+personas simultáneas en cada equipo? La segunda lectura ampliaría participantes,
+motor, validación servidor y reglas XP/ELO más allá de los formatos aprobados.
+**No está aprobada ni se descarta la petición**: aclararla antes de fijar alcance;
+no habilitar seis/ocho jugadores por partido o puntuarlos por analogía con 2v2.
 
-## D1 · Equipos y creación
+05 sigue aprobado/activo: nueve familias/45 tiers, identidad cuenta/jugador/
+familia/tier, XP V2 históricos/recálculo y ocho récords/Hall privados con empates
+compartidos y 0 XP por récord. No volver a pedir esas aprobaciones.
 
-- Torneo privado de la cuenta del operador, con nombre y 2–16 equipos.
-- Elegir **1v1 o 2v2 por torneo**. En 1v1 cada equipo es un jugador; en 2v2 una
-  pareja fija. No mezclar tamaños ni repetir un jugador en equipos distintos.
-  Máximo 16 jugadores en 1v1 o 32 en 2v2.
-- Seleccionar jugadores activos de esa cuenta al iniciar. UUID identifica al
-  jugador/equipo; alias actual y nombres iguales no crean otra identidad.
-- Se puede editar el borrador: participantes, parejas, modo y configuración.
-  Iniciar confirma y fija plantilla, cuadro y reglas. No sustituir jugadores,
-  rehacer sorteo ni cambiar modalidad/configuración a mitad del torneo.
-- Una baja lógica posterior conserva plantilla e historial, sin sustituir al
-  integrante. La baja no concede victoria al rival: continuar con esa plantilla,
-  esperar o cancelar conforme a la política inferior.
-- El torneo V1 propuesto no incluye cruces 1v2. **1v2 sigue admitido fuera del
-  torneo únicamente en Rápido/Caos**, con XP completo y sin ELO. Esta limitación
-  de tamaños del nuevo torneo está incluida en D1, no modifica el motor vigente.
+## Uso propuesto, pendiente de concretar
 
-Crear/iniciar requiere conexión y sesión verificada, para fijar una base común.
-Una vez cargado/iniciado, el juego y su recuperación pueden continuar sin red
-según el apartado de recuperación. No exigir cuentas personales a los jugadores.
+**Crear pool → seleccionar personas → parejas fijas o rotación → jugar.**
+Pantalla con quienes juegan, quienes esperan y próximo cambio. Al finalizar,
+proponer el siguiente partido y confirmarlo con un botón, sin volver a elegir
+participantes. Pausar o terminar entre partidos.
 
-## Cuadro, sorteo y pases libres
+Recomendación inicial: **2v2 para cuatro a seis personas** y **1v1 para dos a seis**
+con cola individual. Son límites propuestos de esta entrega, no del marcador
+general. Orden inicial elegido por operador y guardado, sin resorteos al recargar.
+Jugadores activos de la cuenta, UUID estable; no requieren cuentas personales.
+Lista de personas fija durante sesión; compañeros cambian solo entre partidos
+según variante. Altas/salidas de sesión a mitad quedan fuera de esta propuesta:
+pausar o terminar y crear otra, sin modificar resultados previos.
 
-Eliminación directa a **un partido por cruce**, sin ida/vuelta, series ni partido
-por tercer puesto. El operador confirma el sorteo una vez al iniciar; no depende
-de ELO ni empareja automáticamente por categorías. Persistir orden y asignaciones;
-recargar/reintentar conserva ese sorteo, no lo vuelve a ejecutar.
+### Seis personas: tres parejas fijas
 
-Para N equipos: tamaño del cuadro = siguiente potencia de 2; pases libres =
-tamaño − N. Distribuirlos en primera ronda, cada uno enfrentado a un equipo real,
-sin cruces vacío–vacío. Asignación aleatoria uniforme de los equipos que reciben
-pase; disposición del cuadro queda fijada. Un pase libre es avance de cuadro:
-**no es partido ni victoria**, no crea MATCH_END, XP, ELO, racha, estrellas o récords.
+Parejas A/B, C/D y E/F. Dos juegan, la tercera espera.
 
-### Ejemplo: cuatro equipos
-
-| Cruce | Equipos | Ejemplo de ganador |
-| --- | --- | --- |
-| Semifinal 1 | A contra B | A |
-| Semifinal 2 | C contra D | C |
-| Final | A contra C | C |
-
-Tres partidos reales, cero pases libres. Campeón C, subcampeón A; B y D comparten
-ronda de eliminación en semifinales. No decidir un tercer puesto por goles.
-
-### Ejemplo: cinco equipos
-
-Cuadro de ocho plazas, tres pases libres. Ejemplo de sorteo ya fijado:
-
-| Ronda | Cruce/avance |
-| --- | --- |
-| Primera | A, B y C reciben pase; D contra E produce ganador X |
-| Semifinales | A contra B; C contra X |
-| Final | Ganadores de semifinales |
-
-**Cuatro partidos reales**, tres pases libres. A/B/C no reciben nada por el pase.
-El campeón será oficial únicamente tras confirmar todos los resultados necesarios.
-En general, eliminación directa de N equipos completa **N−1 partidos reales**.
-
-### Comparación con liguilla
-
-Una vuelta enfrenta cada pareja de equipos una vez: N×(N−1)/2 partidos, sin pases
-libres. Cuatro equipos necesitan 6 partidos; cinco, 10; ocho, 28; dieciséis, 120.
-Es útil si se busca que todos jueguen más, pero añade clasificación y criterios de
-empate propios. Queda como alternativa: si se elige, preparar sus puntos,
-desempates y campeón/final en una propuesta V2 antes de implementar. No introducir
-3/1/0 puntos, duración efectiva, goal average individual o final extra por suposición.
-
-## Reglas de cada partido y empates
-
-La configuración se elige al crear el torneo y se fija para todos los cruces.
-Propuesta de valor inicial de la pantalla: **POR GOLES, objetivo 5**, editable antes
-de iniciar dentro de los límites vigentes. También se podrán elegir TIME/AMBAS.
-No cambiar sus reglas ni versiones/checkpoints históricos.
-
-- GOALS: sin partes, ascendente sin límite; primer equipo al objetivo total.
-- TIME: dos partes, resultado acumulado. AMBAS: objetivo por equipo en todo el
-  partido, sin reinicio; final por objetivo o total al terminar las dos partes.
-- Empate TIME/AMBAS: desempate **del motor existente**, prórroga con gol de oro
-  y, si sigue igualado, penaltis. No sorteo, puntos ELO, gol de visitante ni duelo
-  adicional para decidir el cruce.
-- El servidor solo avanza a partir de un resultado completo y válido con ganador.
-  Un empate histórico/sin ganador no se convierte en victoria ni avanza.
-- Blanco/Azul y posiciones se fijan antes del inicio de cada partido, manteniendo
-  los miembros del equipo; se conservan en copia, recuperación e historial.
-  Los goles siempre son del equipo. No asignar goleador ni inferir tiempo jugado.
-
-## Recuperación, confirmación y avance único
-
-Propuesta para la futura implementación, **no contratos ya creados**:
-
-1. Guardar torneo/cuadro confirmados y una copia local por cuenta/proyecto/torneo;
-   conservar relación torneo + cruce + UUID estable del partido junto a la copia
-   del motor, sin alterar UUID/hash de documentos ni colas históricos.
-2. Una sola partida/dispositivo activo como pauta de uso. Una lectura local sirve
-   para jugar/recuperar, no demuestra confirmación remota ni concede experiencia.
-3. En offline, cada final válido se conserva antes de cualquier envío. Permitir
-   continuar el cuadro **provisionalmente** en el mismo dispositivo: siguiente
-   cruce conserva dependencias de UUID y ganadores pendientes. Ronda/final muestran
-   «PENDIENTE DE CONFIRMAR»; campeón/trofeo oficial solo al confirmar toda la cadena.
-4. Al reconectar, enviar en orden de dependencias. Futura transacción bajo RLS:
-   validar cuenta/plantilla/configuración/cruce y antecedentes, guardar agregado
-   por el mecanismo idempotente existente, vincularlo y avanzar una vez. Un
-   resultado no debe guardarse primero como partido libre y luego intentar ligarlo.
-5. Un cruce admite un resultado; un resultado pertenece a un solo cruce. Mismo
-   UUID/contenido es reintento, no otra victoria. Contenido diferente u otro cruce
-   invalida la transacción. Recarga o respuesta tardía no duplica campeón ni avance.
-6. Estado/revisión canónicos resuelven dos dispositivos: si otro resultado ocupó
-   el cruce, conservar las copias/pendientes dependientes y detener su avance;
-   informar del conflicto, sin sobrescribir, borrar ni convertirlos en partidos
-   libres para conceder XP. No ofrecer ganador manual ni administración de datos.
-7. Recuperar una partida con el mismo motor/checkpoint/UUID, en pausa y excluyendo
-   tiempo de cierre, como hoy. Si la copia falta, no inventar goles/resultados;
-   volver al estado confirmado y explicitar lo que queda pendiente.
-
-La copia local no es backup ni sincronización con la app cerrada. Mantener la PWA
-sin caché de Auth/API; una eventual copia explícita de torneo contiene solo sus
-datos necesarios, aislados por cuenta, y se presenta como no verificada sin sesión.
-La ausencia de red nunca interrumpe un partido. Sin copia local utilizable no se
-promete reconstruir pendientes no enviados desde otro navegador/dispositivo.
-
-## Cancelación, abandono y resultado final
-
-- Descartar un borrador no genera resultados ni títulos.
-- Torneo iniciado: cancelar requiere conexión, estado/revisión verificados,
-  confirmación concreta y ausencia de partida activa o finales locales pendientes
-  en el dispositivo que opera. Sin red: pausar/guardar y cancelar al reconectar.
-- Si hay partida activa, recuperarla/terminarla o descartar **solo esa incompleta**
-  mediante confirmación antes de cancelar el torneo. No borrar finales/colas.
-- La cancelación conserva torneo cancelado y todos los partidos ya confirmados:
-  mantienen XP/logros/ELO legítimos. Detiene cruces futuros; no campeón ni trofeo.
-  Un paquete tardío que choque con cancelación/estado canónico se conserva local,
-  sin avance ni premio por el camino alternativo; no prometer resolverlo borrando.
-- No victorias por ausencia, sustituciones, sanciones ni marcadores administrativos
-  en V1. Un abandono se trata como pausa/cancelación, nunca partido ganado inventado.
-- Finalizado: campeón y subcampeón; los demás se agrupan por ronda de eliminación,
-  con empates de puesto/ronda. Sin ordenar eliminados por goles individuales o ELO.
-- No editar resultados de torneo finalizado ni deshacer un cruce confirmado.
-  Corregir/eliminar datos futuros necesita política aparte; el diseño debe poder
-  invalidar/reconstruir dependencias y títulos, sin fingir que esa administración
-  existe en 06. El recálculo aprobado de XP/ELO/tiers sigue intacto.
-
-## D2/D3 · Elegibilidad y premios
-
-**Propuesta, no cambio de elegibilidad ya activo:**
-
-| Hecho | XP/logros existentes | ELO existente | Título de torneo |
+| Paso | Juegan | Esperan | Resultado de ejemplo |
 | --- | --- | --- | --- |
-| Rápido/Caos real confirmado | XP completo por jugador según 02, tiers de 05 una vez | No | Solo si toda la final/cadena se confirma |
-| Clasificatorio real confirmado, 1v1/2v2 | XP completo y bonus Clasificatorio aprobados; tiers de 05 | Sí, reglas de 03 vigentes, sin multiplicador de torneo | Igual |
-| Pase libre | 0; no partido ni victoria | No | No por el pase |
-| Final pendiente/provisional/incompleto o prueba | Sin premio confirmado, sin avance oficial | No | No |
-| Partido ya confirmado de torneo luego cancelado | Se conserva su XP/tiers legítimos | Se conserva si era Clasificatorio | No campeón del torneo cancelado |
+| 1 | A/B contra C/D | E/F | Gana A/B |
+| 2 | A/B contra E/F | C/D | Gana E/F |
+| 3 | E/F contra C/D | A/B | Pendiente de jugar |
 
-No repetir partidos en historial para añadirlos al torneo ni cambiar `match_type`
-a posteriori. Un Clasificatorio del cuadro cuenta **una vez** en la reconstrucción
-completa existente, igual que uno libre; modalidad fija evita activar/desactivar
-ELO arbitrariamente entre rondas. 04 permanece descriptivo, sin pronósticos.
+Ganadora sigue; perdedora pasa al final de cola y entra la primera que esperaba.
+**Salir de mesa no elimina de sesión**: volverán cuando les toque. Sin semifinal,
+final o pase libre premiado. Con cuatro personas se repite entre las dos parejas;
+nadie espera. Cinco no forman parejas fijas completas: ofrecer rotación siguiente,
+sin excluir a la quinta ni convertir la espera en partido 1v2.
 
-Recomendación de D3: título/trofeo privado asociado al UUID del torneo finalizado
-y sus miembros campeones; **0 XP extra de campeonato**. No agregar secretamente
-«Gana torneos», una décima familia o un noveno récord/Hall. Los nueve logros/45
-estrellas y sus 2475 XP máximos se conservan sin cambiar identidad.
+### Cinco personas: cambia uno de los perdedores
 
-Ejemplo de XP, jugador sin historial previo: dos Rápidos ganados 3–0, sin
-prórroga/tanda. Tras el primero: 150 XP partido + 100 logros = **250**. Tras el
-segundo: base acumulada 300 + tiers vigentes 150 = **450**, porque goles alcanza
-nivel 2 (6) y racha nivel 1 (2). El título añade **0**; no cobrar de nuevo los cuatro
-tiers del primer partido. Una baja/alias distinto no repite esos premios.
+Propuesta pendiente de confirmar: ganadores siguen juntos; **sale uno de los dos
+perdedores y entra quien esperaba**, con el perdedor que se queda. Para evitar
+sacar siempre al mismo, proponer al que lleva más partidos consecutivos en mesa;
+empate por orden inicial guardado. Se cuentan rondas, nunca minutos inferidos.
 
-La alternativa de D3 necesita aprobación propia: títulos confirmados derivados,
-una familia adicional de cinco tiers en 1/3/5/10/25, premios 25/25/50/75/100 (275
-máximo). Ambos miembros de una pareja campeona cumplirían el mismo título,
-identidad cuenta/jugador/familia/ordinal, sin cobrar por reapertura. Conserva los
-45 tiers existentes; no declara que su máximo de XP aprobado haya cambiado.
-No importar títulos ficticios de partidos antiguos ni añadir récords/Hall nuevos.
+| Paso | Juegan | Espera | Resultado y cambio de ejemplo |
+| --- | --- | --- | --- |
+| 1 | A/B contra C/D | E | Gana A/B; sale C, entra E |
+| 2 | A/B contra D/E | C | Gana A/B; sale D, entra C |
+| 3 | A/B contra E/C | D | Pendiente de jugar |
 
-## Plan de verificación tras aprobar e implementar
+Si en paso 2 ganara D/E, seguirían juntos y saldría uno de A/B. Cambio posterior
+no altera identidad/resultado anterior. Mantener ganadores **no garantiza igual
+número de partidos a todos**; mezclar ganadores o limitar permanencia requiere
+otra elección, no añadirla silenciosamente.
 
-Lista futura, **no pruebas ejecutadas en esta preparación**:
+Con seis en esta variante sale un perdedor, entra la primera persona de cola y
+saliente va detrás de la otra que esperaba. Con cuatro no hay reserva para este
+cambio: propuesta inicial parejas fijas; mezclar los cuatro requiere otra regla.
 
-- Cuadros N=2…16: N−1 partidos, byes correctos, sin vacío–vacío/sorteo nuevo; cinco
-  equipos completo, empates TIME/AMBAS reales del motor, final sin doble avance.
-- Plantilla fija 1v1/2v2: homónimos/alias/bajas, jugador duplicado/equipo de otra
-  cuenta rechazados. 1v2 casual fuera del torneo conservado; RANKED de tres inválido.
-- Crear/iniciar/recuperar/cuadro/campeón/cancelar en web adaptable y 800×480;
-  no login/cuentas/partidos cerrados repetidos ni confundir fixtures con Preview.
-- Offline: cadena provisional semifinal→final, cierre/reapertura, tiempo excluido,
-  timeout/reintento/respuesta tardía, conflicto entre dispositivos, copias intactas.
-- SQL/RLS solo del proyecto autorizado: guardar/vincular/avanzar atómico,
-  propietarios aislados, permisos mínimos, idempotencia y ninguna recompensa por
-  pase/prueba/incompleto. Migraciones solo después de aprobar implementación.
-- XP/ELO/05 con el mismo resultado una vez; cancelación no borra experiencia real;
-  título reconstruible únicamente con cadena completa y ganadores confirmados.
+### Uno contra uno
 
-Estado y verificaciones de esta preparación en
-[VERIFICACION_BLOQUE_06.md](VERIFICACION_BLOQUE_06.md).
-Siguiente conversación: [prompt condicionado](PROMPT_SIGUIENTE_BLOQUE.md).
+Cola individual: ganador sigue, perdedor al final y entra primero que esperaba.
+Con dos se repite. No mezclar tamaños de partido dentro de una sesión.
+
+## Partido, modos y puntuación
+
+Valor inicial propuesto **Rápido, POR GOLES, objetivo 5**, editable antes de iniciar.
+Mantener GOALS/TIME/AMBAS y desempates del motor: TIME/AMBAS con prórroga/gol de
+oro y penaltis. Solo partido completo válido con ganador decide siguiente turno;
+empate histórico/incompleto no produce salida por sorteo. Goles por equipo,
+sin goleadores individuales ni tiempos inventados. Posiciones/colores de cada
+partido se eligen antes de iniciarlo y se conservan al recuperar.
+
+Se propone elegir Rápido/Caos/Clasificatorio y fijarlo durante sesión. Alternativa
+solo casual sigue abierta; **elegibilidad de sesión pendiente propia de 06**,
+sin volver a aprobar fórmulas existentes:
+
+| Hecho | XP/logros existentes | ELO existente |
+| --- | --- | --- |
+| Rápido/Caos confirmado, formato aprobado | XP completo por jugador; tiers 05 una vez | No |
+| Clasificatorio confirmado, 1v1/2v2 | XP/bonus aprobados; tiers 05 una vez | Sí, mismas reglas 03; sin multiplicador de pool |
+| Esperar, entrar, salir o cambiar compañero | No partido/victoria: 0 XP | No |
+| Prueba, pendiente o incompleto | Sin concesión confirmada | No |
+
+Resultado 2v2 pertenece a los **cuatro jugadores de ese partido**. Cambiar pareja
+no reatribuye goles, XP, ELO o racha anteriores. Marcador general conserva 1v1/2v2
+en todos los modos, 1v2 solo Rápido/Caos con XP completo y sin ELO; no usar 1v2
+para resolver cinco personas en esta pool. 04 sigue descriptivo.
+
+## Terminar, cancelación y premios
+
+Recomendación simple: **sesión abierta hasta pulsar TERMINAR entre partidos**,
+sin campeón, tabla de liga, trofeo o XP extra de sesión. Resumen de partidos y
+resultados confirmados. Quedarse en mesa al final no convierte a nadie en campeón.
+
+Es **propuesta pendiente**, no aprobación de 0 XP ni renuncia definitiva a premios.
+Si se quiere ganador/premio, concretar cierre y criterio, especialmente al rotar
+parejas. «Gana torneos» V1 (1/3/5/10/25; XP 25/25/50/75/100) queda aparcado:
+no convertir pool en título ni activar décima familia, estrellas o noveno récord.
+Los partidos completos confirmados mantienen su XP/logros/ELO legítimos.
+
+- Borrador descartado: sin resultados. Pausa conserva cola/copia; ausencia no gana.
+- Terminar/cancelar: sin activa o finales locales conocidos por resolver. Si hay
+  activa, terminarla o descartar solo la incompleta con confirmación vigente.
+- No borrar historial/colas ni inventar victorias por abandono al terminar sesión.
+- Cierre oficial requiere conexión y revisión verificadas. Sin red, guardar
+  solicitud de terminar, dejar de programar y confirmar antes sus resultados.
+- Cancelación canónica de otro dispositivo puede entrar en conflicto: conservar
+  paquetes pendientes y detener avance, sin cobros por una vía alternativa.
+- Edición/corrección administrativa sigue fuera de 06; conservar diseño
+  reconstruible, XP/ELO/tiers desde hechos vigentes y no fingir UI de administración.
+
+## Recuperación y confirmación: diseño futuro
+
+Sin contratos SQL ni implementación nueva en esta revisión:
+
+1. Copia por cuenta/proyecto/sesión: orden inicial, variante, cola, ronda,
+   participantes, contadores de turnos y relación ronda/UUID junto a checkpoint.
+   No alterar hashes/documentos/colas históricos. Crear/iniciar con sesión online
+   verificada; jugar/recuperar después nunca se bloquea por perder Internet.
+2. Guardar final antes de enviar. Offline proponer siguiente turno en mismo
+   dispositivo con dependencias explícitas; turnos/resultados provisionales,
+   sin conceder XP/ELO confirmado desde cola local.
+3. Reconectar en orden. Bajo RLS validar cuenta/revisión/cola/participantes reales;
+   guardar, vincular y rotar **atómicamente una vez** usando idempotencia vigente.
+   No guardar primero como partido libre para ligarlo después.
+4. Una ronda admite un resultado y un UUID una ronda. Reintento exacto devuelve
+   lo mismo; payload/participantes/revisión diferentes generan conflicto, sin
+   sobrescribir o convertir en libre para premiar. No duplicar entrada/salida.
+5. Recuperar mismo UUID/checkpoint pausado, excluyendo tiempo cerrado. Recarga
+   conserva cola/saliente. Una pestaña/dispositivo activo como pauta; conflicto
+   canónico bloquea rama local y conserva copias/dependencias, sin mezcla automática.
+6. Auth/API fuera de caché PWA; copia privada explícita mínima, referencia local
+   sin sesión verificada. No prometer backup o pendientes no enviados desde otro
+   navegador; si falta copia, no inventar goles/resultados.
+
+## Qué falta decidir
+
+Prioridad de pool sencilla para cuatro/seis personas y preferencia por parejas
+ya expresadas. **No volver a pedir escoger eliminación o liguilla**. Aclarar ahora:
+
+- Significado de 3v3/4v4: parejas en cola o jugadores simultáneos por equipo.
+- En cinco personas: ganadora sigue junta y cambia un perdedor, o mezclar también
+  ganadores. Regla automática de saliente propuesta, aún no aprobada.
+
+Después cerrar solo cola/rotación, modo y cómputo normal de partidos, y cierre
+abierto sin campeón/premio extra o alternativa expresa. No forzar un formulario
+completo de campeonato ni pedir aprobaciones 02–05. Esta explicación del uso
+no aprueba todas las reglas ni autoriza activación de torneos/premios.
+
+## Verificación futura tras acordar e implementar
+
+Plan, **no pruebas funcionales ejecutadas**:
+
+- Secuencias 4/5/6 personas, cambio ganador/cola, turno único, nadie duplicado,
+  compañeros solo entre partidos; 1v1 si acordado, formatos mayores si aprobados.
+- Alias/homónimos/bajas/cuenta ajena, UUID estable/participantes por ronda; reglas
+  y desempates motor, sin premiar espera o paso de turno.
+- Crear/jugar/pausar/recuperar/terminar con pocos pasos, adaptable y 800×480;
+  no repetir cuentas/partidos del checklist 01.
+- Offline/recarga de cinco: mismo compañero/saliente/cola, timeout/reintentos,
+  respuesta tardía/conflictos, pendientes conservados/cierre ordenado.
+- SQL/RLS del proyecto autorizado: aislamiento, guardar/vincular/rotar atómico,
+  idempotencia, XP/ELO/tiers una vez desde historial confirmado completo.
+- Distinguir fixtures de Preview autenticada y de datos reales.
+
+Evidencia de revisión: [VERIFICACION_BLOQUE_06.md](VERIFICACION_BLOQUE_06.md).
+Continuación: [prompt vigente](PROMPT_SIGUIENTE_BLOQUE.md). No iniciar 07.
