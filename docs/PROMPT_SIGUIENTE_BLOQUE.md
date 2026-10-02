@@ -17,14 +17,18 @@ ganadores juntos como regla universal. Concreta algoritmo/cola/saliente y casos
 sin reservas (seis jugando 3v3), conservando elección al recuperar. 4v4 fue
 mencionado como formato adicional; prioridad por delimitar. XP/ELO de formatos
 nuevos aún sin reglas aprobadas, no extrapolar ni activar fórmulas existentes.
-El propietario pide temporadas configurables en Ajustes, ELO y ranking de puntos;
-3/1 y tres/seis meses son ejemplos por estudiar. ELO continuo, 3/0 y tres meses
-son propuestas del agente, no aprobaciones. Registra/delimita esa petición sin
-ampliar la implementación exclusiva de 06 ni activar temporadas/puntos/premios.
-Presenta ejemplos sencillos con seis/tres parejas y cinco/una reserva; concreta
-cola/saliente, modo/elegibilidad, pausa/recuperación/cierre. Sesión abierta sin
-campeón/premio extra es recomendación pendiente, no aprobación. No convertir
-seguir en mesa o cerrar pool en ganar un torneo; Gana torneos queda aparcado.
+La conformidad posterior «estoy de acuerdo con lo que has propuesto tú» acepta
+el diseño expuesto: selector y ejemplos, sesión abierta sin título/premio extra,
+temporadas configurables (recomendación tres meses, 3/0, ELO continuo), historial,
+reglas fijas por temporada y cada Clasificatorio cuenta una vez. No reaprobarlo.
+Solo queda nueva ampliación de puntuación 3v3, ahora presentada en la propuesta:
+XP completo/tiers por participante, media de tres ELO previos por equipo y K
+propio vigente, puntos 3/0. Ejemplo seis 1200/K40 → +20/−20 cada jugador;
+base XP 200/75 antes de tiers. No atribuir aprobación de regla que aún no estaba
+expuesta. Solicita solo esa aprobación; revisar algoritmo de mezcla propuesto
+sin inventar consentimiento literal anterior del algoritmo. 4v4 sin añadir por defecto.
+Esta entrega sigue documental; autorización de implementación debe ser explícita
+respecto a pool/temporadas. No crear Gana torneos ni premio adicional.
 Pregunta solo lo imprescindible, por pasos, sin pedir aprobaciones 02–05.
 No actives pool/torneos/premios ni programes formatos ambiguos sin aprobación
 y autorización de implementación. Una vez autorizada esa implementación,

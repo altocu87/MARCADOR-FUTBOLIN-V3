@@ -703,8 +703,9 @@ Reemplaza la recomendación V1 de eliminación directa/2–16 equipos. No volver
 pedir escoger cuadro/liguilla como si no hubiera expresado esta preferencia.
 
 [PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) contiene ejemplos de seis con tres
-parejas y cinco con una reserva. Cola/rotación concreta, modos/elegibilidad y cierre
-abierto sin campeón/premio adicional siguen **propuestas por acordar**, no activación.
+parejas y cinco con una reserva. Concepto de cola/rotación, modos y cierre
+abierto sin campeón/premio adicional aceptados por conformidad posterior;
+algoritmo concreto y puntuación 3v3 propuestos para revisión, sin activación.
 Gana torneos queda aparcado; ganar/terminar una pool no crea un título por defecto.
 No otra aprobación de XP V2/Hall: 05 sigue activo e intacto, v0.5.3.
 
@@ -718,10 +719,16 @@ anteriormente supone ocho jugadores, con prioridad de entrega por delimitar.
 **Petición de temporadas registrada:** duración configurable en Ajustes, ELO y
 ranking por puntos; tres/seis meses y victoria 3/derrota 1 fueron ejemplos por
 estudiar. Recomendación del agente de ELO continuo, puntos reiniciados por periodo,
-3/0 y tres meses **no aprobada**. Torneos clasificatorios propuestos contarían una
+3/0 y tres meses **aceptada por la conformidad posterior del propietario**.
+Torneos clasificatorios propuestos contarían una
 vez por partido, sin bonus por campeón; casual sin ELO. No reiniciar ELO existente
 ni implementar temporadas/puntos/premios por esta revisión documental de 06;
-delimitar alcance y reglas antes de ampliar fase.
+delimitar implementación antes de ampliar fase. «Estoy de acuerdo con lo que
+has propuesto tú» registra conformidad con diseño presentado y recomendaciones;
+no volver a pedirlas. La fórmula 3v3 recién propuesta (XP completo, media ELO de
+tres participantes previos, K propio vigente, puntos 3/0) **no estaba presentada
+al aceptar**, por lo que queda pendiente aprobación expresa. No activa 4v4 ni
+recompensas nuevas, tampoco autoriza implementar por esta preparación documental.
 Recuperación, confirmación/rotación atómica y cancelación son diseño futuro; sin
 código/migración/UI de pool o premios. Seguimiento y evidencia en ESTADO_ACTUAL y
 VERIFICACION_BLOQUE_06; siguiente conversación sigue en 06, sin iniciar 07.

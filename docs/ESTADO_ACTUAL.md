@@ -13,30 +13,28 @@ variante de cinco personas con cambio de compañero. Busca pocos pasos, sin
 campeonato elaborado. Esta orientación reemplaza la recomendación V1 de
 eliminación directa/2–16 equipos. No volver a pedir eliminación o liguilla.
 
-[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) **V2** contiene ejemplos con
-seis personas/tres parejas y cinco/persona en espera. Propone cola fija, cambio
-de un perdedor, 1v1 opcional, sesión abierta sin campeón/premio extra, XP/logros
-normales por partidos confirmados y ELO solo si Clasificatorio. **Los detalles
-son propuestas pendientes**, no funciones ni aprobación implícita de premios.
-«Gana torneos» queda aparcado: cerrar una pool no es ganar un campeonato.
+[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) registra la conformidad posterior:
+«estoy de acuerdo con lo que has propuesto tú». Diseño expuesto aceptado: pool
+simple, 3v3 real solicitado, selector ganadores/perdedores/ambos con ejemplos,
+sesión abierta sin título/premio extra. Temporadas configurables con ELO continuo,
+puntos por periodo, recomendación inicial tres meses y victoria 3/derrota 0;
+Clasificatorios de pool/torneo cuentan una vez, sin bonus por campeón. Mantener
+historial y reglas fijas por temporada; puestos compartidos por empate de puntos.
+No volver a pedir estas decisiones, aprobaciones 02–05 ni las aclaraciones resueltas.
 
-**Respuestas expresas registradas:** 3v3 son tres personas simultáneas por lado,
-seis por partido. Al crear se elige mezclar **ganadores, perdedores o ambos**.
-No volver a pedir esas aclaraciones ni fijar siempre ganadores juntos. Los ejemplos
-anteriores de cinco ilustran ahora solo la opción perdedores. El formato 4v4 fue
-mencionado antes, con ocho participantes; prioridad de entrega por delimitar.
-Falta concretar algoritmo/cola y ausencia de reservas (en 3v3 con seis todos
-juegan), y elegibilidad XP/ELO de formatos nuevos. Estas decisiones de diseño
-no activan 06 ni amplían automáticamente las fórmulas/formatos ya aprobados.
+**Pendiente nuevo:** propuesta explícita de XP completo/tiers y ELO para 3v3 mediante
+medias de tres ELO previos y K propio vigente. Esa regla no estaba presentada
+cuando respondió; no atribuirle aprobación ni activar SQL/motor de seis jugadores.
+Ejemplo seis 1200/K40 → +20 cada ganador/−20 cada perdedor, base XP 200/75 antes de
+tiers y puntos 3/0. Ilustrativo, no prueba funcional o concesión real. Algoritmo
+concreto de saliente/cola/mezcla propuesto en documento para revisión; 4v4 mencionado,
+prioridad/eligibilidad sin cerrar. No crear décima familia Gana torneos ni noveno Hall.
 
-**Petición adicional registrada:** temporadas de Clasificatorio configurables en
-Ajustes, ELO y ranking por puntos; duración tres/seis meses y puntos 3/1 son
-ideas del propietario, no reglas cerradas. Recomendaciones del agente (ELO
-continuo, puntos por periodo, 3/0, tres meses) siguen sin aprobación. No implementar
-temporadas ni puntos por esta revisión; delimitar alcance antes de ampliar 06.
-No reaprobar 02–05 ni interpretar confianza en criterio como aprobación de premios.
+Alcance continúa **exclusivamente propuesta revisable 06**, no autorización general
+de implementación/activación de pool/temporadas/servicios/premios. Formatos vigentes,
+XP/ELO/RLS/idempotencia/motor/04 y reconstrucción 05 permanecen intactos.
 
-Sincronización de esta revisión: base `491838aa60b2963f5c14af1af0d47ebba7cdfe23`,
+Sincronización de esta revisión: base `4813c37cc6e2a62cc5b82787bf16feddc9a30730`,
 árbol limpio, fetch explícito main/revisión y divergencia 0/0. Main permanece
 `900e470a719bc99bee4df853f0e11301a5b6562e`. Sin sobrescritura/reset/stash.
 Aplicación **v0.5.3** intacta; TORNEO provisional. Solo Markdown, sin código,
@@ -63,8 +61,8 @@ Verificación PASS de siete Markdown, enlaces/cercados/contexto 1–84 y diff li
 Sin funciones/UI/SQL/Preview de pool o temporadas comprobados; versión 0.5.3.
 Esta evidencia se publica después en una anotación documental.
 
-**Siguiente acción efectiva:** concretar opciones de mezcla/cola con ejemplos,
-reglas de formatos nuevos y alcance de temporadas, antes de implementar, mediante
+**Siguiente acción efectiva:** revisar regla nueva 3v3 y algoritmo concreto de
+mezcla; no reabrir acuerdos anteriores. Continuar propuesta, antes de implementar, mediante
 [PROMPT_SIGUIENTE_BLOQUE.md](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07 ni servicios
 excluidos; no repetir checklist 01. Lo siguiente conserva el historial de 05.
 
@@ -412,8 +410,8 @@ Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida
 ## Bloqueo y siguiente acción exacta
 
 **Vigente: propuesta 06 V2 de pool pequeña, sustituye eliminación V1.** Aclarar
-algoritmo de mezcla, formatos nuevos y alcance de temporadas; las dos
-aclaraciones de 3v3 y selector de mezcla ya están resueltas.
+regla nueva XP/ELO 3v3 y revisar algoritmo concreto de mezcla. Conformidad
+con diseño/temporadas ya registrada; no repetir aprobaciones.
 Sin activación de torneos/premios. 05 conserva sus aprobaciones y límite de observación
 autenticada, que no bloquea esta preparación autorizada. No reabrir 01 ni iniciar 07.
 
@@ -453,6 +451,17 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Conformidad con diseño y propuesta de puntuación 3v3
+
+Registrada respuesta «estoy de acuerdo con lo que has propuesto tú»: diseño de
+pool/selector/cierre y temporadas recomendadas (tres meses, 3/0, ELO continuo).
+No reabrir esas decisiones. Puntuación 3v3 antes indefinida ahora propuesta
+con XP completo, media ELO de tres y K propio; pendiente aprobación específica.
+Ejemplos numéricos ilustrativos y algoritmo de cola/mezcla concreto revisable,
+sin fingir aprobación anterior del algoritmo. Solo siete Markdown, aplicación
+0.5.3 intacta; enlaces/integridad/diff proporcionales, sin UI/SQL o datos nuevos.
+Publicar en revisión; no implementación, premios, main o siguiente bloque.
 
 ### 2026-10-02 — Respuestas 06: 3v3 real y mezcla configurable
 

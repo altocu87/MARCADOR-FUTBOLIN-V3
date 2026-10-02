@@ -18,9 +18,9 @@ ELO activo con parámetros aprobados: K40 primeras diez/K20 después, redondeo e
 para cuatro a seis personas, preferentemente parejas, con cola y cambio de
 compañero. Sustituye eliminación directa V1. Ejemplos y detalles pendientes en
 [Propuesta 06](docs/PROPUESTA_BLOQUE_06.md): 3v3 aclarado como tres personas por
-lado; mezcla de ganadores/perdedores/ambos elegible al crear. Algoritmo/reservas,
-XP/ELO nuevo y modo/cierre pendientes; petición de temporadas/puntos registrada,
-sin reglas ni premios implícitos. No código,
+lado; mezcla de ganadores/perdedores/ambos elegible al crear. Diseño/cierre y
+temporadas tres meses/3–0/ELO continuo aceptados; algoritmo/reservas revisables.
+Nueva regla XP/ELO 3v3 propuesta para aprobación; sin activación o premios adicionales. No código,
 migraciones ni funciones de pool; versión **0.5.3** intacta. Evidencia en
 [Verificación 06](docs/VERIFICACION_BLOQUE_06.md). Continuar 06, sin iniciar 07.
 

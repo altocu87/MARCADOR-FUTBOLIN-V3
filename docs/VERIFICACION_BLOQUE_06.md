@@ -2,13 +2,22 @@
 
 ## Alcance vigente
 
-El propietario orienta 06 a pool para cuatro/seis personas, parejas preferentes,
-cola y rotación. Reemplaza recomendación de eliminación directa V1. Detalles
-por acordar; 3v3 ya aclarado como seis jugadores simultáneos y selector al crear
-para mezclar ganadores/perdedores/ambos ya decidido. Algoritmo, reservas y XP/ELO
-nuevo pendientes. Sin activación ni aprobación implícita de premios/modos.
-Petición de temporadas registrada; propuestas 3/1, 3/0 y duraciones no aprobadas.
-[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) V2 es la referencia vigente.
+Conformidad posterior con diseño expuesto y recomendaciones de temporadas
+registrada: selector/ejemplos, cierre abierto sin título/premio adicional, ELO
+continuo, tres meses iniciales y puntos 3/0. No repetir esas aprobaciones.
+Nueva propuesta XP/ELO 3v3 pendiente, porque no estaba expuesta al aceptar.
+Algoritmo concreto de mezcla revisable; entrega solo documental, v0.5.3 intacta.
+[PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) es la referencia vigente.
+
+## Revisión de conformidad y regla nueva, 2026-10-02
+
+Base `4813c37cc6e2a62cc5b82787bf16feddc9a30730`, árbol limpio, fetch explícito
+main/revisión 0/0. Siete Markdown actualizados, sin aplicación/tests/SQL/datos.
+Verificación proporcional de enlaces/cercados/contexto 1–84/diff y aritmética
+ilustrativa: media 1200 contra 1200, expectativa 0.5, K40 → ±20; XP base
+50+100+50=200 ganador, 50+25=75 perdedor. No ejecuta motor/RPC 3v3 ni concede
+XP/ELO/puntos; no tests de UI/SQL/Preview autenticada. Evidencia de aprobación
+distingue diseño ya expuesto de fórmula nueva no aprobada. Publicación tras push.
 
 Entorno cloud `/workspace/MARCADOR-FUTBOLIN-V3`, misma rama de revisión.
 Base `491838aa60b2963f5c14af1af0d47ebba7cdfe23`, árbol limpio antes de editar,

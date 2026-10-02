@@ -1,8 +1,59 @@
 # Propuesta 06 V2 — pool sencilla para grupos pequeños
 
-Fecha: **2026-10-02**. Estado: **propuesta revisada, sin activación**.
+Fecha: **2026-10-02**. Estado: **diseño aceptado; puntuación 3v3 nueva pendiente; sin activación**.
 Aplicación **v0.5.3**; TORNEO conserva su pantalla provisional. Sin código,
 esquema, migraciones, cuentas, partidos ni premios nuevos.
+
+## Conformidad del propietario y alcance, 2026-10-02
+
+Respuesta: «estoy de acuerdo con lo que has propuesto tú». Se registra conformidad
+con el diseño expuesto: pool sencilla, selector ganadores/perdedores/ambos y sus
+ejemplos, sesión abierta sin título/premio adicional; temporadas configurables,
+ELO continuo y puntos por temporada (recomendación inicial **tres meses, 3 por
+victoria y 0 por derrota**). Todos los Clasificatorios reales, incluidos los de
+pool/torneo, contarían una vez; casual sin ELO/puntos de temporada. Conservar
+historial de temporadas y fijar reglas antes de iniciar, cambios para la siguiente;
+posiciones compartidas si empatan puntos. No volver a pedir estas decisiones.
+
+El requisito 3v3 ya está claro. La conformidad no aprueba una fórmula de 3v3 que
+hasta ahora no se había presentado, ni activa automáticamente implementación,
+servicios o premios. La petición vigente sigue siendo propuesta revisable 06.
+4v4 fue mencionado, pero su prioridad y elegibilidad no se añaden por defecto.
+
+Algoritmo propuesto para cerrar mezcla/cola sin más formularios: cola inicial
+persistida; con reservas, entra primero de cola y sale del grupo elegido quien
+lleva más rondas consecutivas, empate por orden inicial. Un relevo por partido.
+Para «ambos», elegir saliente entre todos y recomponer los equipos, evitando
+repetir las dos composiciones anteriores; sorteo guardado una vez y visible antes
+de iniciar. Sin reservas, mantener equipos o mezclar ambos; opciones que requieren
+entrada desde cola se explican como no disponibles. No cambiarlo durante partido.
+Esto concreta técnicamente el diseño; el algoritmo no estaba en el último resumen
+aceptado y sigue como propuesta revisable, sin presentarlo como aprobación literal.
+
+## Única ampliación de puntuación presentada para aprobación: 3v3
+
+**Propuesta nueva, pendiente:** admitir 3v3 en Rápido/Caos/Clasificatorio con
+participación real de tres por lado; cada jugador recibe XP completo del partido
+y tiers existentes que cumpla, por la misma identidad y desde historial confirmado.
+No dividir XP entre tres ni crear familias/estrellas adicionales. En Clasificatorio
+cada ganador recibe 3 puntos de temporada, perdedor 0; nadie recibe nada por esperar.
+
+ELO 3v3 propuesto: media aritmética de los **tres ELO previos** de cada lado para
+calcular expectativa; cada participante aplica su propio K vigente (primeras diez
+K40, después K20), ajuste entero al más próximo con mitades alejadas de cero.
+Mismo inicio 1200, categorías/histéresis y multiplicador de goles 1. El ajuste no
+se divide entre tres, no se aplica al campeón otra vez ni cambia partidos 1v1/2v2.
+Rápido/Caos 3v3 sin ELO ni puntos clasificatorios. No asumir suma cero con K distintos.
+
+Ejemplo propuesto: seis jugadores 1200, todos K40; partido Clasificatorio 3v3
+confirmado. Cada ganador **+20 ELO**, cada perdedor **−20 ELO**. XP base por jugador
+sin prórroga/tanda: ganador **200**, perdedor **75**, más tiers 05 pertinentes una
+sola vez. Puntos de temporada **3/0** por participante. Son cálculos ilustrativos,
+no ejecución de motor/SQL 3v3, concesión real ni aprobación ya recibida.
+
+Esta ampliación exige autorización expresa porque 03 solo tiene 1v1/2v2 aprobado;
+no hay cambio de parámetros previos, RLS, motor, partidas antiguas, XP base/curva o
+04 descriptivo. Proponer una regla concreta no habilita seis participantes en SQL.
 
 ## Orientación expresada por el propietario
 
@@ -107,7 +158,8 @@ Ejemplo ilustrativo con A/B ganadores, C/D perdedores y E esperando:
 | Mezclar ganadores | C/D siguen; sale A, entra E → B/E contra C/D |
 | Mezclar ambos | Rehacer ambos equipos y rotar reserva → por ejemplo A/D contra B/E; C espera |
 
-Son ejemplos de comportamiento, **no aprobación de algoritmo/saliente/sorteo**.
+Ejemplos aceptados por conformidad posterior; algoritmo concreto de saliente/sorteo
+propuesto arriba, sin atribuirle aprobación literal anterior.
 Una propuesta concreta debe evitar dejar a alguien siempre esperando, guardar
 el cambio elegido una vez y conservarlo al recuperar. Mezclar ambos puede alterar
 qué lado ocupa cada jugador; distinguir identidad y posición de cada partido.
@@ -124,17 +176,17 @@ No sustituir 3v3 por tres parejas ni descartar la elección ganadores/perdedores
 
 El propietario pide duración configurable en Ajustes (ejemplos tres/seis meses),
 clasificación ELO y otra de puntos, y que torneos clasificatorios afecten al ELO.
-Menciona 3 puntos por victoria/1 por derrota como ejemplo por estudiar, **no regla
-aprobada**. Propuesta del agente: ELO continuo entre temporadas, puntos por
+Menciona 3 puntos por victoria/1 por derrota como ejemplo anterior, sustituido
+por la recomendación 3/0 aceptada. Propuesta del agente: ELO continuo entre temporadas, puntos por
 periodo reiniciados, historial de temporadas, 3/0 inicialmente y duración tres
-meses. **Son recomendaciones, no decisiones del propietario**.
+meses. **Recomendaciones aceptadas por la conformidad posterior registrada arriba**.
 
 No crear/configurar temporadas, puntos, reinicio ELO o premios en esta revisión.
 Delimitar su alcance antes de ampliar la implementación exclusiva de 06. La
 propuesta es que cada Clasificatorio de pool/torneo cuente una vez como partido,
 sin bonus ELO por ser final/campeón, y modalidad casual conserve XP sin ELO ni
 puntos clasificatorios. Para 3v3/4v4 falta política expresa de puntuación propia.
-No deducir que el usuario aprobó 3/0, tres meses, empates de puntos o premios.
+Conformidad con 3/0, tres meses y ELO continuo registrada arriba; sin premios adicionales.
 
 ## Partido, modos y puntuación
 
@@ -145,9 +197,8 @@ empate histórico/incompleto no produce salida por sorteo. Goles por equipo,
 sin goleadores individuales ni tiempos inventados. Posiciones/colores de cada
 partido se eligen antes de iniciarlo y se conservan al recuperar.
 
-Se propone elegir Rápido/Caos/Clasificatorio y fijarlo durante sesión. Alternativa
-solo casual sigue abierta; **elegibilidad de sesión pendiente propia de 06**,
-sin volver a aprobar fórmulas existentes:
+Diseño aceptado: elegir Rápido/Caos/Clasificatorio y fijarlo durante sesión.
+Puntuación vigente conservada; solo ampliación 3v3 pendiente de aprobación:
 
 | Hecho | XP/logros existentes | ELO existente |
 | --- | --- | --- |
@@ -163,11 +214,11 @@ para resolver cinco personas en esta pool. 04 sigue descriptivo.
 
 ## Terminar, cancelación y premios
 
-Recomendación simple: **sesión abierta hasta pulsar TERMINAR entre partidos**,
+Diseño aceptado: **sesión abierta hasta pulsar TERMINAR entre partidos**,
 sin campeón, tabla de liga, trofeo o XP extra de sesión. Resumen de partidos y
 resultados confirmados. Quedarse en mesa al final no convierte a nadie en campeón.
 
-Es **propuesta pendiente**, no aprobación de 0 XP ni renuncia definitiva a premios.
+Conformidad registrada con **0 XP adicional por sesión**, sin activar premio nuevo.
 Si se quiere ganador/premio, concretar cierre y criterio, especialmente al rotar
 parejas. «Gana torneos» V1 (1/3/5/10/25; XP 25/25/50/75/100) queda aparcado:
 no convertir pool en título ni activar décima familia, estrellas o noveno récord.
@@ -215,11 +266,10 @@ mezclar ganadores, perdedores o ambos. Preferencia por pool sencilla para grupos
 pequeños ya expresada. **No volver a formular las aclaraciones resueltas**, ni
 pedir elegir eliminación/liguilla o reaprobar 02–05.
 
-Concretar por pasos algoritmo/cola/saliente y opciones sin reserva, elegibilidad
-XP/ELO para formatos nuevos, modo/cierre de sesión y alcance de temporadas/puntos.
-Sesión abierta sin campeón/premio extra sigue recomendación, no aprobación.
-Estas respuestas no autorizan implementación/activación de pool, temporadas o
-premios; continuar exclusivamente la propuesta revisable de 06.
+Conformidad posterior con diseño expuesto y temporadas tres meses/3–0/ELO
+continuo registrada arriba. No pedir repetir decisiones aprobadas. Revisar el
+algoritmo concreto de mezcla; solicitar solo la nueva ampliación XP/ELO de 3v3.
+Sin implementación/activación por esta entrega documental, ni iniciar 07.
 
 ## Verificación futura tras acordar e implementar
 
