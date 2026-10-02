@@ -10,7 +10,9 @@ self.addEventListener('install', event => {
   event.waitUntil((async () => {
     try {
       const cache = await caches.open(CACHE_NAME)
-      await cache.addAll(FILES.map(url => new Request(url, { cache: 'reload', credentials: 'omit' })))
+      // Protected Preview assets need this origin's access cookie. The exact
+      // static allowlist excludes Auth/API/user data; reject login redirects.
+      await cache.addAll(FILES.map(url => new Request(url, { cache: 'reload', credentials: 'same-origin', redirect: 'error' })))
     } catch (error) {
       await caches.delete(CACHE_NAME)
       throw error

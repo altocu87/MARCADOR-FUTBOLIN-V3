@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict'
 import { before, after, test } from 'node:test'
 import { spawn } from 'node:child_process'
+import { createServer } from 'node:http'
+import { resolve, extname, sep } from 'node:path'
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { chromium } from 'playwright'
@@ -912,6 +914,72 @@ test('filtro sin resultados: ceros legítimos, sin gráfico y se puede quitar', 
   await page.getByRole('button', { name: 'QUITAR FILTROS', exact: true }).click()
   assert.equal(await metric(page, 'PARTIDOS').textContent(), '12')
   assert.equal(await page.locator('.victory-trend').count(), 1)
+}))
+
+test('Preview protegida: cookie del origen permite preparar y reabrir offline', async () => withPage(async (page, context) => {
+  const root = resolve('tmp/pwa-test')
+  const denied = [], authorized = []
+  let redirectIndexToLogin = true
+  const protectedServer = createServer(async (request, response) => {
+    const path = new URL(request.url, 'http://localhost').pathname
+    if (!(request.headers.cookie ?? '').includes('preview-access-fixture=granted')) {
+      denied.push(path); response.writeHead(401, { 'Content-Type': 'text/html' }); response.end('<h1>Protected preview</h1>'); return
+    }
+    authorized.push(path)
+    if (path === '/index.html' && redirectIndexToLogin) {
+      response.writeHead(302, { Location: '/preview-login' }); response.end(); return
+    }
+    if (path === '/preview-login') {
+      response.writeHead(200, { 'Content-Type': 'text/html' }); response.end('<h1>Preview sign in</h1>'); return
+    }
+    const file = resolve(root, '.' + (path === '/' ? '/index.html' : path))
+    if (!file.startsWith(root + sep)) { response.writeHead(404); response.end(); return }
+    const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.json': 'application/json' }
+    try { const body = await readFile(file); response.writeHead(200, { 'Content-Type': types[extname(file)] ?? 'application/octet-stream', 'Cache-Control': 'no-store' }); response.end(body) }
+    catch { response.writeHead(404); response.end() }
+  })
+  await new Promise(resolve => protectedServer.listen(0, '127.0.0.1', resolve))
+  const protectedOrigin = `http://127.0.0.1:${protectedServer.address().port}`
+  const close = () => new Promise(resolve => protectedServer.close(resolve))
+  let stopped = false
+  try {
+    await context.addCookies([{ name: 'preview-access-fixture', value: 'granted', domain: '127.0.0.1', path: '/', httpOnly: true, sameSite: 'Lax' }])
+    await page.goto(protectedOrigin + '/tests/ui-fixture.html?network=real')
+    await realMode(page); await settings(page)
+    await visible(page, 'Offline no disponible. No cierres sin conexión.')
+    assert.equal(authorized.includes('/preview-login'), false, 'No sigue la redirección hacia login')
+    const failedCaches = await page.evaluate(async () => (await caches.keys()).filter(key => key.startsWith('marcador-shell-v1-')))
+    assert.deepEqual(failedCaches, [], 'La precarga fallida no guarda la pantalla de acceso')
+    redirectIndexToLogin = false
+    await page.reload(); await settings(page)
+    // Requests originate in the actual worker; Playwright route interception
+    // does not fake the server's cookie protection or the Cache API.
+    await page.getByText('OFFLINE DISPONIBLE EN ESTE DISPOSITIVO', { exact: true }).waitFor({ timeout: 5_000 })
+    assert.deepEqual(denied, [], 'La precarga conserva acceso del propio origen')
+    assert.ok(authorized.some(path => path.startsWith('/assets/')))
+    const cached = await page.evaluate(async () => {
+      const keys = (await caches.keys()).filter(key => key.startsWith('marcador-shell-v1-'))
+      return (await Promise.all(keys.map(async key => (await (await caches.open(key)).keys()).map(request => new URL(request.url).pathname)))).flat()
+    })
+    assert.equal(cached.includes('/connection.json'), false)
+    assert.equal(cached.some(path => path.includes('/auth/') || path.includes('/api/')), false)
+    await page.getByRole('button', { name: 'NUEVO PARTIDO', exact: true }).click()
+    await selection(page, 2, 5); await start(page); await whiteGoal(page)
+    await close(); stopped = true; await page.close()
+    const reopened = await context.newPage()
+    await reopened.goto(protectedOrigin + '/tests/ui-fixture.html?network=real')
+    await visible(reopened, 'PARTIDO POR RECUPERAR')
+    await reopened.getByRole('button', { name: 'RECUPERAR PARTIDO', exact: true }).click()
+    await reopened.locator('.pause-overlay').waitFor()
+    assert.equal(await reopened.locator('.white-score strong').textContent(), '1')
+    await settings(reopened)
+    await visible(reopened, 'OFFLINE DISPONIBLE EN ESTE DISPOSITIVO')
+    for (const [width, height] of [[390, 844], [800, 480]]) {
+      await reopened.setViewportSize({ width, height }); await noOverflow(reopened)
+      await reopened.getByText('OFFLINE DISPONIBLE EN ESTE DISPOSITIVO', { exact: true }).scrollIntoViewIfNeeded()
+      await reopened.screenshot({ path: `/tmp/futbolin-protected-offline-${width}.png` })
+    }
+  } finally { if (!stopped) await close() }
 }))
 
 test('PWA real: servidor apagado, reapertura y recuperación offline', async () => withPage(async (page, context) => {

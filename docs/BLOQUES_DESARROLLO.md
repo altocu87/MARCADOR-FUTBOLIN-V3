@@ -43,6 +43,8 @@ Continuación por feedback humano: prueba 1 confirmada; prueba 2 elimina el paso
 
 Continuación del 2026-10-02: el operador confirma recuperación de contraseña (remitente Supabase) y que ya aparece recuperar partido; delega prueba 2 expresamente al agente, simulada TIME/AMBAS. Descarte confirmado de incompletos y confirmación de NUEVO PARTIDO implementados por petición expresa, sin tocar resultados/pendientes. Prueba 8 documentada para móvil; remitente requiere SMTP propio autorizado, sin herramienta/credencial de edición. Sustituye los pendientes históricos anteriores de recuperación de contraseña/prueba 2; no se repiten. Estado y evidencia actuales en ESTADO_ACTUAL.
 
+Incidencia posterior del 2026-10-02: captura Safari con offline no disponible pese a conexión/sesión activas. Error de precarga de archivos protegidos reproducido; cookies del mismo origen y rechazo de redirects corregidos dentro de 01. Pruebas HTTP/worker/navegador independientes correctas, sin desactivar protección ni cachear Auth/API; publicación/evidencia en ESTADO_ACTUAL y VERIFICACION_PWA. Falta confirmar Safari físico: no repetir cuentas, GOALS/TIME ni esperar durante un partido para preparar offline.
+
 Cada fila pasa a en curso, completado o pendiente de verificación con evidencia fechada; no marcar todas completadas al copiar los prompts. El orden puede ajustarse expresamente: el pulido web no depende de disponer de hardware y el diseño del protocolo puede prepararse sin una placa conectada.
 
 ## Bloque 01 — Consolidar la versión actual y comprobar guardado real

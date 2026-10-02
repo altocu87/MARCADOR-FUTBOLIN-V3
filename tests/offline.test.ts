@@ -21,7 +21,10 @@ const cacheApi = {
     return {
       async addAll(requests: Request[]) {
         for (const request of requests) {
-          assert.equal(request.credentials, 'omit'); assert.equal(request.cache, 'reload')
+          assert.equal(request.credentials, 'same-origin'); assert.equal(request.cache, 'reload')
+          assert.equal(request.redirect, 'error', 'La precarga no sigue enlaces hacia una pantalla de acceso')
+          assert.equal(new URL(request.url).origin, origin)
+          assert.equal(request.headers.has('Authorization'), false, 'No añade tokens Supabase a la precarga')
           if (failInstall) throw new Error('incomplete install')
           entries.set(request.url, new Response('APP SHELL: ' + request.url))
         }

@@ -1,5 +1,7 @@
 # PWA, conexión y pendientes — 2026-10-01
 
+Este documento conserva la evidencia inicial; la corrección de Preview protegida del 2026-10-02 está al final. El estado operativo vivo sigue en ESTADO_ACTUAL.md.
+
 ## Alcance
 
 Rama `codex/reliability-offline-v1`, PC local Windows, base de recuperación `176d470`. Bloque autorizado: carga offline, instalación web, indicador de conexión y resultados pendientes visibles/reintento automático. Sin cambios de reglas del motor, esquema/servicios Supabase, Vercel, hardware o funciones competitivas. Fase B y promoción a main siguen pendientes del recorrido autenticado real.
@@ -46,3 +48,15 @@ Primera carga completa con conexión y almacenamiento disponible obligatorios. M
 Pendiente: cuenta de operador introducida personalmente, recorrido Auth → jugadores → partido real → RPC → historial y reintento real sin duplicados. Después revisión/promoción de la rama y eventual despliegue HTTPS autorizado. No declarar fase B cerrada ni avanzar a XP/ELO.
 
 Referencias consultadas: [instalación PWA](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable), [service workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers), [límites de navigator.onLine](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/onLine), [Supabase getSession](https://supabase.com/docs/reference/javascript/auth-getsession). La sesión obtenida por el cliente no sustituye autorización del servidor/RLS; la identidad local tampoco.
+
+## Corrección de precarga en Preview protegida — 2026-10-02
+
+Evidencia humana: captura de Safari/iPhone en la Preview de revisión, PRUEBA OFF/SISTEMA ONLINE/SESIÓN ACTIVA, mensaje «Offline no disponible. No cierres sin conexión.» después de un minuto. La pantalla de estado ya estaba visible; no era un problema de encontrar el control ni de esperar durante un partido. No afirmar una causa remota exacta desde ese mensaje genérico.
+
+Fallo concreto reproducido: tooling/service-worker.js construía Requests de precarga con credentials=omit; la protección por cookie podía rechazar archivos estáticos aunque el documento/sonda ya tuvieran acceso. Regresión Chromium contra servidor HTTP local protegido por cookie HttpOnly del mismo origen: con la versión previa, timeout esperando OFFLINE DISPONIBLE. No se usa route interception para simular peticiones del worker: el servidor aplica realmente 401 a solicitudes sin cookie.
+
+Arreglo mínimo: credentials=same-origin y redirect=error en la precarga de la lista exacta de archivos del build. No agrega Authorization ni tokens Supabase ni recursos dinámicos; no cachea sonda, Auth o API. No se desactiva protección ni modifica Vercel/Supabase. Fallo de instalación elimina solo su caché nueva y preserva la versión anterior/datos locales, sin skipWaiting ni recarga forzada.
+
+Caso integrado posterior: el servidor primero redirige index.html a una pantalla de acceso. El worker rechaza la redirección, la UI muestra no disponible y no conserva caché parcial/página de login. Al restablecer archivos legítimos y recargar con conexión, prepara toda la copia sin solicitudes denegadas. Tras iniciar partido OFF/1–0, se apaga ese servidor de verdad y se cierra/reabre la pestaña: recupera el partido en pausa, mismos jugadores/marcador, y mantiene OFFLINE DISPONIBLE. Se inspeccionan claves de caché para excluir connection.json/Auth/API. Vistas 390×844/800×480, sin scroll general; capturas /tmp/futbolin-protected-offline-*.png revisadas.
+
+npm test siete grupos correctos (estadísticas/análisis 41/41), TypeScript/builds normal y aislado correctos; pruebas focalizadas de protección y PWA 2/2, caso extendido de login/reintento 1/1. Suite completa Chromium 33/33 correcta, sin omitidos/pageerror; publicación: evidencia final en ESTADO_ACTUAL. CLI agent-browser ausente; Chromium/Playwright disponibles usados sin instalar herramientas. Identidad/repositorios son fixture y Supabase está bloqueado: esto verifica la implementación web/HTTP/worker reales, no cuenta remota ni el iPhone. Falta confirmar en Safari físico tras desplegar; si sigue no disponible, recoger aviso/navegador/versión, sin borrar datos ni tocar políticas por rutina.
