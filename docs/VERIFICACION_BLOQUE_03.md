@@ -1,5 +1,7 @@
 # Verificación del bloque 03 — 2026-10-02
 
+**Acceso Vercel posterior resuelto:** conector renovado, equipo/proyecto visibles, Preview HTTP 200 y despliegue READY c2e217a/revisión, 2026-10-02. El 403 registrado más abajo es histórico. No comparte la sesión Supabase del operador: su captura de Alex2 acredita XP/bloqueo ELO. ELO sigue desactivado, parámetros sin aprobar; esta recuperación no cierra 03 ni integra 04. Estado/publicación en ESTADO_ACTUAL.
+
 Implementados ELO Clasificatorio, clasificación privada, categorías configurables y máximo histórico. **ELO real desactivado: faltan decisiones del propietario.** Inicio 1200 aprobado; «Sigue» autoriza continuar el trabajo, no aprobar parámetros propuestos. No se declara cierre funcional completo ni se inicia 04. Estado/publicación vivos en [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md).
 
 ## Decisiones pendientes, con ejemplos concretos
