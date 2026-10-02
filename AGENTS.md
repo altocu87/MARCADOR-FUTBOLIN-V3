@@ -42,6 +42,10 @@ Al implementar o modificar un bloque, antes de darlo por terminado:
 6. Ejecutar las verificaciones proporcionales al cambio. Para código: tests existentes/nuevos, TypeScript/build y verificación visual si afecta a UI. Para documentación sola: revisar integridad, enlaces y `git diff --check`; no requiere autenticarse ni mutar servicios externos.
 7. Cuando se autorice y sea seguro publicar, incluir el contexto actualizado con el bloque. No añadir indiscriminadamente archivos pendientes de otro bloque ni hacer force push. Registrar rama/commit/push con evidencia, sin inventar hashes o resultados.
 
+## Versiones visibles e historial
+
+Por petición expresa del propietario, la aplicación muestra su versión y un historial breve para usuarios. `package.json` es la fuente de la versión del build; mantener coherente el metadato raíz de `package-lock.json` y `src/app/releases.ts`. Registrar cada entrega funcional en lenguaje sencillo, incluyendo lo que sigue pendiente; una versión publicada no significa que el bloque esté cerrado ni aprueba reglas propuestas. Numeración retroactiva: 0.0.0 simulador inicial, 0.1.0 consolidación/01, 0.2.0 XP/02, 0.3.0 ELO/03 pendiente de activar, 0.4.0 preparación/04 e historial visible. Para posteriores entregas del mismo bloque incrementar el parche; al entregar otro bloque incrementar el menor siguiendo esa secuencia. No cambiar reglas, checkpoints, migraciones o permisos por cambiar la versión. La versión mostrada corresponde al build abierto, también cuando una PWA anterior sigue en uso.
+
 El contexto vive en el repositorio, no únicamente en el historial de un chat. Un agente local o en la nube debe tener estos archivos mediante la sincronización de GitHub.
 
 ## Entrega por bloques y siguiente conversación

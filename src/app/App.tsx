@@ -1,3 +1,4 @@
+import { APP_VERSION } from './releases'
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { FixedCanvas } from '../ui/layout/FixedCanvas'
 import { DISPLAY_MODE_KEY, parseDisplayMode, type DisplayMode } from '../ui/layout/displayMode'
@@ -273,7 +274,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
       {screen === 'placeholder' && <div className="placeholder-screen"><span>PRÓXIMAMENTE</span><p>Torneos se implementará en otra fase.</p></div>}
       </>}
     </section>
-    <footer className="system-status" role="status"><span className={`status-dot ${online ? '' : 'status-offline'}`} /><span>{connection.state === 'online' ? 'SISTEMA ONLINE' : connection.state === 'offline' ? 'SIN CONEXIÓN' : 'COMPROBANDO CONEXIÓN'} · {(run.current?.testMode ?? testMode) ? 'PRUEBA ON' : 'PRUEBA OFF'} · {data.user ? data.localIdentity || !online ? 'SESIÓN LOCAL' : 'SESIÓN ACTIVA' : 'SIN SESIÓN'}{pendingCount > 0 && ` · ${pendingCount} PENDIENTES`}</span>{(recoveryWarning || notice && screen !== 'settings' && screen !== 'account') && <span className="status-warning">{recoveryWarning || notice}</span>}{matchOpen && screen !== 'match' && <button type="button" onClick={() => { setActiveMenu('new-match'); setScreen('match') }}>VOLVER AL PARTIDO</button>}</footer>
+    <footer className="system-status" role="status"><span className="app-version" aria-label={`Versión ${APP_VERSION}`}>v{APP_VERSION}</span><span className={`status-dot ${online ? '' : 'status-offline'}`} /><span>{connection.state === 'online' ? 'SISTEMA ONLINE' : connection.state === 'offline' ? 'SIN CONEXIÓN' : 'COMPROBANDO CONEXIÓN'} · {(run.current?.testMode ?? testMode) ? 'PRUEBA ON' : 'PRUEBA OFF'} · {data.user ? data.localIdentity || !online ? 'SESIÓN LOCAL' : 'SESIÓN ACTIVA' : 'SIN SESIÓN'}{pendingCount > 0 && ` · ${pendingCount} PENDIENTES`}</span>{(recoveryWarning || notice && screen !== 'settings' && screen !== 'account') && <span className="status-warning">{recoveryWarning || notice}</span>}{matchOpen && screen !== 'match' && <button type="button" onClick={() => { setActiveMenu('new-match'); setScreen('match') }}>VOLVER AL PARTIDO</button>}</footer>
     {cancelRequest && <CancelMatchDialog recovering={cancelRequest.kind === 'recovery'} error={cancelError} onKeep={keepMatch} onDiscard={discardMatch} />}
   </main></FixedCanvas>
 }

@@ -24,6 +24,8 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 ## Seguimiento
 
+**Ampliación transversal autorizada, 2026-10-02:** versión visible e historial de novedades de 0.0.0 a **0.4.0**, en AJUSTES → VERSIONES. La numeración registra entregas parciales y conserva los avisos de ELO desactivado/04 pendiente; no cambia el estado de los bloques ni inicia 05. Mantener versión/historial en próximas entregas según AGENTS. Evidencia en [VERIFICACION_VERSIONES.md](VERIFICACION_VERSIONES.md).
+
 | Bloque | Entrega | Estado al preparar el plan | Condición para comenzar |
 | --- | --- | --- | --- |
 | 01 | Consolidación y comprobación real | Cerrado funcionalmente el 2026-10-02: todas las pruebas OK según el propietario, incluidas 7/10/11; código/SQL/pruebas independientes correctos. Correos hosted/SMTP pendientes externos separados | Sin repetir pruebas ni promover main |
