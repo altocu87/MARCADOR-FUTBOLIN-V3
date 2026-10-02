@@ -1,4 +1,6 @@
 import { approvedXpRules, rebuildProgression } from '../src/progression/xp'
+import { rebuildCompetition } from '../src/competition/elo'
+import { eloFixtures, eloPlayers, testEloRules } from './eloFixtures'
 /** Development-only fixture. No authentication or data requests to Supabase.
  * Open /tests/ui-fixture.html under Vite. Not an input to the production build.
  */
@@ -62,6 +64,10 @@ async function requireNetwork() {
   const response = await fetch('/connection.json', { cache: 'no-store', signal: AbortSignal.timeout(2_000) })
   if (!response.ok) throw new Error('Red de fixture no disponible')
 }
+if (new URLSearchParams(location.search).get('elo') === 'seed') {
+  players = structuredClone(eloPlayers)
+  for (const doc of eloFixtures()) matches.set(doc.match.id, doc)
+}
 let fixtureIdentity = guest ? null : { id: 'fixture', email: 'operator@example.invalid', displayName: 'OPERADOR UI LOCAL', emailVerified: true, pendingEmail: '' }
 const identityListeners = new Set<(user: typeof fixtureIdentity) => void>()
 const accountCalls = { profile: 0, email: 0, password: 0, resend: 0, reauthenticate: 0, logout: [] as string[] }
@@ -96,6 +102,14 @@ const services: ApplicationServices = {
       await requireNetwork(); signal?.throwIfAborted()
       if (new URLSearchParams(location.search).get('xp') === 'error') throw new Error('Error XP simulado')
       return rebuildProgression([...matches.values()].map(d => ({ ...d.match, participants: d.participants })), id, approvedXpRules)
+    },
+  },
+  competition: {
+    async getRanking(signal) {
+      await requireNetwork(); signal?.throwIfAborted()
+      const mode = new URLSearchParams(location.search).get('elo')
+      if (mode === 'error') throw new Error('Error ELO simulado')
+      return rebuildCompetition(players, [...matches.values()].map(d => ({ ...d.match, participants: d.participants })), { ...testEloRules, enabled: mode !== 'disabled' }).rows
     },
   },
   matches: {

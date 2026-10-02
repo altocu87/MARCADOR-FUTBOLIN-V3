@@ -442,6 +442,8 @@ Esto permite hacer pruebas sin contaminar datos reales.
 
 ## 25. PERFILES
 
+**Bloque 03, 2026-10-02:** perfil competitivo implementado por ID estable, independiente de filtros de análisis y de XP. Panel ELO actual/máximo/categoría/clasificatorias/puesto; ranking privado desde RANKING → CLASIFICACIÓN, sin sustituir historial. Incluye bajas y alias actuales; sin clasificatorias no hay puesto, empates de ELO comparten puesto. Parámetros no aprobados: configuración desactivada y aviso explícito. No se implementan pestañas, logros, rivales ni predicción futuros por esta entrega. Evidencia en [VERIFICACION_BLOQUE_03.md](VERIFICACION_BLOQUE_03.md).
+
 Decisión posterior del propietario, 2026-10-01: autoriza desarrollar en su totalidad el bloque de estadísticas básicas propuesto, con datos simulados mientras queda pendiente la comprobación real de fase B. Perfil básico e historial filtrado implementados: partidos, victorias, derrotas, empates, porcentaje y goles de su equipo a favor/en contra/diferencia. No es autorización de XP/ELO/niveles calculados, logros ni estadísticas avanzadas. El resto de este apartado sigue siendo hoja de ruta futura.
 
 Autorización posterior del mismo día: ampliar el análisis del perfil con últimos cinco resultados, racha actual/mejor racha de victorias, rendimiento 1v1/2v2, filtros inclusivos de fechas/modalidad/formato y evolución acumulada de victorias. Todas las secciones e historial del perfil usan el mismo conjunto. Empates interrumpen victorias/derrotas; penaltis deciden resultado sin sumar goles. Datos en memoria, sin nuevos contadores/tablas ni escritura; no habilita XP/ELO, logros, predicción o forma competitiva. Evidencia y límites en VERIFICACION_ESTADISTICAS.md.
@@ -479,7 +481,9 @@ Rival favorito/némesis: solo mostrar conclusión si existen al menos 5 enfrenta
 
 ## 26. ELO
 
-NO necesariamente implementar ahora.
+**Autorización de implementación del bloque 03, 2026-10-02:** preparado y verificado ELO únicamente Clasificatorio mediante reconstrucción privada de servidor, sin activarlo. Inicio 1200 aprobado; K/experiencia y redondeo pendientes de aprobación expresa. Propuesta: primeras 10 confirmadas K40, desde la 11 K20, cada ajuste al entero más próximo con mitades alejándose de cero. Ejemplos y preguntas concretos en VERIFICACION_BLOQUE_03; no interpretar «Sigue» como aprobación. Parámetros persistidos NULL, `enabled=false`, CHECK impide habilitar incompleto; sin valores cliente de respaldo.
+
+`elo_rules_v1`, `get_ranking_v1` y `get_competition_snapshot_v1`: STABLE SECURITY INVOKER/RLS, lectura por cuenta autenticada, snapshot completo JSON sin cap de filas. Historial vigente como fuente de verdad, orden `finished_at`/UUID con microsegundos, ganador almacenado sin reinterpretar el motor. Referencia TypeScript solo para tests; no actualizaciones cliente de players.elo/max_elo/classified_matches. Reintentos/recargas/pendientes no duplican ajustes. Política propuesta de todos los históricos y máximo reconstruible puede reducir máximos al corregir/eliminar: aprobación pendiente. No se implementan esas operaciones administrativas ni se amplían permisos.
 
 Concepto aprobado: ELO inicial = 1200.
 
@@ -495,6 +499,8 @@ Estos parámetros deben poder ajustarse posteriormente.
 
 ## 27. ELO EN 2v2
 
+**Implementación preparada en 03:** ambas medias calculadas antes de modificar a cualquier compañero; ajuste completo propio por jugador y K según sus clasificatorias confirmadas anteriores. Una pareja nueva/establecida puede recibir +20/+10 contra media igual con la propuesta K40/K20 y margen 1. Las bajas/renombrados conservan trayectoria por UUID. ELO actual/máximo efectivos son derivados del historial, no contadores físicos; política de máximos tras recálculo aún pendiente de aprobación.
+
 ELO del equipo: media del ELO de los jugadores.
 
 El cambio se calcula contra el ELO medio rival. Cada jugador recibe posteriormente su ajuste correspondiente.
@@ -502,6 +508,8 @@ El cambio se calcula contra el ELO medio rival. Cada jugador recibe posteriormen
 Guardar ELO actual y máximo histórico.
 
 ## 28. DIFERENCIA DE GOLES Y ELO
+
+**Bloque 03:** multiplicadores configurables en servidor y comprobados solo en fixtures/ROLLBACK, no activos ni aprobados. Propuesta de abajo frente a alternativa siempre 1; empates/tandas usarían 1. Se pide decisión expresa, no cuenta lanzamientos de tanda como goles ni cambia resultados guardados.
 
 Existe una propuesta NO definitiva para pequeño multiplicador:
 
@@ -514,6 +522,8 @@ Existe una propuesta NO definitiva para pequeño multiplicador:
 No convertirlo en regla irreversible. Debe ser configurable si se implementa.
 
 ## 29. CATEGORÍAS
+
+**Bloque 03:** preparados umbrales e histéresis descendente configurables, con saltos múltiples y reconstrucción cronológica. Propuesta de abajo e histéresis 25 frente a alternativa 0 siguen pendientes; no se asigna categoría real mientras ELO esté desactivado. Fronteras probadas: Oro entra 1200, conserva 1175, baja 1174. No se confunde el inicio ELO aprobado con aprobación de umbrales/categoría inicial.
 
 Propuesta actual:
 
@@ -1185,6 +1195,8 @@ Orden de prioridades durante un partido:
 Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
+
+**Actualización vigente del bloque 03, 2026-10-02:** ELO/ranking privado/categorías/máximo implementados y verificados mediante SQL real con ROLLBACK, 14 tests ELO/repositorio, nueve grupos generales, Chromium 41/41/builds/revisión visual. Dos migraciones aplicadas, configuración ELO desactivada y parámetros pendientes NULL: aprobar únicamente K/experiencia, redondeo, categorías/histéresis, multiplicador e históricos antes de activar; ejemplos en VERIFICACION_BLOQUE_03. XP/niveles de 02 siguen aprobados/activos e intactos; 01 cerrado por el propietario. Preview autenticada XP/ELO sin acceso del agente, límite distinto de SQL/RLS y UI independiente. No solicitar nuevos partidos/cuentas. SMTP separado, no main ni administración. Siguiente 04 entregado con dependencia de cerrar 03 y aprobar modelo/muestra de §32–33; no iniciado. Esta entrada sustituye el «03 no iniciado» y otros pendientes históricos de las anotaciones anteriores; estado/publicación vivos en ESTADO_ACTUAL.
 
 **Actualización del bloque 02, 2026-10-02:** autorizado e implementado XP/niveles con las decisiones expresas de §30–31. Migraciones de configuración/vista y activación aplicadas al proyecto existente; pruebas independientes, UI/React y SQL/RPC/RLS reales completadas. Concesión derivada del historial confirmado, sin modificar datos antiguos/columnas físicas/motor. La inspección autenticada de XP en Preview no está disponible por alcance Vercel/proxy y ausencia de sesión del operador: no sustituirla por fixtures ni reabrir el checklist cerrado de 01. Siguiente propuesto: 03 ELO/ranking/categorías, sin iniciarlo por esta entrega; requiere parámetros competitivos aprobados. Estado/pruebas/publicación vigentes en ESTADO_ACTUAL y BLOQUES_DESARROLLO. Las anotaciones previas de «XP no implementado» son históricas y quedan sustituidas por esta actualización; SMTP/correos sigue independiente.
 

@@ -1,5 +1,7 @@
 import type { ProgressionRepository } from '../../services/persistence/ProgressionRepository'
 import { ProgressionPanel } from '../components/ProgressionPanel'
+import type { CompetitionRepository } from '../../services/persistence/CompetitionRepository'
+import { CompetitionPanel } from '../components/CompetitionPanel'
 import { useEffect, useMemo, useState } from 'react'
 import type { MatchRepository } from '../../services/persistence/MatchRepository'
 import type { Player } from '../../services/persistence/models'
@@ -9,7 +11,8 @@ import { errorMessage } from '../../app/useData'
 import { HistoryScreen } from './HistoryScreen'
 import { AnalysisDetails } from '../components/AnalysisDetails'
 
-export function StatisticsScreen({ repository, players, userId, online, initialPlayerId, onBack, playersLoading, dataMessage, dataRevision = null, progressionRepository = null }: {
+export function StatisticsScreen({ repository, players, userId, online, initialPlayerId, onBack, playersLoading, dataMessage, dataRevision = null, progressionRepository = null, competitionRepository = null }: {
+  competitionRepository?: CompetitionRepository | null
   dataRevision?: string | null
   progressionRepository?: ProgressionRepository | null
   repository: MatchRepository | null; players: Player[]; userId: string | null; online: boolean
@@ -19,7 +22,7 @@ export function StatisticsScreen({ repository, players, userId, online, initialP
   const [selectedId, setSelectedId] = useState(initialPlayerId)
   const [search, setSearch] = useState('')
   const player = players.find(p => p.id === selectedId)
-  if (userId && player) return <PlayerProfile dataRevision={dataRevision} progressionRepository={progressionRepository} key={player.id} player={player} players={players} userId={userId} repository={repository} online={online} onBack={() => setSelectedId(null)} />
+  if (userId && player) return <PlayerProfile competitionRepository={competitionRepository} dataRevision={dataRevision} progressionRepository={progressionRepository} key={player.id} player={player} players={players} userId={userId} repository={repository} online={online} onBack={() => setSelectedId(null)} />
   const query = search.trim().toLocaleLowerCase('es')
   const filtered = players.filter(p => `${p.name} ${p.nickname ?? ''}`.toLocaleLowerCase('es').includes(query))
   return <section className="data-screen statistics-screen">
@@ -32,7 +35,8 @@ export function StatisticsScreen({ repository, players, userId, online, initialP
   </section>
 }
 
-function PlayerProfile({ player, players, userId, repository, online, onBack, progressionRepository, dataRevision }: {
+function PlayerProfile({ player, players, userId, repository, online, onBack, progressionRepository, competitionRepository, dataRevision }: {
+  competitionRepository: CompetitionRepository | null
   player: Player; userId: string; repository: MatchRepository | null; online: boolean; onBack: () => void
   dataRevision: string | null
   progressionRepository: ProgressionRepository | null
@@ -73,6 +77,7 @@ function PlayerProfile({ player, players, userId, repository, online, onBack, pr
     <div className="scroll-panel profile-content">
       <div className="profile-identity"><div className="profile-avatar" aria-hidden="true">{player.name[0]}{player.photoUrl?.startsWith('https://') && <img src={player.photoUrl} alt="" referrerPolicy="no-referrer" onError={event => { event.currentTarget.hidden = true }} />}</div><div><h2>{player.nickname || player.name}</h2>{player.nickname && <p>{player.name}</p>}<span>{player.active ? 'ACTIVO' : 'INACTIVO · HISTORIAL CONSERVADO'}</span></div></div>
       <ProgressionPanel repository={progressionRepository} playerId={player.id} online={online} revision={`${version}:${dataRevision ?? ""}`} />
+      <CompetitionPanel repository={competitionRepository} playerId={player.id} online={online} revision={`${version}:${dataRevision ?? ""}`} />
       <details className="analysis-filters" open={filtersOpen} onToggle={event => setFiltersOpen(event.currentTarget.open)}><summary>FILTRAR ANÁLISIS</summary><form onSubmit={event => { event.preventDefault(); try { validateAnalysisFilter(draft); setFilter({ ...draft }); setFilterError('') } catch (error) { setFilterError(errorMessage(error)) } }}>
         <label>Desde<input type="date" value={draft.from} onChange={e => setDraft(value => ({ ...value, from: e.target.value }))} /></label>
         <label>Hasta<input type="date" value={draft.to} onChange={e => setDraft(value => ({ ...value, to: e.target.value }))} /></label>

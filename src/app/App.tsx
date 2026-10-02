@@ -13,6 +13,7 @@ import { PasswordRecoveryScreen } from '../ui/screens/PasswordRecoveryScreen'
 import { SettingsScreen } from '../ui/screens/SettingsScreen'
 import { HistoryScreen } from '../ui/screens/HistoryScreen'
 import { StatisticsScreen } from '../ui/screens/StatisticsScreen'
+import { RankingScreen } from '../ui/screens/RankingScreen'
 import { CancelMatchDialog } from '../ui/components/CancelMatchDialog'
 import { RecoveryScreen } from '../ui/screens/RecoveryScreen'
 import { PendingMatchesScreen } from '../ui/screens/PendingMatchesScreen'
@@ -29,7 +30,7 @@ import { activePlayers, type MatchDocument, type Player } from '../services/pers
 import { mapMatch, participantsFor } from '../services/persistence/mapMatch'
 
 const menuItems: MenuItem[] = [{ id: 'new-match', label: 'NUEVO PARTIDO' }, { id: 'tournament', label: 'TORNEO' }, { id: 'ranking', label: 'RANKING' }, { id: 'settings', label: 'AJUSTES' }]
-type Screen = 'account' | 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'statistics' | 'placeholder' | 'recovery' | 'pending'
+type Screen = 'account' | 'new' | 'configuration' | 'players' | 'match' | 'settings' | 'history' | 'ranking' | 'statistics' | 'placeholder' | 'recovery' | 'pending'
 const browserStorage: KeyValueStorage = { getItem: key => localStorage.getItem(key), setItem: (key, value) => localStorage.setItem(key, value) }
 type CancelRequest = { kind: 'active'; id: string; pausedByDialog: boolean } | { kind: 'recovery'; copy: ActiveMatchCopy }
 const noRecovery = () => false
@@ -266,8 +267,9 @@ export function App({ services }: { services: ApplicationServices | null }) {
       {screen === 'settings' && <SettingsScreen key={userId ?? 'guest'} services={services} user={data.user} players={data.players} protectedIds={protectedIds} testMode={testMode} onTestMode={value => { setTestMode(value); try { localStorage.setItem('marcador:test-mode:v1', String(value)) } catch { setNotice('Preferencia aplicada; no se pudo recordar localmente.') } }} refresh={data.refresh} pendingCount={pendingCount} onRetry={pending.retry} dataMessage={notice || pending.message || data.message} online={online && !data.localIdentity} onAccount={() => openAccount()} syncBusy={pending.busy} onPending={() => setScreen('pending')} offline={offline} onCheck={() => void connection.monitor.check()}
         onProfile={id => openStatistics(id)} displaySettings={<DisplaySettings mode={displayMode} onChange={value => { setDisplayMode(value); try { localStorage.setItem(DISPLAY_MODE_KEY, value) } catch { setNotice('Vista aplicada; no se pudo recordar localmente.') } }} />} />}
       {screen === 'pending' && <PendingMatchesScreen documents={pending.documents} online={online && !data.localIdentity} busy={pending.busy} message={pending.message} onRetry={pending.retry} onBack={() => setScreen('settings')} />}
-      {screen === 'history' && <HistoryScreen players={data.players} key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} online={online && !data.localIdentity} onStatistics={() => openStatistics()} />}
-      {screen === 'statistics' && <StatisticsScreen dataRevision={pending.lastSavedId} progressionRepository={services?.progression ?? null} key={userId ?? 'guest'} repository={services?.matches ?? null} players={data.players} playersLoading={data.loading} dataMessage={data.message} userId={userId} online={online && !data.localIdentity} initialPlayerId={profilePlayerId} onBack={() => setScreen('history')} />}
+      {screen === 'history' && <HistoryScreen players={data.players} key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} online={online && !data.localIdentity} onStatistics={() => openStatistics()} onRanking={() => setScreen('ranking')} />}
+      {screen === 'ranking' && <RankingScreen repository={services?.competition ?? null} key={userId ?? 'guest'} userId={userId} online={online && !data.localIdentity} revision={pending.lastSavedId} onBack={() => setScreen('history')} onProfile={id => openStatistics(id)} />}
+      {screen === 'statistics' && <StatisticsScreen competitionRepository={services?.competition ?? null} dataRevision={pending.lastSavedId} progressionRepository={services?.progression ?? null} key={userId ?? 'guest'} repository={services?.matches ?? null} players={data.players} playersLoading={data.loading} dataMessage={data.message} userId={userId} online={online && !data.localIdentity} initialPlayerId={profilePlayerId} onBack={() => setScreen('history')} />}
       {screen === 'placeholder' && <div className="placeholder-screen"><span>PRÓXIMAMENTE</span><p>Torneos se implementará en otra fase.</p></div>}
       </>}
     </section>

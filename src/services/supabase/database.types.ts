@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      elo_rules_v1: {
+        Row: {
+          category_thresholds: number[] | null
+          eligible_from: string | null
+          enabled: boolean
+          established_k: number | null
+          hysteresis: number | null
+          initial_elo: number
+          margin_multipliers: number[] | null
+          provisional_k: number | null
+          provisional_matches: number | null
+          rounding: string | null
+          singleton: boolean
+          version: number
+        }
+        Insert: {
+          category_thresholds?: number[] | null
+          eligible_from?: string | null
+          enabled?: boolean
+          established_k?: number | null
+          hysteresis?: number | null
+          initial_elo?: number
+          margin_multipliers?: number[] | null
+          provisional_k?: number | null
+          provisional_matches?: number | null
+          rounding?: string | null
+          singleton?: boolean
+          version: number
+        }
+        Update: {
+          category_thresholds?: number[] | null
+          eligible_from?: string | null
+          enabled?: boolean
+          established_k?: number | null
+          hysteresis?: number | null
+          initial_elo?: number
+          margin_multipliers?: number[] | null
+          provisional_k?: number | null
+          provisional_matches?: number | null
+          rounding?: string | null
+          singleton?: boolean
+          version?: number
+        }
+        Relationships: []
+      }
       match_events: {
         Row: {
           blue_score: number
@@ -317,7 +362,28 @@ export type Database = {
       }
     }
     Functions: {
+      get_competition_snapshot_v1: { Args: never; Returns: Json }
+      get_ranking_v1: {
+        Args: never
+        Returns: {
+          active: boolean
+          category: string
+          classified_matches: number
+          elo: number
+          enabled: boolean
+          max_elo: number
+          name: string
+          nickname: string
+          player_id: string
+          ranking_position: number
+          rules_version: number
+        }[]
+      }
       save_match_v1: { Args: { document: Json }; Returns: string }
+      valid_elo_settings_v1: {
+        Args: { multipliers: number[]; thresholds: number[] }
+        Returns: boolean
+      }
       valid_xp_thresholds_v1: {
         Args: { values_array: number[] }
         Returns: boolean
