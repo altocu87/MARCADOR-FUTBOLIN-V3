@@ -74,7 +74,7 @@ Verificación de esta continuación: npm test, siete grupos correctos (estadíst
 | 5 · Prórroga/penaltis | Simulación automatizada correcta para TIME/AMBAS; no pedir repetirla manualmente por rutina |
 | 6 · Guardado/historial/perfiles | Confirmada OK por el propietario; no repetir |
 | 7 · Recuperación tras recarga | 2026-10-02: propietario confirma que aparece recuperar partido. Falta confirmar reanudación completa; descarte solicitado y añadido con confirmación |
-| 8 · Pendiente offline/reconexión | Falta recorrido desde el origen real; mismo ID, un solo resultado |
+| 8 · Pendiente offline/reconexión | 2026-10-02: capturas y Supabase real confirman resultado nuevo 0–3 único, histórico anterior conservado y cero pendientes/sincronización completada. Falta confirmar que se observó el pendiente antes de reconectar; no repetir todo el partido |
 | 9 · Prueba ON sin incremento | Falta contraste de historial/perfiles reales antes/después |
 | 10 · Alias/baja lógica | Falta comprobación desde UI real; no borrar jugadores |
 | 11 · PWA física | Falta instalación y reapertura offline en el teléfono real |
@@ -123,12 +123,14 @@ En la [Preview estable de esta rama](https://marcador-futbolin-v3-git-codex-8b42
 
 1. Cuando Vercel muestre la actualización, cerrar/reabrir sin borrar almacenamiento. Pruebas 1 y 6 ya confirmadas; 2–5 asumidas y simuladas por el agente, no repetir por rutina. Recuperación de contraseña real confirmada por el propietario el 2026-10-02: no volver a registrar ni cambiarla para repetir la prueba.
 2. Recuperación del partido (7): la oferta ya aparece en el dispositivo del operador. Falta confirmar que RECUPERAR PARTIDO conserva marcador/jugadores y CONTINUAR reanuda; se puede enlazar con la prueba 8. Si no desea conservar ese juego sin terminar, DESCARTAR PARTIDO → confirmación. NUEVO PARTIDO durante juego pide cancelar: «NO» conserva/reanuda si estaba jugando, «SÍ» abre el menú nuevo. La cancelación ya tiene pruebas independientes; observar la UI publicada basta, sin fabricar más resultados reales.
-3. Prueba 8, móvil: seguir los pasos específicos de abajo. Resultado OFF real que se desea conservar; verificar el mismo ID/un único resultado y retorno de pendientes al contador inicial.
+3. Prueba 8, móvil: guardado único y cola vacía ya confirmados por capturas y Supabase real el 2026-10-02. Falta solo recordar si se vio el pendiente antes de reconectar; no crear otro partido para repetir el guardado. Los pasos de abajo quedan como referencia del recorrido. La recarga/reapertura sin red se registra aparte en 11.
 4. Prueba 9: un partido ON no incrementa historial/perfiles/partidos/eventos ni crea pendientes/checkpoint. Prueba 10: editar alias/desactivar/reactivar desde UI conservando identidad/historial; no borrar jugadores. Son comprobaciones reales todavía pendientes.
 5. MI CUENTA: nombre de operador y conservación de vínculos con cuenta existente. Seguridad/sesiones/cambio de correo se prueban solo cuando se desee efectuar esas acciones reales. No crear otra cuenta. Plantillas y remitente: instrucciones en supabase/templates/README.md; aplicación hosted/SMTP autorizada pendientes, no resueltos mediante Git.
 6. Prueba 11: OFFLINE DISPONIBLE, instalación/reapertura offline de la PWA y actualización detrás de protección en el teléfono real. La emulación no acredita ese dispositivo.
 
 ### Prueba 8 en el móvil — pendiente offline y reconexión
+
+Seguimiento real del 2026-10-02: el propietario comunica «parece que sí se ha guardado» y aporta historial con el nuevo 0–3 para Azul una sola vez y panel con cero pendientes/«SINCRONIZACIÓN COMPLETADA». SELECT en Supabase confirma un único 0–3 en esa fecha, finalizado y no de prueba, con dos participantes/cinco eventos; el partido anterior 2–0 y sus participantes/eventos permanecen. Guardado real y estado final de sincronización confirmados. La consulta no verifica la cola local; esa evidencia procede de la captura. Falta respuesta sobre si se observó pendiente antes de reconectar; no se presupone el paso por tiempo transcurrido ni se pide generar otro partido. Sin evidencia de reapertura sin red, no dar por completada 11 ni la reanudación de 7.
 
 1. Con Internet, abrir la misma Preview/navegador e iniciar sesión con la cuenta existente si aún no está abierta (la sesión se recuerda automáticamente en ese origen). No cerrar sesión antes de pasar a offline. AJUSTES → MODO PRUEBA OFF **antes** de iniciar. Anotar contador de pendientes/historial; para probar la recarga sin red, esperar también **OFFLINE DISPONIBLE**. Si no aparece, se puede comprobar terminar/sincronizar manteniendo la app abierta, pero la reapertura offline sigue pendiente.
 2. Recuperar el partido ya ofrecido, si se desea terminar y guardar, o iniciar uno OFF que se quiera conservar. Dar un gol, sin llegar todavía al objetivo.
