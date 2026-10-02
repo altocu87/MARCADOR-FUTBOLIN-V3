@@ -577,6 +577,16 @@ Los parámetros deben permanecer configurables. No dispersar constantes mágicas
 
 ## 32. FORMA
 
+**Decisiones y entrega vigentes — 2026-10-02, v0.4.1.** El propietario aprueba las recomendaciones y concreta 1 contra 2 exclusivamente Rápido/Caos. Sustituye los pendientes históricos de 03/04 de abajo. ELO servidor activado: versión 2, inicio 1200, primeras 10 K40/después K20, nearest-away, categorías Bronce <1000/Plata 1000/Oro 1200/Platino 1400/Diamante 1600/Élite 1800, descenso con histéresis 25, multiplicadores todos 1 y todos los Clasificatorios históricos válidos; máximo reconstruible. No hay suelo ELO ni suma cero garantizada con K distintos.
+
+04 integrado como **análisis descriptivo**, sin índice, pronóstico, porcentajes predictivos ni confianza estimada. H2H de jugador/pareja exactos desde el historial completo confirmado, con perspectivas inversas y filtros del perfil; 1v2/2v1 agrupados como formato 1v2, separados de 1v1/2v2. Forma: últimos cinco Clasificatorios por ID, independiente de filtros, sin rellenar ausencias. Selección permite consultar enfrentamientos del modo elegido y forma de cada participante, solo al abrir el panel; consultas paralelas cancelables, error/offline no bloquean COMENZAR. Perfil reutiliza su lectura existente sin nuevas consultas.
+
+1v2: tres jugadores activos distintos, mismas reglas de victoria/sin ventaja inicial, color del solo seleccionable, XP completo para cada jugador y equipos/posición conservados en copia, recuperación, resultado e historial. Clasificatorio sigue requiriendo 1v1/2v2: rechazo en UI, composición, mapeo, recuperación, estadísticas/XP y servidor/RPC/trigger diferido. `soloTeam` opcional de configuración solo representa equipos; versiones de reglas/checkpoints anteriores intactas. No cambia MatchEngine ni sus reglas de goles/reloj/desempate.
+
+Migración aplicada **20261002140820_casual_1v2_and_approved_elo.sql**: reemplazo acotado de validadores RPC/trigger de equipos y activación ELO aprobada. RLS/grants, locks/idempotencia, cronología, columnas protegidas y vista XP conservados. Sin tablas nuevas ni datos de negocio modificados. Conteos antes/después: dos jugadores/dos Rápidos/cuatro participantes/doce eventos; ambos 225 XP/nivel 1, cero Clasificatorios reales. SQL de 03/04 real con ROLLBACK PASS; ningún Auth/usuario/correo nuevo.
+
+
+
 **Preparación parcial de 04, 2026-10-02:** últimos cinco Clasificatorios por ID, más reciente primero, sin completar ausencias; resultado guardado/validado, tanda decide G/P sin sumar goles. Referencia y maqueta solo en tests reutilizan análisis existente, conservan bajas e identidad y reconstrucción desde historial. Forma competitiva separada/rotulada respecto a filtros H2H; los últimos resultados generales del perfil no cambian. Integración activa espera cierre competitivo de 03. No modifica XP/ELO. Evidencia en [VERIFICACION_BLOQUE_04.md](VERIFICACION_BLOQUE_04.md).
 
 Forma reciente: últimos 5 partidos clasificatorios.
@@ -1201,6 +1211,9 @@ Orden de prioridades durante un partido:
 Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
+
+Entrega vigente v0.4.1: 03 aprobado/activado y 04 descriptivo integrado; detalles y decisiones en §32 y ESTADO_ACTUAL. Sustituye los pendientes históricos de abajo. 05 no iniciado.
+
 
 **Confirmación humana de paneles, 2026-10-02:** captura del propietario en Preview v0.4.0 con sesión activa; Alex2 muestra 225 XP/nivel 1 y 30 XP hasta umbral 255, dos partidos confirmados y aviso ELO pendiente de aprobación/inicio 1200/ajustes y categorías desactivados. Observación autenticada real acreditada para el perfil mostrado, sin sesión controlada por el agente ni nueva aprobación competitiva. Sustituye el pendiente humano de observar esos paneles en ese perfil; el 403 del conector, parámetros pendientes de 03 y SMTP siguen independientes. Continuación inmediata: comprobar conector tras reabrir Codex, después decisiones de 03 y cierre/integración 04; 05 no iniciado. Evidencia/publicación en ESTADO_ACTUAL.
 

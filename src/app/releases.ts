@@ -5,6 +5,17 @@ export const APP_VERSION = version
 
 export const releases = [
   {
+    version: '0.4.1',
+    title: 'Enfrentamientos, forma y partidas 1 contra 2',
+    changes: [
+      'ELO activado con las reglas aprobadas para Clasificatorio.',
+      'Perfil con enfrentamientos de jugadores y parejas exactas, filtros y últimos cinco Clasificatorios.',
+      'Rápido y Caos permiten 1 contra 2, elegir el color del jugador solo y recuperar la partida.',
+      'Cada jugador recibe su XP completo. 1 contra 2 queda excluido de Clasificatorio.',
+      'Análisis descriptivo: no se calculan pronósticos ni probabilidades.',
+    ],
+  },
+  {
     version: '0.4.0',
     title: 'Versiones y preparación del análisis competitivo',
     changes: [

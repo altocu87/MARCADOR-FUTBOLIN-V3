@@ -16,6 +16,7 @@ export function validateCheckpoint(value: unknown): asserts value is MatchCheckp
   const state = value.state
   const config = state.config
   if (!object(config) || !['QUICK', 'CHAOS', 'RANKED'].includes(String(config.mode)) || !['GOALS', 'TIME', 'BOTH'].includes(String(config.victoryCondition)) || !integer(config.goalLimit) || config.goalLimit < 1 || config.goalLimit > 20 || !integer(config.halfDurationMinutes) || config.halfDurationMinutes < 1 || config.halfDurationMinutes > 30) return invalid()
+  if (config.soloTeam !== undefined && (!['WHITE', 'BLUE'].includes(String(config.soloTeam)) || config.mode === 'RANKED')) return invalid()
   if ((config.rulesVersion ?? 1) !== value.version) return invalid()
   if ([3, 4].includes(value.version) && config.victoryCondition !== 'BOTH') return invalid()
   const singleGoalMatch = value.version === 2 && config.victoryCondition === 'GOALS'

@@ -1,4 +1,5 @@
 import type { MatchSummary, Participant } from '../services/persistence/models'
+import { matchFormat } from '../statistics/matchFormat'
 import { playerStatistics } from '../statistics/playerStatistics'
 
 export interface XpRules {
@@ -53,10 +54,8 @@ export function rebuildProgression(matches: readonly MatchSummary[], playerId: s
     if (rules.eligibleFrom !== null && Date.parse(match.started_at) < Date.parse(rules.eligibleFrom)) continue
     // Reuse final score/winner/identity checks, then reject conflicting retries.
     playerStatistics([match], playerId)
-    const ids = new Set(match.participants.map(p => p.player_id))
-    const white = match.participants.filter(p => p.team === 'WHITE').length
-    if (![2, 4].includes(match.participants.length) || ids.size !== match.participants.length || white * 2 !== match.participants.length
-      || !['QUICK', 'CHAOS', 'RANKED'].includes(match.match_type) || !Number.isFinite(Date.parse(match.started_at))) throw new Error('Partido incompatible con XP.')
+    matchFormat(match)
+    if (!['QUICK', 'CHAOS', 'RANKED'].includes(match.match_type) || !Number.isFinite(Date.parse(match.started_at))) throw new Error('Partido incompatible con XP.')
     const fingerprint = JSON.stringify([match.match_type, match.winner_team, match.went_to_extra_time, match.went_to_penalties,
       match.started_at, match.white_score, match.blue_score, match.penalty_white_score, match.penalty_blue_score,
       match.participants.map(p => [p.player_id, p.team, p.position]).sort((a, b) => String(a[0]).localeCompare(String(b[0])))])

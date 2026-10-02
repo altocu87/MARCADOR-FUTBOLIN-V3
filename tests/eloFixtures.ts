@@ -2,7 +2,7 @@ import type { EloRules } from '../src/competition/elo'
 import type { MatchDocument, Player } from '../src/services/persistence/models'
 import { MatchEngine } from '../src/match-engine/MatchEngine'
 import { mapMatch } from '../src/services/persistence/mapMatch'
-/** Test parameters ONLY. These proposals are not production defaults/approval. */
+/** Test parameters ONLY, including alternate goal-margin policies. Not production defaults. */
 export const testEloRules: EloRules = {
   version: 1, enabled: true, initial: 1200, eligibleFrom: null,
   provisionalMatches: 10, provisionalK: 40, establishedK: 20, rounding: 'nearest-away',

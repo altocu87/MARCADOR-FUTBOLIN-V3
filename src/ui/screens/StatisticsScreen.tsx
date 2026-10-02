@@ -9,6 +9,7 @@ import { loadPlayerMatches } from '../../statistics/loadPlayerStatistics'
 import { analyzePlayerResults, emptyAnalysisFilter, preparePlayerResults, validateAnalysisFilter, type AnalysisFilter, type PlayerResult } from '../../statistics/playerAnalysis'
 import { errorMessage } from '../../app/useData'
 import { HistoryScreen } from './HistoryScreen'
+import { CompetitiveAnalysis } from '../components/CompetitiveAnalysis'
 import { AnalysisDetails } from '../components/AnalysisDetails'
 
 export function StatisticsScreen({ repository, players, userId, online, initialPlayerId, onBack, playersLoading, dataMessage, dataRevision = null, progressionRepository = null, competitionRepository = null }: {
@@ -65,7 +66,7 @@ function PlayerProfile({ player, players, userId, repository, online, onBack, pr
   const analysis = useMemo(() => results ? analyzePlayerResults(results, player.id, filter) : null, [results, player.id, filter])
   const stats = analysis?.totals
   const filtered = Object.keys(filter).some(key => filter[key as keyof AnalysisFilter] !== emptyAnalysisFilter[key as keyof AnalysisFilter])
-  const filterLabel = `${filter.from || 'inicio'} → ${filter.to || 'sin límite final'} · ${filter.mode === 'ALL' ? 'todos los modos' : filter.mode === 'QUICK' ? 'Rápido' : filter.mode === 'CHAOS' ? 'Caos' : 'Clasificatorio'} · ${filter.format === 'ALL' ? '1v1 y 2v2' : filter.format}`
+  const filterLabel = `${filter.from || 'inicio'} → ${filter.to || 'sin límite final'} · ${filter.mode === 'ALL' ? 'todos los modos' : filter.mode === 'QUICK' ? 'Rápido' : filter.mode === 'CHAOS' ? 'Caos' : 'Clasificatorio'} · ${filter.format === 'ALL' ? '1v1, 1v2 y 2v2' : filter.format}`
   if (history) return <HistoryScreen players={players} repository={repository} userId={userId} online={online} playerId={player.id} playerName={player.nickname || player.name} filteredMatches={analysis?.matches ?? []} filterLabel={filterLabel} onBack={() => setHistory(false)} />
   const metrics = stats ? [
     ['PARTIDOS', stats.played], ['VICTORIAS', stats.wins], ['DERROTAS', stats.losses], ['EMPATES', stats.draws],
@@ -82,12 +83,12 @@ function PlayerProfile({ player, players, userId, repository, online, onBack, pr
         <label>Desde<input type="date" value={draft.from} onChange={e => setDraft(value => ({ ...value, from: e.target.value }))} /></label>
         <label>Hasta<input type="date" value={draft.to} onChange={e => setDraft(value => ({ ...value, to: e.target.value }))} /></label>
         <label>Modalidad<select aria-label="Modalidad" value={draft.mode} onChange={e => setDraft(value => ({ ...value, mode: e.target.value as AnalysisFilter['mode'] }))}><option value="ALL">Todas</option><option value="QUICK">Rápido</option><option value="CHAOS">Caos</option><option value="RANKED">Clasificatorio</option></select></label>
-        <label>Formato<select aria-label="Formato" value={draft.format} onChange={e => setDraft(value => ({ ...value, format: e.target.value as AnalysisFilter['format'] }))}><option value="ALL">1v1 y 2v2</option><option value="1v1">1v1</option><option value="2v2">2v2</option></select></label>
+        <label>Formato<select aria-label="Formato" value={draft.format} onChange={e => setDraft(value => ({ ...value, format: e.target.value as AnalysisFilter['format'] }))}><option value="ALL">1v1, 1v2 y 2v2</option><option value="1v1">1v1</option><option value="1v2">1v2 · Rápido/Caos</option><option value="2v2">2v2</option></select></label>
         <div className="panel-toolbar"><button type="submit">APLICAR FILTROS</button><button type="button" onClick={() => { setFilter(emptyAnalysisFilter); setDraft(emptyAnalysisFilter); setFilterError('') }}>QUITAR FILTROS</button></div>
         <p className="statistics-note">Fechas inclusivas en la zona horaria de este dispositivo. Los cambios se aplican al pulsar APLICAR FILTROS.</p>{filterError && <p role="alert" className="notice">{filterError}</p>}
       </form></details>
       {filtered && <p className="analysis-scope" role="status">FILTRO APLICADO · {filterLabel}</p>}
-      {online && stats && analysis ? <><dl className="statistics-grid">{metrics.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>{stats.played === 0 && <p>{filtered ? 'No hay partidos que coincidan con estos filtros.' : 'No hay partidos guardados para este jugador.'}</p>}<AnalysisDetails analysis={analysis} players={players} /></> : <p role={message ? 'alert' : 'status'}>{busy ? 'Calculando todos los partidos guardados…' : message || 'Preparando consulta…'}</p>}
+      {online && stats && analysis ? <><dl className="statistics-grid">{metrics.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>{stats.played === 0 && <p>{filtered ? 'No hay partidos que coincidan con estos filtros.' : 'No hay partidos guardados para este jugador.'}</p>}<AnalysisDetails analysis={analysis} players={players} /><CompetitiveAnalysis results={results!} playerId={player.id} players={players} filter={filter} /></> : <p role={message ? 'alert' : 'status'}>{busy ? 'Calculando todos los partidos guardados…' : message || 'Preparando consulta…'}</p>}
       <p className="statistics-note">Los goles son de su equipo, no goles individuales. Los penaltis deciden la victoria pero no se suman a los goles. Partidos de prueba y pendientes de sincronización no cuentan.</p>
     </div>
     <div className="panel-toolbar profile-actions"><button type="button" disabled={busy || !online || !analysis} onClick={() => setHistory(true)}>VER HISTORIAL DEL JUGADOR</button><button type="button" disabled={busy || !online} onClick={() => setVersion(v => v + 1)}>ACTUALIZAR</button></div>

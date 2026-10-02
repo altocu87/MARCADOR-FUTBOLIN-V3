@@ -59,7 +59,8 @@ export class ActiveMatchStore {
   }
   private validate(value: unknown): asserts value is ActiveMatchCopy {
     if (!object(value) || value.version !== 1 || typeof value.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.id) || value.ownerId !== this.ownerId || value.testMode !== false || !Array.isArray(value.players) || !value.players.every(player)) throw new Error('Copia inválida')
-    participantsFor(value.players)
     validateCheckpoint(value.checkpoint)
+    if (value.players.length === 3 && value.checkpoint.state.config?.mode === 'RANKED') throw new Error('Clasificatorio incompatible')
+    participantsFor(value.players, value.checkpoint.state.config?.soloTeam)
   }
 }

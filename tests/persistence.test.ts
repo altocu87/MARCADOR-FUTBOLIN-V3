@@ -8,7 +8,7 @@ import type { MatchRepository } from '../src/services/persistence/MatchRepositor
 const players: Player[] = [1, 2, 3, 4].map(n => ({ id: `00000000-0000-4000-8000-00000000000${n}`, name: `Jugador ${n}`, nickname: null, photoUrl: null, active: true, level: 0 }))
 assert.deepEqual(participantsFor(players.slice(0, 2)).map(p => [p.team, p.position]), [['WHITE', 1], ['BLUE', 1]])
 assert.deepEqual(participantsFor(players).map(p => [p.team, p.position]), [['WHITE', 1], ['BLUE', 1], ['WHITE', 2], ['BLUE', 2]])
-for (const invalid of [[], players.slice(0, 3), [players[0], players[0]], [{ ...players[0], active: false }, players[1]]]) assert.throws(() => participantsFor(invalid))
+for (const invalid of [[], players.slice(0, 1), [players[0], players[0]], [{ ...players[0], active: false }, players[1]]]) assert.throws(() => participantsFor(invalid))
 assert.equal(activePlayers([...players, { ...players[0], active: false }]).length, 4)
 
 let now = Date.parse('2026-10-01T00:00:00Z')

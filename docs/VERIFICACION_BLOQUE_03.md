@@ -1,5 +1,12 @@
 # Verificación del bloque 03 — 2026-10-02
 
+**Decisiones y entrega vigentes — 2026-10-02, v0.4.1.** El propietario aprueba las recomendaciones y concreta 1 contra 2 exclusivamente Rápido/Caos. Sustituye los pendientes históricos de 03/04 de abajo. ELO servidor activado: versión 2, inicio 1200, primeras 10 K40/después K20, nearest-away, categorías Bronce <1000/Plata 1000/Oro 1200/Platino 1400/Diamante 1600/Élite 1800, descenso con histéresis 25, multiplicadores todos 1 y todos los Clasificatorios históricos válidos; máximo reconstruible. No hay suelo ELO ni suma cero garantizada con K distintos.
+
+Activación aplicada en migración 20261002140820; prueba SQL completa de 03 con alternativa multiplicadores todos 1 PASS y ROLLBACK. Datos y XP originales preservados. UI competitiva existente lee configuración servidor; no cambio de cálculo cliente. El bloqueo de aprobación que describe el registro anterior queda superado. Preview autenticada del build nuevo no observada directamente.
+
+## Registro histórico anterior a la aprobación
+
+
 Implementados ELO Clasificatorio, clasificación privada, categorías configurables y máximo histórico. **ELO real desactivado: faltan decisiones del propietario.** Inicio 1200 aprobado; «Sigue» autoriza continuar el trabajo, no aprobar parámetros propuestos. No se declara cierre funcional completo ni se inicia 04. Estado/publicación vivos en [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md).
 
 ## Decisiones pendientes, con ejemplos concretos

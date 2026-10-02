@@ -1,4 +1,25 @@
-# Bloque 04 — diseño y pruebas independientes, 2026-10-02
+# Bloque 04 — entrega descriptiva verificada, 2026-10-02
+
+**Decisiones y entrega vigentes — 2026-10-02, v0.4.1.** El propietario aprueba las recomendaciones y concreta 1 contra 2 exclusivamente Rápido/Caos. Sustituye los pendientes históricos de 03/04 de abajo. ELO servidor activado: versión 2, inicio 1200, primeras 10 K40/después K20, nearest-away, categorías Bronce <1000/Plata 1000/Oro 1200/Platino 1400/Diamante 1600/Élite 1800, descenso con histéresis 25, multiplicadores todos 1 y todos los Clasificatorios históricos válidos; máximo reconstruible. No hay suelo ELO ni suma cero garantizada con K distintos.
+
+04 integrado como **análisis descriptivo**, sin índice, pronóstico, porcentajes predictivos ni confianza estimada. H2H de jugador/pareja exactos desde el historial completo confirmado, con perspectivas inversas y filtros del perfil; 1v2/2v1 agrupados como formato 1v2, separados de 1v1/2v2. Forma: últimos cinco Clasificatorios por ID, independiente de filtros, sin rellenar ausencias. Selección permite consultar enfrentamientos del modo elegido y forma de cada participante, solo al abrir el panel; consultas paralelas cancelables, error/offline no bloquean COMENZAR. Perfil reutiliza su lectura existente sin nuevas consultas.
+
+1v2: tres jugadores activos distintos, mismas reglas de victoria/sin ventaja inicial, color del solo seleccionable, XP completo para cada jugador y equipos/posición conservados en copia, recuperación, resultado e historial. Clasificatorio sigue requiriendo 1v1/2v2: rechazo en UI, composición, mapeo, recuperación, estadísticas/XP y servidor/RPC/trigger diferido. `soloTeam` opcional de configuración solo representa equipos; versiones de reglas/checkpoints anteriores intactas. No cambia MatchEngine ni sus reglas de goles/reloj/desempate.
+
+Migración aplicada **20261002140820_casual_1v2_and_approved_elo.sql**: reemplazo acotado de validadores RPC/trigger de equipos y activación ELO aprobada. RLS/grants, locks/idempotencia, cronología, columnas protegidas y vista XP conservados. Sin tablas nuevas ni datos de negocio modificados. Conteos antes/después: dos jugadores/dos Rápidos/cuatro participantes/doce eventos; ambos 225 XP/nivel 1, cero Clasificatorios reales. SQL de 03/04 real con ROLLBACK PASS; ningún Auth/usuario/correo nuevo.
+
+## Verificación de la entrega integrada
+
+- `npm test`: diez grupos correctos, estadísticas/análisis 42, XP 8, ELO/repositorio 14, contratos 04 13.
+- TypeScript y builds normal/fixture correctos. Chromium **48/48**, cero fallos u omitidos; recuperación, idempotencia, 1v2 casual, rechazo Clasificatorio, H2H/filtros/forma y consulta prepartido offline. Revisión visual móvil, tablet, escritorio y viewport 800×480. Corregido el panel prepartido para compartir el scroll de jugadores y mantener COMENZAR accesible; regresión focalizada 7/7 y batería completa posteriores correctas.
+- `node --import tsx supabase/tests/block04.ts`: SQL real RPC/retry/XP paridad, 1v2 ambos colores, exclusión ELO, rechazo ranked por RPC y trigger, plaza inválida, preservación XP anterior: PASS, ROLLBACK.
+- Generador 03 SQL real: paridad/reconstrucción/RLS/políticas, incluida alternativa todos los multiplicadores 1, PASS con ROLLBACK antes de activar.
+- Advisors: sin avisos nuevos de funciones/RLS. Se mantienen [WARN Auth histórico](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection) e [INFO índice histórico sin uso](https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index). No cambios Auth/planes/índices.
+- Browser usa motor y repositorios en memoria, bloquea Supabase; no equivale a navegador autenticado remoto. Perfil conserva límites de paginación sin snapshot transaccional entre dispositivos. Prepartido no mezcla ELO y resultados para calcular previsiones: no existe ese cálculo.
+- `npm audit --omit=dev --audit-level=moderate`: cero vulnerabilidades. Publicación en rama de revisión registrada en ESTADO_ACTUAL; sin promoción main.
+
+## Registro histórico de la preparación anterior (sustituido por la entrega de arriba)
+
 
 **04 espera el cierre competitivo de 03.** No se declara entrega funcional ni se activa análisis/predicción en la aplicación. La petición vigente permite avanzar diseño/pruebas independientes sin aprobar propuestas. Publicación y continuidad operativas en [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md).
 
@@ -63,3 +84,9 @@ Vercel `web_fetch_vercel_url` al alias protegido devuelve **403 forbidden** en `
 ## Continuidad exacta
 
 Cerrar decisiones/activación de 03 dentro de su alcance autorizado; registrar después modelo/pesos/muestra/2v2 de 04 y desarrollar/verificar su integración real. No dar 04 por cerrado con esta maqueta. Se prepara 05 con prompt condicionado en [BLOQUES_DESARROLLO.md](BLOQUES_DESARROLLO.md), **sin iniciarlo**; progresión y dependencias previas deben estar estables, y catálogo/recompensas de 05 requieren aprobación propia. Publicar solo esta preparación estable en la misma revisión, sin main, administración, logros, torneos, Google/Drive o pagos.
+
+## Prompt completo del siguiente bloque propuesto
+
+```text
+Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1 y trabaja exclusivamente en bloque 05: logros, récords y Hall of Fame. Lee AGENTS.md, contexto/estado, BLOQUES_DESARROLLO y VERIFICACION_BLOQUE_04; sincroniza sin sobrescribir trabajo local ni promover main. ELO de 03 está aprobado/activo; 04 es descriptivo y la previsión fue aplazada por decisión expresa: no reabrir esas decisiones. Conserva XP aprobado, reconstrucción privada desde historial, RLS, idempotencia, motor y formatos: 1v1/2v2 en todos los modos; 1v2 solo Rápido/Caos con XP completo y sin ELO. No repetir cuentas ni partidos del checklist cerrado. Antes de conceder premios extraordinarios, prepara catálogo, umbrales y recompensas con ejemplos concretos para aprobación; avanza diseño y pruebas independientes sin convertir propuestas en reglas. Implementa el catálogo aprobado con identidad estable, premios únicos, recálculo desde hechos confirmados, exclusión de prueba/pendientes y sin atribuir goles individuales. No inventes tiempos/eventos ausentes, administración ni XP ilimitado al actualizar récords. Verifica datos/UI/SQL reales según acceso y distingue fixtures de Preview autenticada. No torneos, Google/Drive, pagos, cambios SMTP ni promoción main. Actualiza contexto, seguimiento, versión y novedades; publica estable en revisión y entrega el siguiente prompt sin iniciar 06.
+```

@@ -1,3 +1,5 @@
+import { PreMatchAnalysis } from '../components/PreMatchAnalysis'
+import type { MatchRepository } from '../../services/persistence/MatchRepository'
 import { useEffect, useState, type CSSProperties } from 'react'
 import type { MatchInput } from '../../inputs/MatchInput'
 import type { GoalEffect, MatchConfiguration, MatchMode, MatchState, VictoryCondition } from '../../match-engine/types'
@@ -11,16 +13,19 @@ export function MatchConfigurationScreen({ mode, onContinue, onBack }: { mode: M
 }
 function Stepper({ label, value, suffix, onChange, min, max }: { label: string; value: number; suffix: string; onChange: (value: number) => void; min: number; max: number }) { return <div className="stepper"><span>{label}</span><div><button type="button" aria-label={`Reducir ${label}`} onClick={() => onChange(Math.max(min, value - 1))}>−</button><strong>{value}<small>{suffix}</small></strong><button type="button" aria-label={`Aumentar ${label}`} onClick={() => onChange(Math.min(max, value + 1))}>+</button></div></div> }
 
-export function PlayerSelectionScreen({ availablePlayers, testMode, onStart, onBack }: { availablePlayers: Player[]; testMode: boolean; onStart: (players: Player[]) => void; onBack: () => void }) {
+export function PlayerSelectionScreen({ availablePlayers, mode, testMode, onStart, onBack, repository, online }: { repository: MatchRepository | null; online: boolean; availablePlayers: Player[]; mode: MatchMode; testMode: boolean; onStart: (players: Player[], soloTeam?: 'WHITE' | 'BLUE') => void; onBack: () => void }) {
+  const [soloTeam, setSoloTeam] = useState<'WHITE' | 'BLUE'>('BLUE')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const selectable = availablePlayers.filter(p => p.active)
   const selected = selectedIds.map(id => selectable.find(p => p.id === id)).filter((p): p is Player => Boolean(p))
   const select = (id: string) => setSelectedIds(current => current.includes(id) ? current.filter(value => value !== id) : current.length < 4 ? [...current, id] : current)
   return <section className="player-selection screen-stack">
-    <header className="screen-heading"><p className="eyebrow">{testMode ? 'MODO PRUEBA · SIN GUARDADO' : 'JUGADORES ACTIVOS · 1V1 O 2V2'}</p><h1>SELECCIONAR JUGADORES</h1></header>
-    <div className="team-slots">{[0, 1, 2, 3].map(index => <span key={index} className={index % 2 === 0 ? 'white-slot' : 'blue-slot'}>{index % 2 === 0 ? 'BLANCO' : 'AZUL'} {Math.floor(index / 2) + 1}<b>{selected[index]?.nickname || selected[index]?.name || '—'}</b></span>)}</div>
-    <div className="player-grid selection-grid scroll-panel">{selectable.length === 0 ? <p>Crea jugadores en AJUSTES → JUGADORES.</p> : selectable.map(player => <button type="button" key={player.id} aria-pressed={selectedIds.includes(player.id)} className={'player-card ' + (selectedIds.includes(player.id) ? 'selected' : '')} onClick={() => select(player.id)}><span className="player-number">{selectedIds.includes(player.id) ? selectedIds.indexOf(player.id) + 1 : '＋'}</span><span className="player-avatar" style={{ '--avatar-tint': '#80b9ee' } as CSSProperties}>{player.name[0]}</span><strong>{player.nickname || player.name}</strong><small>NIVEL {player.level}</small></button>)}</div>
-    <div className="screen-actions"><button type="button" className="secondary-action" onClick={onBack}>VOLVER</button><button type="button" className="primary-action" disabled={selected.length !== 2 && selected.length !== 4} onClick={() => onStart(selected)}>COMENZAR {selected.length === 4 ? '2V2' : '1V1'} ›</button></div>
+    <header className="screen-heading"><p className="eyebrow">{testMode ? 'MODO PRUEBA · SIN GUARDADO' : mode === 'RANKED' ? 'CLASIFICATORIO · 1V1 O 2V2' : 'JUGADORES ACTIVOS · 1V1, 1V2 O 2V2'}</p><h1>SELECCIONAR JUGADORES</h1></header>
+    {selected.length === 3 && mode !== 'RANKED' && <button type="button" onClick={() => setSoloTeam(team => team === 'WHITE' ? 'BLUE' : 'WHITE')}>JUGADOR SOLO: {soloTeam === 'WHITE' ? 'BLANCO' : 'AZUL'} · CAMBIAR</button>}
+    <div className="team-slots">{(selected.length === 3 && mode !== 'RANKED' ? [0, 1, 2] : [0, 1, 2, 3]).map(index => <span key={index} className={(index % 2 === 0) !== (selected.length === 3 && soloTeam === 'WHITE') ? 'white-slot' : 'blue-slot'}>{(index % 2 === 0) !== (selected.length === 3 && soloTeam === 'WHITE') ? 'BLANCO' : 'AZUL'} {Math.floor(index / 2) + 1}<b>{selected[index]?.nickname || selected[index]?.name || '—'}</b></span>)}</div>
+    <div className="player-grid selection-grid scroll-panel">{selectable.length === 0 ? <p>Crea jugadores en AJUSTES → JUGADORES.</p> : selectable.map(player => <button type="button" key={player.id} aria-pressed={selectedIds.includes(player.id)} className={'player-card ' + (selectedIds.includes(player.id) ? 'selected' : '')} onClick={() => select(player.id)}><span className="player-number">{selectedIds.includes(player.id) ? selectedIds.indexOf(player.id) + 1 : '＋'}</span><span className="player-avatar" style={{ '--avatar-tint': '#80b9ee' } as CSSProperties}>{player.name[0]}</span><strong>{player.nickname || player.name}</strong><small>NIVEL {player.level}</small></button>)}{([2, 4].includes(selected.length) || selected.length === 3 && mode !== 'RANKED') && <PreMatchAnalysis key={selected.map(p => p.id).join(',') + soloTeam + mode} players={selected} soloTeam={soloTeam} mode={mode} repository={repository} online={online} />}</div>
+
+    <div className="screen-actions"><button type="button" className="secondary-action" onClick={onBack}>VOLVER</button><button type="button" className="primary-action" disabled={![2, 4].includes(selected.length) && !(selected.length === 3 && mode !== 'RANKED')} onClick={() => onStart(selected, selected.length === 3 ? soloTeam : undefined)}>COMENZAR {selected.length === 4 ? '2V2' : selected.length === 3 ? '1V2' : '1V1'} ›</button></div>
   </section>
 }
 
@@ -46,9 +51,9 @@ function MatchBoard({ state, engine, input, players }: { state: Readonly<MatchSt
       <ScoreButton team="AZUL" score={state.blueGoals} disabled={state.goalInputLocked || state.status !== 'PLAYING'} onClick={() => input.emit('GOL_AZUL')} />
     </div>
     <div className="match-bottom">
-      <div className="team-line white-line"><button type="button" className="minus-score" aria-label="Quitar gol blanco" onClick={() => input.emit('QUITAR_GOL_BLANCO')}>−1</button><PlayerMini player={players[0]} /><PlayerMini player={players[2]} /></div>
+      <div className="team-line white-line"><button type="button" className="minus-score" aria-label="Quitar gol blanco" onClick={() => input.emit('QUITAR_GOL_BLANCO')}>−1</button><PlayerMini player={players[players.length === 3 && state.config?.soloTeam === 'WHITE' ? 1 : 0]} /><PlayerMini player={players.length === 3 && state.config?.soloTeam === 'WHITE' ? undefined : players[2]} /></div>
       <div className="board-controls"><button type="button" onClick={() => input.emit('DESHACER')}>DESHACER</button><button type="button" onClick={() => input.emit(state.status === 'PAUSED' ? 'CONTINUAR' : 'PAUSA')}>{state.status === 'PAUSED' ? 'CONTINUAR' : 'PAUSA'}</button></div>
-      <div className="team-line blue-line"><PlayerMini player={players[1]} /><PlayerMini player={players[3]} /><button type="button" className="minus-score" aria-label="Quitar gol azul" onClick={() => input.emit('QUITAR_GOL_AZUL')}>−1</button></div>
+      <div className="team-line blue-line"><PlayerMini player={players[players.length === 3 && state.config?.soloTeam === 'WHITE' ? 0 : 1]} /><PlayerMini player={players.length === 3 && state.config?.soloTeam === 'WHITE' ? players[2] : players[3]} /><button type="button" className="minus-score" aria-label="Quitar gol azul" onClick={() => input.emit('QUITAR_GOL_AZUL')}>−1</button></div>
     </div>
     {state.status === 'PAUSED' && <div className="pause-overlay">PAUSA <button type="button" onClick={() => input.emit('CONTINUAR')}>CONTINUAR</button></div>}
     {state.status === 'COUNTDOWN' && <button type="button" className="countdown-overlay" onClick={() => engine.skipCountdown()}><span>PREPARADOS</span><strong>{state.countdownValue}</strong><small>TOCA PARA SALTAR</small></button>}

@@ -23,6 +23,8 @@ export interface TimelineEvent {
 export interface MatchConfiguration {
   /** Missing in historical copies: retain their per-period goal rules. */
   rulesVersion?: 1 | 2 | 3 | 4
+  /** Presentation of three-player casual teams; never a scoring handicap. */
+  soloTeam?: Team
   mode: MatchMode
   victoryCondition: VictoryCondition
   goalLimit: number

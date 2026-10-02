@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { MatchSummary } from '../src/services/persistence/models'
 import { loadPlayerMatches } from '../src/statistics/loadPlayerStatistics'
-import { emptyAnalysisFilter } from '../src/statistics/playerAnalysis'
+import { emptyAnalysisFilter, preparePlayerResults } from '../src/statistics/playerAnalysis'
 import { directEvidence, predictionDraft, rankedForm } from './block04Prototype'
 import { eloFixture, eloFixtures, eloPlayers } from './eloFixtures'
 
@@ -101,7 +101,7 @@ test('filtros H2H reutilizados, forma competitiva completa independiente del fil
   assert.throws(() => directEvidence(games, [a], [b], { ...emptyAnalysisFilter, from: '2026-02-30' }), /Fecha/)
 })
 test('rechaza selección inválida y resultados incompatibles antes de presentar evidencia parcial', () => {
-  for (const [own, rivals] of [[[], [b]], [[a], [a]], [[a, a], [b, d]], [[a], [b, d]]]) assert.throws(() => directEvidence([], own, rivals), /incompatible/)
+  for (const [own, rivals] of [[[], [b]], [[a], [a]], [[a, a], [b, d]], [[a], [b, b]]]) assert.throws(() => directEvidence([], own, rivals), /incompatible/)
   assert.throws(() => directEvidence([{ ...summary(0), winner_team: 'BLUE' }], [a], [b]), /Ganador/)
 })
 test('últimos cinco conservan microsegundos/zonas y desempate UUID', () => {
@@ -111,4 +111,36 @@ test('últimos cinco conservan microsegundos/zonas y desempate UUID', () => {
     { ...summary(2), finished_at: '2026-10-02T12:00:00.123456Z' },
   ]
   assert.deepEqual(rankedForm(games, a).map(r => r.match.id), [games[2].id, games[0].id, games[1].id])
+})
+
+test('1v2 casual: ambas orientaciones, XP completo, H2H exacto y forma sin clasificatorias', async () => {
+  const { MatchEngine } = await import('../src/match-engine/MatchEngine')
+  const { mapMatch, participantsFor } = await import('../src/services/persistence/mapMatch')
+  const { rebuildProgression, approvedXpRules } = await import('../src/progression/xp')
+  const { ActiveMatchStore } = await import('../src/services/persistence/ActiveMatchStore')
+  for (const mode of ['QUICK', 'CHAOS'] as const) for (const soloTeam of ['WHITE', 'BLUE'] as const) {
+    const players = eloPlayers.slice(0, 3).map(p => ({ ...p, active: true }))
+    let now = Date.parse('2026-10-02T12:00:00Z')
+    const engine = new MatchEngine(() => now)
+    engine.createMatch({ mode, soloTeam, victoryCondition: 'GOALS', goalLimit: 2, halfDurationMinutes: 1 })
+    engine.skipCountdown(); engine.dispatch('GOL_BLANCO'); now += 3000
+    const data = new Map<string, string>()
+    const store = new ActiveMatchStore({ getItem: k => data.get(k) ?? null, setItem: (k, v) => { data.set(k, v) } }, 'test04', 'owner')
+    store.save({ version: 1, id: 'ee040000-0000-4000-8000-000000000001', ownerId: 'owner', testMode: false, players, checkpoint: engine.getCheckpoint() })
+    const restored = new MatchEngine(() => now)
+    restored.restoreCheckpoint(store.load()!.checkpoint)
+    assert.equal(restored.getState().config!.soloTeam, soloTeam)
+    assert.deepEqual(participantsFor(store.load()!.players, soloTeam).map(p => p.team), soloTeam === 'WHITE' ? ['BLUE', 'WHITE', 'BLUE'] : ['WHITE', 'BLUE', 'WHITE'])
+    restored.dispatch('CONTINUAR'); restored.dispatch('GOL_BLANCO')
+    const doc = mapMatch(restored.getState(), players, 'ee040000-0000-4000-8000-000000000001', false)
+    const match = { ...doc.match, participants: doc.participants }
+    const white = doc.participants.filter(p => p.team === 'WHITE').map(p => p.player_id)
+    const blue = doc.participants.filter(p => p.team === 'BLUE').map(p => p.player_id)
+    assert.equal(directEvidence([match], white, blue, emptyAnalysisFilter).totals.wins, 1)
+    assert.equal(directEvidence([match], blue, white, emptyAnalysisFilter).totals.losses, 1)
+    for (const p of doc.participants) assert.equal(rebuildProgression([match, match], p.player_id, approvedXpRules).xp, p.team === 'WHITE' ? 150 : 75)
+    assert.deepEqual(rankedForm([match], players[0].id), [])
+    assert.throws(() => preparePlayerResults([{ ...match, match_type: 'RANKED' }], players[0].id), /Equipos/)
+    assert.throws(() => mapMatch({ ...restored.getState(), config: { ...restored.getState().config!, mode: 'RANKED' } }, players, doc.match.id, false), /Clasificatorio/)
+  }
 })

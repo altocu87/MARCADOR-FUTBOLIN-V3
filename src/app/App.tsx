@@ -213,10 +213,11 @@ export function App({ services }: { services: ApplicationServices | null }) {
   function openStatistics(playerId: string | null = null) {
     setProfilePlayerId(playerId); setActiveMenu('ranking'); setScreen('statistics')
   }
-  function start(selected: Player[]) {
+  function start(selected: Player[], soloTeam?: 'WHITE' | 'BLUE') {
     if (!configuration) return
     try {
-      participantsFor(selected)
+      participantsFor(selected, soloTeam)
+      if (selected.length === 3 && configuration.mode === 'RANKED') throw new Error('Clasificatorio requiere 1v1 o 2v2.')
       if (!testMode && !coordinator) throw new Error('Inicia sesión desde la esquina superior o activa MODO PRUEBA.')
       if (!testMode) {
         const copy = activeStore?.load()
@@ -226,7 +227,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
         activeStore: testMode ? null : activeStore, checkpointReleased: false }
       handledId.current = null; finalDocument.current = null
       setPlayers(selected); setNotice(''); setSaveMessage(''); setCanLeave(false)
-      engine.createMatch(configuration); setScreen('match')
+      engine.createMatch({ ...configuration, ...(selected.length === 3 ? { soloTeam: soloTeam ?? 'BLUE' } : {}) }); setScreen('match')
     } catch (error) { setNotice(errorMessage(error)) }
   }
   function recoverMatch() {
@@ -263,7 +264,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
       {screen === 'new' && <NewMatchScreen onSelect={nextMode => { setMode(nextMode); setScreen('configuration') }} />}
       {screen === 'recovery' && recovery && <RecoveryScreen copy={recovery} onRecover={recoverMatch} onDiscard={requestCancellation} />}
       {screen === 'configuration' && <MatchConfigurationScreen mode={mode} onContinue={next => { setConfiguration(next); setScreen('players') }} onBack={() => setScreen('new')} />}
-      {screen === 'players' && <PlayerSelectionScreen key={userId ?? 'practice'} availablePlayers={availablePlayers} testMode={testMode} onStart={start} onBack={() => setScreen('configuration')} />}
+      {screen === 'players' && <PlayerSelectionScreen repository={services?.matches ?? null} online={online && !data.localIdentity} key={userId ?? 'practice'} availablePlayers={availablePlayers} mode={mode} testMode={testMode} onStart={start} onBack={() => setScreen('configuration')} />}
       {screen === 'match' && <MatchFlow state={state} engine={engine} input={input} players={players} onNewMatch={newMatch} saveMessage={saveMessage} canLeave={canLeave && !saving} onRetry={() => { if (!saving && run.current && finalDocument.current) void persist(run.current, finalDocument.current) }} />}
       {screen === 'settings' && <SettingsScreen key={userId ?? 'guest'} services={services} user={data.user} players={data.players} protectedIds={protectedIds} testMode={testMode} onTestMode={value => { setTestMode(value); try { localStorage.setItem('marcador:test-mode:v1', String(value)) } catch { setNotice('Preferencia aplicada; no se pudo recordar localmente.') } }} refresh={data.refresh} pendingCount={pendingCount} onRetry={pending.retry} dataMessage={notice || pending.message || data.message} online={online && !data.localIdentity} onAccount={() => openAccount()} syncBusy={pending.busy} onPending={() => setScreen('pending')} offline={offline} onCheck={() => void connection.monitor.check()}
         onProfile={id => openStatistics(id)} displaySettings={<DisplaySettings mode={displayMode} onChange={value => { setDisplayMode(value); try { localStorage.setItem(DISPLAY_MODE_KEY, value) } catch { setNotice('Vista aplicada; no se pudo recordar localmente.') } }} />} />}

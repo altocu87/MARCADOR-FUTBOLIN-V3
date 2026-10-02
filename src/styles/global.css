@@ -265,3 +265,17 @@ button:focus-visible,input:focus-visible { outline: 2px solid #86ebff; outline-o
   .adaptive-canvas .competition-metrics { gap: 8px; }
   .adaptive-canvas .competition-metrics dd { font-size: 17px; }
 }
+
+.competitive-analysis { border:1px solid #385679; border-radius:10px; padding:14px; margin-top:16px; background:#102039; }
+.competitive-analysis h3 { color:#75ddff; font-size:14px; margin:12px 0; }
+.competitive-analysis label { display:flex; flex-direction:column; gap:8px; }
+.competitive-analysis select { width:100%; min-width:0; min-height:48px; color:#eef5ff; background:#132b45; border:1px solid #527797; border-radius:7px; padding:8px; }
+.competitive-analysis p, .competitive-form { font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
+.competitive-form { padding-left:20px; }
+.player-selection > button { min-height:48px; padding:8px; color:#eef5ff; background:#132b45; border:1px solid #527797; border-radius:7px; }
+
+.prematch-analysis { grid-column:1 / -1; min-height:0; flex-shrink:0; border:1px solid #385679; border-radius:8px; padding:8px; font-size:11px; }
+.prematch-analysis summary { cursor:pointer; padding:6px; color:#75ddff; font-weight:800; }
+.prematch-analysis-body { max-height:110px; overflow:auto; line-height:1.6; }
+
+.player-selection .screen-actions { flex-shrink:0; min-height:48px; }

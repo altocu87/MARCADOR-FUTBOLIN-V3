@@ -1,3 +1,4 @@
+import { matchFormat, type MatchFormat } from './matchFormat'
 import type { MatchMode } from '../match-engine/types'
 import type { MatchSummary } from '../services/persistence/models'
 import { playerStatistics, type PlayerStatistics } from './playerStatistics'
@@ -6,14 +7,14 @@ export interface AnalysisFilter {
   from: string
   to: string
   mode: 'ALL' | MatchMode
-  format: 'ALL' | '1v1' | '2v2'
+  format: 'ALL' | MatchFormat
 }
 export const emptyAnalysisFilter: AnalysisFilter = { from: '', to: '', mode: 'ALL', format: 'ALL' }
 export type Outcome = 'WIN' | 'LOSS' | 'DRAW'
 export interface PlayerResult {
   match: MatchSummary
   outcome: Outcome
-  format: '1v1' | '2v2'
+  format: MatchFormat
   goalsFor: number
   goalsAgainst: number
   timestamp: number
@@ -25,7 +26,7 @@ export interface PlayerAnalysis {
   recent: PlayerResult[]
   currentStreak: { outcome: Outcome | null; length: number }
   bestWinStreak: number
-  byFormat: { format: '1v1' | '2v2'; totals: PlayerStatistics }[]
+  byFormat: { format: MatchFormat; totals: PlayerStatistics }[]
   evolution: { id: string; finishedAt: string; played: number; winRate: number }[]
 }
 
@@ -42,7 +43,7 @@ function dateBoundary(value: string, nextDay = false) {
 }
 
 export function validateAnalysisFilter(filter: AnalysisFilter) {
-  if (!['ALL', 'QUICK', 'CHAOS', 'RANKED'].includes(filter.mode) || !['ALL', '1v1', '2v2'].includes(filter.format)) throw new Error('Filtro no válido.')
+  if (!['ALL', 'QUICK', 'CHAOS', 'RANKED'].includes(filter.mode) || !['ALL', '1v1', '1v2', '2v2'].includes(filter.format)) throw new Error('Filtro no válido.')
   const from = filter.from ? dateBoundary(filter.from) : -Infinity
   const to = filter.to ? dateBoundary(filter.to, true) : Infinity
   if (from >= to) throw new Error('La fecha Desde debe ser anterior o igual a Hasta.')
@@ -58,10 +59,7 @@ export function preparePlayerResults(matches: readonly MatchSummary[], playerId:
     if (match.test_mode !== false || match.status !== 'MATCH_END') continue
     const participant = match.participants.find(p => p.player_id === playerId)
     if (!participant) continue
-    const size = match.participants.length
-    if (![2, 4].includes(size) || new Set(match.participants.map(p => p.player_id)).size !== size ||
-      match.participants.filter(p => p.team === 'WHITE').length !== size / 2 ||
-      match.participants.filter(p => p.team === 'BLUE').length !== size / 2) throw new Error('Equipos incompatibles. No se muestra un análisis parcial.')
+    const format = matchFormat(match)
     const timestamp = Date.parse(match.finished_at)
     if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(match.finished_at) || !Number.isFinite(timestamp) ||
       !['QUICK', 'CHAOS', 'RANKED'].includes(match.match_type)) throw new Error('Fecha o modalidad del partido incompatible.')
@@ -74,7 +72,7 @@ export function preparePlayerResults(matches: readonly MatchSummary[], playerId:
       continue
     }
     seen.set(match.id, fingerprint)
-    results.push({ match, timestamp, fraction, format: size === 2 ? '1v1' : '2v2',
+    results.push({ match, timestamp, fraction, format,
       outcome: match.winner_team === null ? 'DRAW' : match.winner_team === participant.team ? 'WIN' : 'LOSS',
       goalsFor: participant.team === 'WHITE' ? match.white_score : match.blue_score,
       goalsAgainst: participant.team === 'WHITE' ? match.blue_score : match.white_score })
@@ -100,5 +98,5 @@ export function analyzePlayerResults(results: readonly PlayerResult[], playerId:
   const matches = selected.map(r => r.match)
   return { totals: playerStatistics(matches, playerId), matches: [...matches].reverse(), recent: selected.slice(-5).reverse(),
     currentStreak, bestWinStreak, evolution,
-    byFormat: (['1v1', '2v2'] as const).map(format => ({ format, totals: playerStatistics(selected.filter(r => r.format === format).map(r => r.match), playerId) })) }
+    byFormat: (['1v1', '1v2', '2v2'] as const).map(format => ({ format, totals: playerStatistics(selected.filter(r => r.format === format).map(r => r.match), playerId) })) }
 }

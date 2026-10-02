@@ -1,3 +1,4 @@
+import { participantsFor } from '../../services/persistence/mapMatch'
 import type { ActiveMatchCopy } from '../../services/persistence/ActiveMatchStore'
 
 export function RecoveryScreen({ copy, onRecover, onDiscard }: { copy: ActiveMatchCopy; onRecover: () => void; onDiscard: () => void }) {
@@ -9,7 +10,7 @@ export function RecoveryScreen({ copy, onRecover, onDiscard }: { copy: ActiveMat
     <h1>PARTIDO POR RECUPERAR</h1>
     <p className="recovery-meta">{period} · {Math.floor(state.elapsedSeconds / 60)}:{String(state.elapsedSeconds % 60).padStart(2, '0')} JUGADOS</p>
     <div className="result-score"><span>BLANCO <b>{state.whiteGoals}</b></span><em>—</em><span><b>{state.blueGoals}</b> AZUL</span></div>
-    <p className="recovery-players">{copy.players.map((p, i) => `${i % 2 === 0 ? 'B' : 'A'}: ${p.nickname || p.name}`).join(' · ')}</p>
+    <p className="recovery-players">{participantsFor(copy.players, state.config?.soloTeam).map(p => `${p.team === 'WHITE' ? 'B' : 'A'}: ${p.player_name}`).join(' · ')}</p>
     <p className="result-summary">No se ha sumado tiempo mientras la aplicación estuvo cerrada.</p>
     <button type="button" className="primary-action large-action" onClick={onRecover}>{state.status === 'MATCH_END' ? 'RECUPERAR RESULTADO' : 'RECUPERAR PARTIDO'}</button>
     {state.status !== 'MATCH_END' && <button type="button" className="discard-match-action" onClick={onDiscard}>DESCARTAR PARTIDO</button>}

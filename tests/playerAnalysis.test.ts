@@ -20,7 +20,7 @@ const analyze = (games: MatchSummary[], filter = emptyAnalysisFilter) => analyze
 test('análisis vacío: sin racha, sin evolución y ambos formatos sin partidos', () => {
   const a = analyze([])
   assert.deepEqual(a.currentStreak, { outcome: null, length: 0 }); assert.equal(a.bestWinStreak, 0)
-  assert.deepEqual(a.recent, []); assert.deepEqual(a.evolution, []); assert.deepEqual(a.byFormat.map(r => r.totals.played), [0, 0])
+  assert.deepEqual(a.recent, []); assert.deepEqual(a.evolution, []); assert.deepEqual(a.byFormat.map(r => r.totals.played), [0, 0, 0])
 })
 test('orden cronológico, últimos cinco y acumulado sobre todos los partidos', () => {
   const games = ['WIN', 'WIN', 'LOSS', 'DRAW', 'WIN', 'LOSS', 'LOSS'].map((r, i) => match(i + 1, r as 'WIN' | 'LOSS' | 'DRAW'))
@@ -38,16 +38,16 @@ test('empate corta victorias/derrotas, racha actual de empates explícita', () =
 test('1v1 y 2v2 se separan por participantes, misma perspectiva para compañeros', () => {
   const games = [match(1), match(2, 'LOSS', 4), match(3, 'WIN', 4)]
   const a = analyze(games)
-  assert.deepEqual(a.byFormat.map(r => [r.totals.played, r.totals.wins, r.totals.losses]), [[1, 1, 0], [2, 1, 1]])
+  assert.deepEqual(a.byFormat.map(r => [r.totals.played, r.totals.wins, r.totals.losses]), [[1, 1, 0], [0, 0, 0], [2, 1, 1]])
   const teammate = analyzePlayerResults(preparePlayerResults(games, id(3)), id(3))
-  assert.deepEqual(teammate.totals, a.byFormat[1].totals)
+  assert.deepEqual(teammate.totals, a.byFormat[2].totals)
 })
 test('filtros combinados: todas las secciones e historial usan el mismo subconjunto', () => {
   const games = Array.from({ length: 12 }, (_, i) => ({ ...match(i + 1, i % 2 ? 'LOSS' : 'WIN', i % 2 ? 4 : 2), match_type: i % 3 ? 'CHAOS' as const : 'QUICK' as const }))
   const a = analyze(games, { from: '2026-10-03', to: '2026-10-11', mode: 'CHAOS', format: '1v1' })
   assert.deepEqual(a.matches.map(m => m.finished_at.slice(0, 10)), ['2026-10-11', '2026-10-09', '2026-10-05', '2026-10-03'])
   assert.equal(a.totals.played, 4); assert.equal(a.currentStreak.length, 4); assert.equal(a.bestWinStreak, 4)
-  assert.equal(a.recent.length, 4); assert.equal(a.evolution.length, 4); assert.equal(a.byFormat[1].totals.played, 0)
+  assert.equal(a.recent.length, 4); assert.equal(a.evolution.length, 4); assert.equal(a.byFormat[2].totals.played, 0)
 })
 test('periodo sin coincidencias no altera los datos ni inventa una racha', () => {
   const games = [match(1)], original = structuredClone(games)

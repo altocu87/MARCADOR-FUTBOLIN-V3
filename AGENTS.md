@@ -24,6 +24,7 @@ Si se pide continuar por bloques o un número de bloque, leer [docs/BLOQUES_DESA
 ## Reglas esenciales
 
 - El MatchEngine no depende de React, Supabase, Vercel ni hardware. Todas las fuentes de gol pasan por la validación del motor y su bloqueo de tres segundos.
+- Formatos aprobados el 2026-10-02: 1v1/2v2 en los tres modos; 1v2 solo Rápido/Caos, sin ventaja inicial y con XP completo por jugador. Clasificatorio rechaza tres participantes también en servidor. Color del jugador solo se conserva en copia/recuperación. ELO 03 aprobado/activo; 04 descriptivo, sin pronósticos.
 - Registrar goles por equipo, no por jugador. Reglas vigentes: GOALS sin partes/objetivo por equipo/cronómetro ascendente sin límite; TIME dos partes por reloj; AMBAS objetivo por equipo para el partido completo, sin reinicio entre partes: final al alcanzarlo o, tras dos partes por reloj, ganador por acumulado. Conservar reglas de copias anteriores. No cambiarlas silenciosamente ni volver a retirar AMBAS.
 - Internet nunca bloquea una partida. No enviar cada gol a la nube. Modo prueba no persiste partidos ni eventos.
 - No implementar XP/ELO, logros, torneos completos o hardware hasta que el usuario autorice esa fase.

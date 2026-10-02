@@ -117,6 +117,17 @@ Implementa ELO solo Clasificatorio, ranking privado, categorías y máximo hist�
 
 ## Bloque 04 — Análisis competitivo, enfrentamientos y predicción
 
+**Decisiones y entrega vigentes — 2026-10-02, v0.4.1.** El propietario aprueba las recomendaciones y concreta 1 contra 2 exclusivamente Rápido/Caos. Sustituye los pendientes históricos de 03/04 de abajo. ELO servidor activado: versión 2, inicio 1200, primeras 10 K40/después K20, nearest-away, categorías Bronce <1000/Plata 1000/Oro 1200/Platino 1400/Diamante 1600/Élite 1800, descenso con histéresis 25, multiplicadores todos 1 y todos los Clasificatorios históricos válidos; máximo reconstruible. No hay suelo ELO ni suma cero garantizada con K distintos.
+
+04 integrado como **análisis descriptivo**, sin índice, pronóstico, porcentajes predictivos ni confianza estimada. H2H de jugador/pareja exactos desde el historial completo confirmado, con perspectivas inversas y filtros del perfil; 1v2/2v1 agrupados como formato 1v2, separados de 1v1/2v2. Forma: últimos cinco Clasificatorios por ID, independiente de filtros, sin rellenar ausencias. Selección permite consultar enfrentamientos del modo elegido y forma de cada participante, solo al abrir el panel; consultas paralelas cancelables, error/offline no bloquean COMENZAR. Perfil reutiliza su lectura existente sin nuevas consultas.
+
+1v2: tres jugadores activos distintos, mismas reglas de victoria/sin ventaja inicial, color del solo seleccionable, XP completo para cada jugador y equipos/posición conservados en copia, recuperación, resultado e historial. Clasificatorio sigue requiriendo 1v1/2v2: rechazo en UI, composición, mapeo, recuperación, estadísticas/XP y servidor/RPC/trigger diferido. `soloTeam` opcional de configuración solo representa equipos; versiones de reglas/checkpoints anteriores intactas. No cambia MatchEngine ni sus reglas de goles/reloj/desempate.
+
+Migración aplicada **20261002140820_casual_1v2_and_approved_elo.sql**: reemplazo acotado de validadores RPC/trigger de equipos y activación ELO aprobada. RLS/grants, locks/idempotencia, cronología, columnas protegidas y vista XP conservados. Sin tablas nuevas ni datos de negocio modificados. Conteos antes/después: dos jugadores/dos Rápidos/cuatro participantes/doce eventos; ambos 225 XP/nivel 1, cero Clasificatorios reales. SQL de 03/04 real con ROLLBACK PASS; ningún Auth/usuario/correo nuevo.
+
+Cierre del alcance aprobado: análisis descriptivo, previsión aplazada por decisión expresa. Comprobaciones/publicación en ESTADO_ACTUAL/VERIFICACION_BLOQUE_04. El prompt original de abajo queda histórico: no requiere reaprobar ELO ni incorporar pronósticos.
+
+
 **Preparación parcial del 2026-10-02:** primero comprobada dependencia de 03 en revisión vigente/Supabase real: ELO desactivado y parámetros pendientes NULL, sin aprobación posterior. 04 **espera ese cierre**. Avanzados diseño, referencia H2H/forma y maqueta solamente en tests; no UI activa ni predicción/porcentajes. Tres preguntas propias de §32–33 (modelo/pesos, muestra y tratamiento 2v2), con ejemplos concretos, sin respuesta expresa registrada. Diez grupos npm test, contratos 04 12/12, Chromium 42/42, TypeScript/builds/visual correctos; SQL de dependencia/RLS READ ONLY y ROLLBACK PASS, sin nuevas cuentas/partidos/migraciones. XP de 02 aprobado/activo intacto y 01 cerrado; Preview XP/ELO autenticada 403, SMTP externo separado. Detalles en [VERIFICACION_BLOQUE_04.md](VERIFICACION_BLOQUE_04.md), publicación/continuidad en ESTADO_ACTUAL. Cerrar 03 y decisiones/integración 04 sigue siendo la siguiente acción efectiva; entregar 05 no los salta ni inicia 05.
 
 **Agente:** enfrentamientos directos, últimos cinco clasificatorios y previsión con muestra/confianza; reutilizar las estadísticas y filtros ya implementados. **Propietario:** aprobar modelo/pesos/umbral de muestra que todavía sean propuestas (apartados 32–33).
@@ -132,6 +143,9 @@ Con 03 cerrado y reglas competitivas aprobadas, desarrolla enfrentamientos direc
 ```
 
 ## Bloque 05 — Logros, récords y Hall of Fame
+
+Continuidad tras v0.4.1: 03 activo y 04 descriptivo integrado; previsión aplazada voluntariamente y no bloquea preparar 05. Usar el prompt actualizado de continuación al final de VERIFICACION_BLOQUE_04. Catálogo/umbrales/recompensas de logros y récords siguen pendientes de aprobación. No iniciado. El prompt anterior de preparación se conserva como registro histórico.
+
 
 **Prompt preparado durante la entrega parcial de 04:** no inicia 05 ni acredita cierre de 03/04. Las dependencias anteriores deben comprobarse otra vez; con 03 desactivado y 04 sin integración, registrar espera, conservar progresión y limitarse a preparación independiente que esté autorizada. No aplicar catálogo ni XP extraordinario por recibir este prompt.
 

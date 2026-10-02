@@ -13,10 +13,11 @@ begin
   if operator_id is null then raise exception 'Existing operator required; do not create one'; end if;
   if exists(select 1 from auth.users where id=other_id) then raise exception 'Isolation probe UUID collision'; end if;
   select count(*) into expected_players from public.players where owner_id=operator_id;
-  if not exists(select 1 from public.elo_rules_v1 where not enabled and initial_elo=1200
-    and provisional_matches is null and provisional_k is null and established_k is null
-    and rounding is null and category_thresholds is null and hysteresis is null and margin_multipliers is null)
-    then raise exception '03 dependency changed: inspect approval before proceeding'; end if;
+  if not exists(select 1 from public.elo_rules_v1 where enabled and version=2 and initial_elo=1200
+    and eligible_from is null and provisional_matches=10 and provisional_k=40 and established_k=20
+    and rounding='nearest-away' and category_thresholds=array[0,1000,1200,1400,1600,1800]
+    and hysteresis=25 and margin_multipliers=array[1,1,1,1,1,1]::numeric[])
+    then raise exception 'Approved ELO configuration changed'; end if;
   if not exists(select 1 from public.xp_rules_v1 where enabled and complete=50 and win=100 and draw=60
     and loss=25 and ranked_win=50 and extra_time_win=25 and penalties_win=25 and eligible_from is null
     and cardinality(thresholds)=101 and thresholds[2]=100 and thresholds[3]=255 and thresholds[101]=50119)
@@ -41,9 +42,9 @@ begin
   set local role authenticated;
   snapshot := public.get_competition_snapshot_v1();
   if jsonb_array_length(snapshot) <> expected_players
-    or exists(select 1 from jsonb_array_elements(snapshot) r where (r->>'enabled')::boolean
-      or (r->>'elo')::integer <> 1200 or r->>'category' is not null or r->>'ranking_position' is not null)
-    then raise exception 'Disabled ELO snapshot differs'; end if;
+    or exists(select 1 from jsonb_array_elements(snapshot) r where not (r->>'enabled')::boolean
+      or (r->>'rules_version')::integer <> 2 or r->>'category' is null)
+    then raise exception 'Approved ELO snapshot differs'; end if;
   if exists(select 1 from public.matches where owner_id <> operator_id)
     or exists(select 1 from public.players where owner_id <> operator_id)
     then raise exception 'Owner isolation failed'; end if;
