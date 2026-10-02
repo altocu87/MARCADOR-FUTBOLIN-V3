@@ -1,3 +1,5 @@
+import { AchievementCards } from '../src/ui/components/AchievementsPanel'
+import { rebuildAchievements } from '../src/achievements/rebuild'
 import { useState } from 'react'
 import { FixedCanvas } from '../src/ui/layout/FixedCanvas'
 import { reviewHonours, type RecordId } from './block05Prototype'
@@ -40,7 +42,7 @@ export function Block05Review() {
       .review05 label { display:flex; flex-direction:column; gap:6px; } .review05 .controls05 { display:flex; flex-wrap:wrap; gap:12px; }
     `}</style>
     <main className="review05">
-      <header><h1>Logros, récords y Hall of Fame</h1><p className="warning05">PROPUESTA V1 · Datos simulados · Premios sin activar</p></header>
+      <header><h1>Logros, récords y Hall of Fame</h1><p className="warning05">LOGROS POR NIVELES · Datos simulados · Récords en propuesta</p></header>
       <nav aria-label="Secciones de honores">
         <button aria-pressed={tab === 'achievements'} onClick={() => setTab('achievements')}>LOGROS</button>
         <button aria-pressed={tab === 'records'} onClick={() => setTab('records')}>RÉCORDS</button>
@@ -60,14 +62,10 @@ export function Block05Review() {
           <section aria-label="Resumen de propuesta">
             <h2>{tab === 'hall' ? 'Líderes de esta cuenta simulada' : displayName(row.player)}</h2>
             <p className="muted05">{row.player.active ? 'Activo' : 'Baja · conserva historial'} · {row.metrics.played} partidos simulados</p>
-            <p data-testid="proposed-xp">XP extraordinario propuesto: {row.proposedExtraXp} · Concedido: 0</p>
+            <p data-testid="proposed-xp">XP extraordinario concedido: 0</p>
             <p className="muted05">Prueba y pendientes excluidos. Récords: 0 XP. Goles siempre de equipo.</p>
           </section>
-          {tab === 'achievements' && <div className="cards05">{row.achievements.map(a => <section key={a.id} data-achievement={a.id}>
-            <h2>{a.title}</h2><p>{a.evidence ? 'Cumple en la simulación' : 'En progreso'} · {a.progress}/{a.threshold}</p>
-            <progress aria-label={a.title} value={a.progress} max={a.threshold} /><p>Premio propuesto: {a.xp} XP único</p>
-            {a.evidence && <p className="muted05">Primer hecho: {new Date(a.evidence.finishedAt).toLocaleDateString('es-ES')}</p>}
-          </section>)}</div>}
+          {tab === 'achievements' && <AchievementCards snapshot={rebuildAchievements({ accountId: 'fixture-account', playerId, source: 'confirmed', complete: true, matches: state === 'empty' ? [] : history })} />}
           {tab === 'records' && <div className="cards05">{row.records.map(r => <section key={r.id}><h2>{names[r.id]}</h2>
             <p>{r.value === null ? 'Datos insuficientes' : r.id === 'best_win_rate' ? `${r.value.toFixed(1)} %` : r.value}</p>
             <p className="muted05">{r.matchIds.length ? `${r.matchIds.length} partido(s) de evidencia` : 'Derivado del historial completo'}</p>

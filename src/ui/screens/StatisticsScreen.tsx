@@ -4,13 +4,14 @@ import type { CompetitionRepository } from '../../services/persistence/Competiti
 import { CompetitionPanel } from '../components/CompetitionPanel'
 import { useEffect, useMemo, useState } from 'react'
 import type { MatchRepository } from '../../services/persistence/MatchRepository'
-import type { Player } from '../../services/persistence/models'
+import type { MatchSummary, Player } from '../../services/persistence/models'
 import { loadPlayerMatches } from '../../statistics/loadPlayerStatistics'
 import { analyzePlayerResults, emptyAnalysisFilter, preparePlayerResults, validateAnalysisFilter, type AnalysisFilter, type PlayerResult } from '../../statistics/playerAnalysis'
 import { errorMessage } from '../../app/useData'
 import { HistoryScreen } from './HistoryScreen'
 import { CompetitiveAnalysis } from '../components/CompetitiveAnalysis'
 import { AnalysisDetails } from '../components/AnalysisDetails'
+import { AchievementsPanel } from '../components/AchievementsPanel'
 
 export function StatisticsScreen({ repository, players, userId, online, initialPlayerId, onBack, playersLoading, dataMessage, dataRevision = null, progressionRepository = null, competitionRepository = null }: {
   competitionRepository?: CompetitionRepository | null
@@ -43,7 +44,8 @@ function PlayerProfile({ player, players, userId, repository, online, onBack, pr
   progressionRepository: ProgressionRepository | null
   players: readonly Player[]
 }) {
-  const [results, setResults] = useState<PlayerResult[] | null>(null)
+  const [confirmedHistory, setConfirmedHistory] = useState<{ matches: MatchSummary[]; results: PlayerResult[] } | null>(null)
+  const results = confirmedHistory?.results ?? null
   const [history, setHistory] = useState(false)
   const [filter, setFilter] = useState<AnalysisFilter>(emptyAnalysisFilter)
   const [draft, setDraft] = useState<AnalysisFilter>(emptyAnalysisFilter)
@@ -53,12 +55,12 @@ function PlayerProfile({ player, players, userId, repository, online, onBack, pr
   const [busy, setBusy] = useState(false)
   const [version, setVersion] = useState(0)
   useEffect(() => {
-    setResults(null); setHistory(false); setMessage(''); setBusy(false)
+    setConfirmedHistory(null); setHistory(false); setMessage(''); setBusy(false)
     if (!online || !repository) { setMessage('SIN CONEXIÓN O SESIÓN POR VERIFICAR · Las estadísticas necesitan consultar todos los resultados guardados.'); return }
     const controller = new AbortController()
     setBusy(true)
     void loadPlayerMatches(repository, player.id, controller.signal).then(value => {
-      if (!controller.signal.aborted) setResults(preparePlayerResults(value, player.id))
+      if (!controller.signal.aborted) setConfirmedHistory({ matches: value, results: preparePlayerResults(value, player.id) })
     }).catch(error => { if (!controller.signal.aborted) setMessage(errorMessage(error)) })
       .finally(() => { if (!controller.signal.aborted) setBusy(false) })
     return () => controller.abort()
@@ -79,6 +81,7 @@ function PlayerProfile({ player, players, userId, repository, online, onBack, pr
       <div className="profile-identity"><div className="profile-avatar" aria-hidden="true">{player.name[0]}{player.photoUrl?.startsWith('https://') && <img src={player.photoUrl} alt="" referrerPolicy="no-referrer" onError={event => { event.currentTarget.hidden = true }} />}</div><div><h2>{player.nickname || player.name}</h2>{player.nickname && <p>{player.name}</p>}<span>{player.active ? 'ACTIVO' : 'INACTIVO · HISTORIAL CONSERVADO'}</span></div></div>
       <ProgressionPanel repository={progressionRepository} playerId={player.id} online={online} revision={`${version}:${dataRevision ?? ""}`} />
       <CompetitionPanel repository={competitionRepository} playerId={player.id} online={online} revision={`${version}:${dataRevision ?? ""}`} />
+      <AchievementsPanel accountId={userId} playerId={player.id} matches={confirmedHistory?.matches ?? null} online={online} busy={busy} message={message} />
       <details className="analysis-filters" open={filtersOpen} onToggle={event => setFiltersOpen(event.currentTarget.open)}><summary>FILTRAR ANÁLISIS</summary><form onSubmit={event => { event.preventDefault(); try { validateAnalysisFilter(draft); setFilter({ ...draft }); setFilterError('') } catch (error) { setFilterError(errorMessage(error)) } }}>
         <label>Desde<input type="date" value={draft.from} onChange={e => setDraft(value => ({ ...value, from: e.target.value }))} /></label>
         <label>Hasta<input type="date" value={draft.to} onChange={e => setDraft(value => ({ ...value, to: e.target.value }))} /></label>

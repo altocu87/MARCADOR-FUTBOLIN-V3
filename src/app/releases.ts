@@ -5,6 +5,16 @@ export const APP_VERSION = version
 
 export const releases = [
   {
+    version: '0.5.1',
+    title: 'Logros que suben de nivel',
+    changes: [
+      'El perfil muestra nueve familias de logros con cinco estrellas y progreso hacia el siguiente nivel.',
+      'Goles de tu equipo empieza en 1, 5 y 50. Partidos y victorias empiezan en 1 y 5.',
+      'Los niveles se reconstruyen desde partidos confirmados; prueba y pendientes no cuentan.',
+    ],
+    pending: 'XP extraordinario, récords y Hall of Fame pendientes de aprobación. Los logros de torneos esperan al bloque 06.',
+  },
+  {
     version: '0.5.0',
     title: 'Propuesta de logros, récords y Hall of Fame',
     changes: [

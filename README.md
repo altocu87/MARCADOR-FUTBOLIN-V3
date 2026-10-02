@@ -4,7 +4,7 @@ Simulador táctil del marcador físico de futbolín. React + Vite + TypeScript +
 
 ## Versión y novedades
 
-Versión actual de la rama de desarrollo: **0.4.1**. Se muestra al pie de la aplicación; **AJUSTES → VERSIONES** ofrece un historial breve, disponible sin cuenta y también sin conexión después de cargar la aplicación. Numeración retroactiva por entregas: 0.0.0 simulador inicial; 0.1.0 consolidación, cuentas, historial y offline; 0.2.0 experiencia/niveles; 0.3.0 clasificación competitiva preparada, ELO desactivado; 0.4.0 preparación del análisis competitivo y consulta de versiones. Publicar 0.4.0 no cierra 03/04 ni activa predicciones. La versión indica el build abierto: una PWA anterior seguirá mostrando su propia versión hasta actualizarse con el mecanismo existente.
+Versión actual de la rama de desarrollo: **0.5.1**. Se muestra al pie de la aplicación; **AJUSTES → VERSIONES** ofrece un historial breve, disponible sin cuenta y también sin conexión después de cargar la aplicación. Numeración retroactiva por entregas: 0.0.0 simulador inicial; 0.1.0 consolidación, cuentas, historial y offline; 0.2.0 experiencia/niveles; 0.3.0 clasificación competitiva preparada, ELO desactivado; 0.4.0 preparación del análisis competitivo y consulta de versiones. Publicar 0.4.0 no cierra 03/04 ni activa predicciones. La versión indica el build abierto: una PWA anterior seguirá mostrando su propia versión hasta actualizarse con el mecanismo existente.
 
 Fuente de versión: `package.json`; contenido del historial: `src/app/releases.ts`. Mantener ambos y el metadato raíz del lockfile al publicar cada entrega, sin cambiar versiones de dependencias. Ver alcance y comprobaciones en [VERIFICACION_VERSIONES.md](docs/VERIFICACION_VERSIONES.md).
 
@@ -14,13 +14,15 @@ ELO activo con parámetros aprobados: K40 primeras diez/K20 después, redondeo e
 
 ## Contexto y estado de la fase
 
-**v0.5.0 — preparación del bloque 05:** propuesta de 24 logros y ocho récords en
-[Catálogo para aprobación](docs/CATALOGO_BLOQUE_05.md). Catálogo y XP extraordinario
-sin aprobar ni activar. Maqueta exclusiva del build aislado en
-`/tests/ui-fixture.html?block05=review`, con datos simulados y cero premios
-concedidos; no forma parte de Preview normal. Verificación y continuación en
-[VERIFICACION_BLOQUE_05.md](docs/VERIFICACION_BLOQUE_05.md). ELO aprobado/activo y
-04 descriptivo preservados; 06 no iniciado. Ejecutar `npm run test:block05` o
+**v0.5.1 — logros por niveles:** el perfil ofrece nueve familias con cinco
+estrellas, progreso al siguiente nivel y evidencia de cada tier. Goles de tu
+equipo: 1/5/50/250/1000; partidos y victorias: 1/5/25/100/250. Historial completo
+confirmado, independiente de filtros; prueba y pendientes excluidos. Las estrellas
+no añaden XP. Recompensas extraordinarias y récords/Hall siguen como propuesta en
+[Catálogo 05](docs/CATALOGO_BLOQUE_05.md). Torneos previstos para 06, sin iniciarlo.
+[Verificación y continuación 05](docs/VERIFICACION_BLOQUE_05.md) distingue fixtures,
+SQL real y Preview sin sesión del operador. ELO activo y 04 descriptivo preservados.
+Ejecutar `npm run test:block05` o
 `npm test` (once grupos); prueba SQL reproducible de solo lectura:
 `node --import tsx supabase/tests/block05.ts`, ejecutar salida íntegra con su
 ROLLBACK únicamente en el proyecto autorizado. No migración ni filas nuevas.
@@ -89,7 +91,7 @@ El bloque 01 añade `node --import tsx supabase/tests/block01.ts > /tmp/futbolin
 
 El build comprueba TypeScript y genera `dist/`. Las pruebas SQL reproducibles están en `supabase/tests/persistence_v1.sql`: ejecutar completas como administrador, con su ROLLBACK final. Usan fixtures temporales y no dejan cuentas ni partidos.
 
-`npm run test:browser` genera ambos builds y ejecuta las regresiones Chromium con Playwright 1.63.0: vistas, las tres condiciones de victoria, acceso con cookie de vista protegida, prueba sin guardado, recuperación 2v2, pendientes/historial sin duplicados, perfiles/estadísticas, análisis/filtros y reapertura PWA con servidor apagado. Usa `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, Chromium del sistema en `/usr/bin/chromium` o el navegador de Playwright (`npx playwright install chromium`). Preview aislado en 5197, contextos temporales y tráfico Supabase bloqueado; no verifica Auth ni datos reales. `npm test` ejecuta diez grupos independientes del navegador; estadísticas/análisis 42 casos, XP ocho, ELO/repositorio catorce y contratos aislados de 04 doce. Chromium de la preparación parcial de 04: 42/42; con versión/historial visible: 44/44, conservando esos recorridos. La prueba SQL real reproducible de XP se describe en [VERIFICACION_BLOQUE_02.md](docs/VERIFICACION_BLOQUE_02.md). Resultados del bloque inicial cloud y pasos para cerrar fase B en [VERIFICACION_NUBE.md](docs/VERIFICACION_NUBE.md); estadísticas en [VERIFICACION_ESTADISTICAS.md](docs/VERIFICACION_ESTADISTICAS.md).
+`npm run test:browser` genera ambos builds y ejecuta las regresiones Chromium con Playwright 1.63.0: vistas, las tres condiciones de victoria, acceso con cookie de vista protegida, prueba sin guardado, recuperación 2v2, pendientes/historial sin duplicados, perfiles/estadísticas, análisis/filtros y reapertura PWA con servidor apagado. Usa `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, Chromium del sistema en `/usr/bin/chromium` o el navegador de Playwright (`npx playwright install chromium`). Preview aislado en 5197, contextos temporales y tráfico Supabase bloqueado; no verifica Auth ni datos reales. `npm test` ejecuta once grupos independientes del navegador; logros/tiers y récords propuestos tienen 19 contratos en 05; estadísticas/análisis 42 casos, XP ocho, ELO/repositorio catorce y contratos aislados de 04 doce. Chromium de la preparación parcial de 04: 42/42; con versión/historial visible: 44/44, conservando esos recorridos. La prueba SQL real reproducible de XP se describe en [VERIFICACION_BLOQUE_02.md](docs/VERIFICACION_BLOQUE_02.md). Resultados del bloque inicial cloud y pasos para cerrar fase B en [VERIFICACION_NUBE.md](docs/VERIFICACION_NUBE.md); estadísticas en [VERIFICACION_ESTADISTICAS.md](docs/VERIFICACION_ESTADISTICAS.md).
 
 La página `/tests/ui-fixture.html` inyecta repositorios en memoria para verificar formularios, partido e historial sin usar credenciales ni modificar Supabase. Está disponible en desarrollo y en el build aislado `npm run build:test-offline` → `npm run preview:test-offline` (puerto 5188, salida ignorada `tmp/pwa-test`). No valida Supabase real ni forma parte de `dist/` de producción. `?network=real` exige respuesta del servidor local para simular identidad, jugadores y guardado; permite apagar ese servidor y verificar el arranque desde la caché PWA.
 

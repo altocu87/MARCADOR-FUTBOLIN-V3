@@ -1,3 +1,131 @@
+# Bloque 05 — logros progresivos, v0.5.1, 2026-10-02
+
+Petición vigente implementada: una familia que sube de nivel con estrellas/tiers,
+en lugar de tarjetas separadas. El propietario fija goles 1/5/50 y delega otros
+escalones y familias accesibles. Nueve familias/cinco niveles (**45 estrellas**)
+en PERFIL → LOGROS. La recompensa activa es la estrella; **0 XP extra**.
+Recompensas V2 y récords/Hall siguen en [CATALOGO_BLOQUE_05.md](CATALOGO_BLOQUE_05.md)
+para aprobación. 05 no cerrado; 06 sin iniciar. ELO activo/04 descriptivo intactos.
+
+## Implementación y fuentes
+
+- `src/achievements/catalog.ts`: nueve familias, cinco umbrales ascendentes.
+  `rebuild.ts`: reconstrucción por cuenta/jugador/familia/ordinal del tier;
+  metadato `tiers-v2` no cambia identidad. Una recarga/retry no añade estrellas.
+- `AchievementsPanel` y `AchievementCards`: estrellas, nivel actual, siguiente
+  objetivo/lo que falta, todos los umbrales y evidencia fecha/UUID. Una tarjeta
+  por familia, nivel 0 y estado máximo 5/5. Texto React escapado, keys estables,
+  hooks incondicionales, cálculo memoizado por historial/cuenta/jugador.
+- StatisticsScreen reutiliza todas las páginas confirmadas bajo RLS. Sin consulta
+  adicional ni contador persistido; filtros no cambian logros. Sin red/error o
+  lectura parcial se ocultan cifras, sin confirmar ceros falsos. Actualización,
+  cuenta/jugador, reconexión y sync reutilizan invalidación/cancelación existente.
+  Conserva también las páginas originales antes de deduplicar PlayerResult, para
+  detectar conflictos en banderas de prórroga/tanda que no alteran el marcador.
+- Prueba/pendientes/checkpoints fuera; 1v2 Rápido/Caos sin ELO, compañeros comparten
+  goles de equipo. Penaltis deciden victoria sin inflar goles; 0–0 por tanda no
+  cumple victoria a cero. No tiempos jugados ni goles individuales inventados.
+- No migraciones, funciones SQL nuevas, permisos, escrituras, tablas/columnas de
+  premio ni extensión del XP. Cliente presenta badges, no concede experiencia.
+  Correcciones futuras recalculan estrellas desde hechos vigentes. Motor intacto.
+- Fixtures usan el componente real y catálogo actual; récords/Hall son propuestas
+  solo en tests. `approved=false` en reviewHonours se refiere a esa revisión mixta,
+  no niega la petición aprobada de estrellas. Todas sus contribuciones XP son 0.
+
+## Evidencia de esta entrega
+
+Base `1712e7dcded478f0dfe359d45cc4c1a78195417d`, rama correcta y árbol limpio.
+Fetch explícito de revisión/main sin sobrescribir, referencias revisión 0/0;
+main `900e470a719bc99bee4df853f0e11301a5b6562e`, sin promoción.
+
+- `npm test`: once grupos correctos; ejecución explícita de los contratos 05
+  **13/13 de revisión + 6/6 del módulo activo**. Fronteras exactas, saltos de varios
+  niveles, IDs, cuenta/jugador, primera evidencia, retry/recarga, prueba/procedencia,
+  racha/empate, 2v2/1v2, conflictos, edición/eliminación y 0 XP extraordinario.
+- TypeScript/build normal y fixture correctos. Typecheck adicional de tests,
+  componente/maqueta y generador: `npx tsc --ignoreConfig --noEmit --strict
+  --target ES2022 --module ESNext --moduleResolution Bundler --jsx react-jsx
+  --skipLibCheck --types node,vite/client tests/block05Prototype.ts tests/block05Review.tsx
+  tests/block05.test.ts tests/achievements.test.ts supabase/tests/block05.ts tests/uiFixture.tsx`.
+- Chromium: los recorridos nuevos del perfil verifican filtros independientes,
+  refresco, baja, pendiente → sync sin duplicar y prueba sin avance. El escenario
+  de error del perfil comprueba ausencia de tarjetas. Fixture de revisión verifica
+  nueve familias, cinco tiers/estrellas, estados y Hall propuesto, sin Supabase.
+- Visual: capturas revisadas del perfil móvil 390×844 y fixture, mediciones a
+  320×568/390×844/844×390/768×1024/1440×900/800×480. Scroll interno y controles
+  de niveles ≥48 px. Evidencia temporal `/tmp/futbolin-block05-visual`, fuera de Git.
+  Playwright/Chromium existentes, sin nueva dependencia. Perfil real de la app
+  en fixture también abierto en referencia física exacta 800×480, captura
+  `/tmp/futbolin-block05-visual/profile-physical.png`.
+- Primer recorrido focalizado detectó una expectativa errónea del test: actualizar
+  desmonta las tarjetas durante carga y cierra sus detalles abiertos. Corregida
+  la comparación para medir estrellas/progreso, sin exigir ese estado transitorio.
+  No se alteraron hechos ni premios para hacer pasar la prueba.
+- Al ampliar el typecheck a la fixture completa se añadieron sus tipos ambiente
+  `vite/client` para ImportMeta.env y CSS; no cambios de producción por ese ajuste.
+- `npm audit --omit=dev --audit-level=moderate`: 0 vulnerabilidades. Diff/enlaces,
+  84 apartados del contexto y metadatos package/lock coherentes.
+
+## SQL real y datos
+
+Único proyecto autorizado `unemjyfhzljcdjcbiiwh`. Generador actualizado
+`supabase/tests/block05.ts`: **19 escenarios PASS** en REPEATABLE READ READ ONLY
+con ROLLBACK. Incluye fronteras goles 1/4/5/49/50/249/250/999/1000, escenarios
+base/retry/editado/eliminado/vacío, casual1v2, microsegundos, 25 partidos,
+pendientes/práctica excluidos y prórroga/tanda. Compara 45 tiers, progreso y primera
+evidencia, métricas y seis récords propuestos no ELO. No prueba una RPC nueva.
+
+SQL de seguridad conserva XP/ELO aprobados activos, RLS/SECURITY INVOKER/permisos
+y aislamiento de otra identidad. Rol de operador existente simulado en SQL,
+sin crear Auth/partidos y sin login de navegador. Fixtures únicamente JSON en
+variables/CTEs, ningún INSERT/UPDATE/DELETE/DDL. SELECT posterior: **2 jugadores,
+2 Rápidos, 4 participantes, 12 eventos, 0 Clasificatorios; 225 XP/nivel 1 ambos**.
+No repetir cuentas/partidos del checklist cerrado ni tocar SMTP/Google/Drive/pagos.
+
+## Publicación y límites de Preview
+
+Primera batería completa Chromium **52/52**, cero fallos/omitidos (200 s),
+incluida reapertura PWA con servidor realmente apagado. Una revisión posterior
+conservó las páginas originales para detectar banderas contradictorias antes
+de deduplicar; añade un tercer recorrido del perfil. **Batería final 53/53**, cero fallos/omitidos (193 s), con regresión de banderas
+contradictorias y perfil físico expandido. Once grupos npm test, typecheck y ambos
+builds finales correctos. Publicación se registra al comprobarla.
+Vercel protegido HTTP/READY demuestra despliegue, no sesión Supabase del operador.
+No se dispone de esa sesión; la UI nueva se verifica con repositorios en memoria.
+Para observación autenticada pendiente usar un perfil/histórico existentes; no
+pedir otra cuenta ni partidos nuevos. No retirar protección ni promover main.
+
+## Prompt vigente: continuar solo 05
+
+```text
+Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1 y trabaja
+exclusivamente en completar bloque 05. Lee AGENTS.md, docs/CONTEXTO_MAESTRO.md,
+docs/ESTADO_ACTUAL.md, docs/BLOQUES_DESARROLLO.md, docs/CATALOGO_BLOQUE_05.md y
+docs/VERIFICACION_BLOQUE_05.md. Sincroniza sin sobrescribir trabajo local ni
+promover main. v0.5.1 ya implementa nueve familias con cinco tiers/45 estrellas
+en PERFIL → LOGROS desde historial confirmado completo, independiente de filtros.
+Conserva esa identidad cuenta/jugador/familia/ordinal y reconstrucción; prueba,
+cola e incompletos excluidos. No rehagas estrellas como 45 tarjetas separadas.
+XP extraordinario activo 0; propuesta V2 25/25/50/75/100 por tier y ocho récords/Hall
+siguen pendientes de aprobación. Prepara cualquier ajuste concreto y comprueba
+si hay decisión expresa posterior antes de integrar recompensas o reglas de Hall.
+Avanza pruebas independientes. Si se aprueba XP, deriva en servidor bajo RLS,
+contribución única por tier y recálculo desde hechos vigentes, con desglose y sin
+alterar XP base/curva aprobados. Récords propuestos 0 XP y empates compartidos.
+ELO aprobado/activo y 04 descriptivo, sin pronósticos. 1v1/2v2 todos los modos;
+1v2 solo Rápido/Caos, XP completo y sin ELO. Conserva motor/RLS/idempotencia;
+no atribuyas goles individuales ni inventes tiempos. Verifica código/UI/SQL
+según acceso, distingue fixtures de Preview autenticada; utiliza perfil existente,
+no repitas cuentas/partidos del checklist cerrado. Actualiza contexto/seguimiento,
+versión/novedades, publica en revisión y entrega prompt condicionado de 06.
+Sin torneos, administración, pagos, Google/Drive, cambios SMTP ni promoción main.
+```
+
+## Registro histórico de preparación v0.5.0
+
+Las pruebas y publicación siguientes corresponden a v0.5.0; sus 24 tarjetas y
+recompensas V1 quedan sustituidas por el catálogo actual, sin haberse concedido.
+
 # Bloque 05 — preparación revisable, v0.5.0, 2026-10-02
 
 **Sin catálogo aprobado ni premios extraordinarios activos.** 05 no está cerrado.
@@ -125,7 +253,7 @@ fuera del bundle, versión/log 0.5.0 pendientes de aprobación; sin sesión del
 operador ni logros reales. Esta evidencia se versiona después en una anotación
 documental, sin cambiar versión/código ni inferir su futuro despliegue.
 
-## Continuación efectiva: terminar 05
+## Prompt histórico v0.5.0, sustituido por el vigente de arriba
 
 ```text
 Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1 y trabaja
@@ -155,7 +283,7 @@ Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1 y ejecut
 exclusivamente bloque 06: torneos. Lee AGENTS.md, CONTEXTO_MAESTRO, ESTADO_ACTUAL,
 BLOQUES_DESARROLLO y VERIFICACION_BLOQUE_05; sincroniza preservando trabajo local,
 sin promover main. Comprueba primero cierre y catálogo aprobado/activo de 05;
-v0.5.0 fue solo preparación sin premios: si 05 sigue abierto, registra dependencia
+05 permanece abierto en v0.5.1: si sigue abierto, registra dependencia
 y no lo saltes. Con 05 cerrado, prepara propuesta concreta de formato, equipos,
 cuadro/liguilla, byes, empates y recompensas para aprobación propia de 06. Avanza
 diseño/pruebas independientes; no inventes ni actives reglas/premios propuestos.

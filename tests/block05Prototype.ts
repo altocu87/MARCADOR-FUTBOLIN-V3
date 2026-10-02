@@ -1,24 +1,15 @@
 import type { MatchSummary, Player } from '../src/services/persistence/models'
 import { preparePlayerResults } from '../src/statistics/playerAnalysis'
+import { achievementCatalog, type AchievementMetric } from '../src/achievements/catalog'
+import { rebuildAchievements } from '../src/achievements/rebuild'
 import { matchFormat } from '../src/statistics/matchFormat'
 import { rebuildCompetition, type EloRules } from '../src/competition/elo'
 
-/** PROPOSAL ONLY. No production imports, persistence or reward writes. */
-export type Metric = 'played' | 'wins' | 'streak' | 'ranked_played' | 'ranked_wins' | 'team_goals' | 'clean_win' | 'extra_win' | 'penalty_win'
+/** Records/Hall remain a proposal. Badge tiers use the production catalogue. */
+export type Metric = AchievementMetric
 export interface DraftAchievement { id: string; metric: Metric; threshold: number; xp: number; title: string }
-const family = (metric: Metric, title: string, thresholds: number[], rewards: number[]): DraftAchievement[] =>
-  thresholds.map((threshold, i) => ({ id: `${metric}_${threshold}`, metric, threshold, xp: rewards[i], title: `${title} · ${threshold}` }))
-export const draftCatalog: readonly DraftAchievement[] = Object.freeze([
-  ...family('played', 'Partidos completados', [1, 10, 50, 100, 250], [25, 25, 50, 50, 100]),
-  ...family('wins', 'Victorias', [1, 10, 50, 100, 250], [25, 25, 50, 50, 100]),
-  ...family('streak', 'Victorias consecutivas', [3, 5, 10], [25, 50, 100]),
-  ...family('ranked_played', 'Clasificatorios completados', [1, 10, 50], [25, 50, 100]),
-  ...family('ranked_wins', 'Victorias clasificatorias', [10, 50], [50, 100]),
-  ...family('team_goals', 'Goles de tu equipo', [50, 250, 1000], [25, 50, 100]),
-  ...family('clean_win', 'Victoria a cero', [1], [25]),
-  ...family('extra_win', 'Victoria por prórroga sin tanda', [1], [25]),
-  ...family('penalty_win', 'Victoria por penaltis', [1], [25]),
-].map(item => Object.freeze(item)))
+export const draftCatalog: readonly DraftAchievement[] = achievementCatalog.flatMap(family =>
+  family.thresholds.map((threshold, i) => ({ id: `${family.id}:tier_${i + 1}`, metric: family.id, threshold, xp: 0, title: `${family.title} · Nivel ${i + 1}` })))
 
 export type RecordId = 'most_played' | 'most_wins' | 'best_streak' | 'biggest_margin' | 'most_team_goals' | 'best_win_rate' | 'current_elo' | 'max_elo'
 export interface DraftRecord {
@@ -57,25 +48,12 @@ export function reviewHonours(players: readonly Player[], inputs: readonly Histo
   const competitive = rebuildCompetition(players, history, eloRules).rows
   const rows = players.map(player => {
     const results = preparePlayerResults(history, player.id)
-    const metrics: Record<Metric, number> = { played: 0, wins: 0, streak: 0, ranked_played: 0, ranked_wins: 0, team_goals: 0, clean_win: 0, extra_win: 0, penalty_win: 0 }
-    const evidence = new Map<string, { matchId: string; finishedAt: string }>()
-    let currentStreak = 0
-    for (const r of results) {
-      const win = r.outcome === 'WIN'
-      metrics.played++; metrics.wins += Number(win); metrics.team_goals += r.goalsFor
-      currentStreak = win ? currentStreak + 1 : 0
-      metrics.streak = Math.max(metrics.streak, currentStreak)
-      metrics.ranked_played += Number(r.match.match_type === 'RANKED')
-      metrics.ranked_wins += Number(win && r.match.match_type === 'RANKED')
-      metrics.clean_win += Number(win && r.goalsFor > 0 && r.goalsAgainst === 0)
-      metrics.extra_win += Number(win && r.match.went_to_extra_time && !r.match.went_to_penalties)
-      metrics.penalty_win += Number(win && r.match.went_to_penalties)
-      for (const item of draftCatalog) if (!evidence.has(item.id) && metrics[item.metric] >= item.threshold) {
-        evidence.set(item.id, { matchId: r.match.id, finishedAt: r.match.finished_at })
-      }
-    }
-    const achievements = draftCatalog.map(item => ({ ...item, progress: Math.min(item.threshold, metrics[item.metric]),
-      evidence: evidence.get(item.id) ?? null, identity: `${player.id}:${item.id}` }))
+    const badges = rebuildAchievements({ accountId: 'fixture-account', playerId: player.id, source: 'confirmed', complete: true, matches: history })
+    const metrics = badges.metrics
+    const achievements = badges.families.flatMap(family => family.tiers.map(tier => ({
+      ...draftCatalog.find(item => item.id === tier.id)!, progress: tier.progress,
+      evidence: tier.evidence, identity: tier.identity,
+    })))
     const maxFrom = (id: RecordId, select: (r: typeof results[number]) => number | null): DraftRecord => {
       const candidates = results.map(r => ({ id: r.match.id, value: select(r) })).filter((r): r is { id: string; value: number } => r.value !== null)
       const value = candidates.length ? Math.max(...candidates.map(r => r.value)) : null
@@ -110,5 +88,5 @@ export function reviewHonours(players: readonly Player[], inputs: readonly Histo
     return { id: record.id, value: first?.record.value ?? null,
       leaders: first ? candidates.filter(row => compare(row.record, first.record) === 0).map(row => row.player) : [] }
   }) ?? []
-  return { rows, hall, catalogVersion: 'draft-v1' as const, approved: false as const }
+  return { rows, hall, catalogVersion: 'tiers-v2' as const, approved: false as const }
 }

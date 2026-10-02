@@ -37,7 +37,7 @@ Object.defineProperty(window, 'fixtureRecoveryCalls', { value: recoveryCalls })
 const authCalls = { login: 0, register: 0 }
 Object.defineProperty(window, 'fixtureAuthCalls', { value: authCalls })
 // Built, isolated profile/pagination fixtures. No database writes.
-if (statisticsMode === 'seed' || statisticsMode === 'analysis') {
+if (statisticsMode === 'seed' || statisticsMode === 'analysis' || statisticsMode === 'conflicting-badges') {
   const analysis = statisticsMode === 'analysis'
   for (let i = 0; i < (analysis ? 12 : 25); i++) {
     let now = Date.UTC(2026, 9, 1) + i * (analysis ? 86_400_000 : 180_000)
@@ -125,10 +125,14 @@ const services: ApplicationServices = {
       await requireNetwork()
       query.signal?.throwIfAborted()
       if (statisticsMode === 'error' && query.playerId) throw new Error('Error de consulta simulado · No se han cargado estadísticas')
-      return [...matches.values()].map(doc => ({ ...doc.match, participants: doc.participants }))
+      const rows = [...matches.values()].map(doc => ({ ...doc.match, participants: doc.participants }))
         .filter(m => !m.test_mode && (!query.playerId || m.participants.some(p => p.player_id === query.playerId)))
         .filter(m => !query.before || m.finished_at < query.before.finishedAt || m.finished_at === query.before.finishedAt && m.id < query.before.id)
         .sort((a, b) => b.finished_at.localeCompare(a.finished_at) || b.id.localeCompare(a.id)).slice(offset, offset + 20)
+      // Conflicting extra-time flags would disappear if badges consumed already
+      // deduplicated PlayerResult[]. Keep raw confirmed pages available too.
+      if (statisticsMode === 'conflicting-badges' && query.playerId && !query.before && rows.length) return [...rows, { ...rows[0], went_to_extra_time: !rows[0].went_to_extra_time }]
+      return rows
     },
     async getMatchById(id) { const doc = matches.get(id); if (!doc) throw new Error('No encontrado'); return structuredClone(doc) },
   },

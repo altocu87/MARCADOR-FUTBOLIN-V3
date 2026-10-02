@@ -6,6 +6,41 @@
 
 ## Punto de continuidad para conversaciones nuevas
 
+**Bloque 05 parcialmente implementado, v0.5.1, 2026-10-02.** Nueva petición del
+propietario: logros que suben de nivel con estrellas/tiers, una tarjeta por
+familia; goles en 1/5/50 y otros escalones accesibles. Implementadas nueve familias
+con cinco niveles, 45 estrellas en PERFIL → LOGROS. Goles de equipo
+1/5/50/250/1000; partidos y victorias 1/5/25/100/250; resto en
+[CATALOGO_BLOQUE_05.md](CATALOGO_BLOQUE_05.md). Sustituye las 24 tarjetas de la
+propuesta V1 anterior, que nunca concedió premios. **Estrellas activas, 0 XP extra**.
+Propuesta V2 25/25/50/75/100 XP por tier y ocho récords/Hall pendientes de aprobación.
+No iniciar torneos: Gana torneos queda previsto para 06, sin resultado ficticio.
+
+`src/achievements/` reconstruye niveles y primera evidencia desde hechos
+confirmados vigentes. Identidad cuenta/jugador/familia/ordinal; versión y umbral
+no crean otro premio. `AchievementsPanel` reutiliza la lectura completa privada
+del perfil; independiente de filtros. Retry/recarga no duplican estrellas;
+edición/eliminación futuras recalculan. Prueba, cola local, checkpoint y lectura
+parcial no contribuyen. Offline/error retira cifras. Sin migraciones/escrituras,
+contadores, nueva caché, cambios de XP/ELO/RLS/RPC/motor o administración.
+
+Base sincronizada `1712e7dcded478f0dfe359d45cc4c1a78195417d`, árbol limpio y rama
+correcta, revisión local/remota 0/0. `main` permanece `900e470` sin promoción.
+SQL real READ ONLY/ROLLBACK PASS: 19 escenarios TS/SQL de tiers y récords propuestos,
+RLS/permisos/reglas aprobadas; fixtures solo variables/CTEs, sin filas nuevas.
+SELECT posterior: 2 jugadores/2 Rápidos/4 participantes/12 eventos/0 Clasificatorios,
+ambos 225 XP/nivel 1. Sin cuentas ni partidos del checklist cerrado repetidos.
+
+Verificación de código y UI en [VERIFICACION_BLOQUE_05.md](VERIFICACION_BLOQUE_05.md).
+Preview protegida se comprueba como despliegue/HTTP; no hay sesión Supabase del
+operador, no se atribuye el fixture a recorrido autenticado. Publicación y
+resultados finales se registran en esa verificación y en el cambio de v0.5.1.
+Siguiente acción efectiva: decidir recompensas V2 y récords/Hall, completar solo
+05 y observar perfil existente autenticado según acceso. 05 no cerrado; 06 no
+iniciado. SMTP/Google/Drive/pagos/main excluidos.
+
+**Registro histórico de preparación v0.5.0, sustituido por los tiers v0.5.1:**
+
 **Bloque 05 en preparación revisable, v0.5.0, 2026-10-02.** Catálogo propuesto de
 24 logros/8 récords con umbrales, premios únicos de 25/50/100 XP, récords sin XP,
 porcentaje con mínimo 20 e históricos/recálculo explícitos en
@@ -210,7 +245,7 @@ Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida
 
 ## Bloqueo y siguiente acción exacta
 
-**Vigente tras preparación 05:** decidir la V1 de CATALOGO_BLOQUE_05, integrar
+**Vigente tras v0.5.1:** decidir recompensas V2 y récords/Hall de CATALOGO_BLOQUE_05, integrar
 únicamente lo aprobado y verificarlo. Ningún premio extraordinario activado.
 Dependencias 03/04 cerradas en su alcance: ELO activo, análisis descriptivo sin
 pronóstico. No repetir cuentas/partidos del checklist de 01. El párrafo siguiente
@@ -243,6 +278,25 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Logros progresivos por estrellas, v0.5.1
+
+Petición del propietario implementada: una tarjeta por familia y cinco niveles,
+con goles 1/5/50/250/1000. Nueve familias activas, 45 identidades de tier por cuenta
+y jugador. Primeros niveles accesibles; siguiente meta, progreso, estrellas y
+lista de umbrales/evidencia en el perfil. La propuesta V1 queda sustituida sin
+haber concedido XP. Extraordinario activo 0; propuesta V2 y récords/Hall pendientes.
+
+Módulos nuevos `src/achievements/catalog.ts`, `rebuild.ts`, `AchievementsPanel`;
+integración en StatisticsScreen y CSS adaptable/físico. Historial completo bajo
+RLS reutilizado, sin consultas/escrituras adicionales; derivación sin contador.
+Fixtures de 05 usan el componente real y catálogo actual; récords/Hall siguen
+solo simulados. SQL 19 escenarios PASS sin mutar esquema/datos, seguridad intacta.
+Versión package/lock/releases 0.5.1, sin dependencias nuevas. Contexto, seguimiento,
+catálogo, README y verificación actualizados. Once grupos npm test y contratos 13+6 correctos, builds/typecheck PASS y
+Chromium final 53/53 sin fallos/omitidos, incluida regresión de banderas
+contradictorias y perfil físico expandido. Publicación final se
+anota en VERIFICACION_BLOQUE_05; ningún inicio 06 ni promoción main.
 
 ### 2026-10-02 — Preparación independiente del bloque 05, v0.5.0
 

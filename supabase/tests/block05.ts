@@ -1,4 +1,4 @@
-/** Read-only SQL design proof. JSON fixtures live only in CTEs/variables;
+/** Read-only SQL proof for active badge tiers and proposed records. JSON fixtures live only in CTEs/variables;
  * no INSERT/UPDATE/DDL, account creation or reward activation.
  * node --import tsx supabase/tests/block05.ts > /tmp/futbolin-block05.sql
  * Execute whole output via the connector against the authorized project.
@@ -30,6 +30,7 @@ const cases = [makeCase('base', base), makeCase('retry', [...base, ...base]), ma
   makeCase('microseconds', [microA, microB]), makeCase('long_history', Array.from({ length: 25 }, (_, i) => summary(eloFixture(i, 2, 'WHITE', 4)))),
   makeCase('pending_practice_excluded', [], eloPlayers, [{ source: 'pending', complete: true, matches: base }, { source: 'practice', complete: true, matches: base }]),
   makeCase('extra_and_penalties', xpFixtures().map(summary), xpPlayers as Player[]),
+  ...[1, 4, 5, 49, 50, 249, 250, 999, 1000].map(goals => makeCase(`team_goals_${goals}`, [summary(eloFixture(50, 2, 'WHITE', goals))])),
 ]
 const json = (value: unknown) => `'${JSON.stringify(value).replaceAll("'", "''")}'::jsonb`
 const security = readFileSync(new URL('./block05_readonly.sql', import.meta.url), 'utf8')
@@ -90,9 +91,9 @@ begin
           'best_win_rate',case when (t.metrics->>'played')::int>=20 then (t.metrics->>'wins')::numeric/(t.metrics->>'played')::numeric*100 end) records
       from totals t
     ) select jsonb_agg(jsonb_build_object('id',id,'metrics',metrics,'proposedExtraXp',proposed_xp,'grantedExtraXp',0,'achievements',achievements,'records',records) order by id) into actual from rows;
-    if actual is distinct from scenario->'expected' then raise exception 'FAIL draft SQL/TS parity: %',scenario->>'name'; end if;
+    if actual is distinct from scenario->'expected' then raise exception 'FAIL badge tiers/records SQL/TS parity: %',scenario->>'name'; end if;
   end loop;
 end $draft$;
-select 'PASS: block05 read-only security and 10 draft SQL/TS scenarios; no awards or schema writes' as result;
+select 'PASS: block05 read-only security and ${cases.length} badge tiers/records SQL/TS scenarios; no XP or schema writes' as result;
 rollback;
 `)

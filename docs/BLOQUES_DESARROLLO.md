@@ -24,13 +24,13 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 ## Seguimiento
 
-**Vigente en v0.5.0, 2026-10-02:** 03 activo con reglas aprobadas; 04 descriptivo
-integrado, previsión aplazada. 05 preparado para aprobación, sin catálogo activo
-ni XP extraordinario: [CATALOGO_BLOQUE_05](CATALOGO_BLOQUE_05.md), referencia/maqueta
-aisladas y SQL de solo lectura. La siguiente acción efectiva permanece en 05:
-decidir esa V1 e integrar/probar únicamente lo aprobado. 06 no iniciado; su prompt
-queda condicionado al cierre de 05. Los pendientes competitivos históricos de los
-párrafos siguientes quedan sustituidos por v0.4.1.
+**Vigente en v0.5.1, 2026-10-02:** 03 activo aprobado y 04 descriptivo integrado.
+05 tiene nueve familias de logros con cinco niveles/estrellas en el perfil,
+reconstrucción confirmada, 0 XP extraordinario. Umbrales V2 implementados por
+petición de tiers del propietario; recompensas V2 y récords/Hall siguen en
+[CATALOGO_BLOQUE_05](CATALOGO_BLOQUE_05.md) para aprobación. 05 no cerrado;
+siguiente acción revisar esas propuestas y completar solo 05. 06 no iniciado,
+condicionado al cierre de 05. Evidencias en VERIFICACION_BLOQUE_05 y ESTADO_ACTUAL.
 
 **Punto 2 de revisión completado, 2026-10-02:** conector Vercel renovado y comprobado realmente: equipo/proyecto visibles, Preview HTTP 200 y despliegue READY de c2e217a/revisión. El 403 de las entradas anteriores queda resuelto. Punto 1 XP/bloqueo ELO ya acreditado por captura del propietario; no repetir cuentas/partidos. Sigue abierto el cierre competitivo de 03 (parámetros sin aprobación, ELO desactivado), después integración 04; 05 no iniciado. No se obtiene la sesión Supabase del operador por conectar Vercel. Evidencia/limitaciones en ESTADO_ACTUAL.
 
@@ -44,7 +44,7 @@ párrafos siguientes quedan sustituidos por v0.4.1.
 | 02 | XP y niveles | Implementado/activado el 2026-10-02 con decisiones expresas; npm test/Chromium 37/37 y SQL/RPC/RLS reales correctos. XP autenticado de Alex2 acreditado por captura humana; conector Vercel recuperado sin compartir sesión del operador | 01 cerrado; parámetros aprobados, todos los históricos. No repetir 01 ni pedir nuevos partidos: panel XP del perfil mostrado ya acreditado |
 | 03 | ELO, ranking y categorías | Aprobado/activo desde v0.4.1; SQL real y reconstrucción/RLS verificados | No reabrir reglas aprobadas; no repetir 01 |
 | 04 | Análisis competitivo descriptivo | Integrado/verificado v0.4.1: 1v1/2v2 y casual 1v2, forma/H2H; Chromium 48/48 y SQL real PASS | Previsión aplazada por decisión expresa; no bloquea 05 |
-| 05 | Logros, récords y Hall of Fame | v0.5.0 preparación revisable: 24 logros/8 récords, tests/maqueta aislados y SQL READ ONLY; sin aprobación ni premios | Aprobar/corregir CATALOGO_BLOQUE_05, integrar y verificar concesión única; no cerrado |
+| 05 | Logros, récords y Hall of Fame | v0.5.1: nueve familias activas, cinco tiers/45 estrellas, historial confirmado; 0 XP extra. Récords/Hall en fixture | Aprobar/corregir recompensas V2 y récords/Hall; Preview autenticada por observar. No cerrado |
 | 06 | Torneos | Propuesto, no iniciado | Cierre 05; formato/reglas/premios de torneo aprobados |
 | 07 | Sonido y pulido del uso diario | Propuesto | Flujos que se van a pulir estables |
 | 08 | Backup y restauración | Propuesto | Modelos de datos de los bloques anteriores estables |
@@ -154,13 +154,15 @@ Con 03 cerrado y reglas competitivas aprobadas, desarrolla enfrentamientos direc
 
 ## Bloque 05 — Logros, récords y Hall of Fame
 
-**Preparación vigente v0.5.0:** catálogo concreto de 24 logros/8 récords en
-CATALOGO_BLOQUE_05. Aprobación propia pendiente; reglas/XP extraordinario no
-activos. Referencia, 13 tests y maqueta bajo tests, generador SQL con diez
-escenarios CTE en READ ONLY/ROLLBACK. UI normal solo incorpora versión/novedades
-que identifican preparación. Evidencia y prompt de continuación inmediato en
-[VERIFICACION_BLOQUE_05.md](VERIFICACION_BLOQUE_05.md). Esta entrada sustituye el
-«No iniciado» del párrafo siguiente; no confundir preparación con cierre.
+**Entrega vigente v0.5.1:** nueve familias de logros con cinco niveles/estrellas
+en el perfil, umbrales accesibles y reconstrucción desde hechos confirmados.
+45 tiers únicos, 0 XP extra. La petición de niveles sustituye la propuesta V1;
+recompensas V2 y ocho récords/Hall siguen pendientes en CATALOGO_BLOQUE_05.
+SQL real de solo lectura comprueba 19 escenarios y RLS/reglas aprobadas.
+[VERIFICACION_BLOQUE_05.md](VERIFICACION_BLOQUE_05.md) contiene la evidencia y el
+prompt efectivo para continuar 05; no iniciar 06.
+
+**Registro histórico de preparación, sustituido por v0.5.1:**
 
 Continuidad tras v0.4.1: 03 activo y 04 descriptivo integrado; previsión aplazada voluntariamente y no bloquea preparar 05. Usar el prompt actualizado de continuación al final de VERIFICACION_BLOQUE_04. Catálogo/umbrales/recompensas de logros y récords siguen pendientes de aprobación. No iniciado. El prompt anterior de preparación se conserva como registro histórico.
 

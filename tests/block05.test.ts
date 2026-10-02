@@ -11,27 +11,27 @@ const replay = (matches: MatchSummary[]) => reviewHonours(eloPlayers, [{ source:
 const achievement = (rows: ReturnType<typeof replay>['rows'], id: string, player = 0) => rows[player].achievements.find(a => a.id === id)!
 const record = (rows: ReturnType<typeof replay>['rows'], id: string, player = 0) => rows[player].records.find(r => r.id === id)!
 
-test('propuesta con 24 IDs únicos; ningún premio real, incluso si cumple todos los umbrales', () => {
-  assert.equal(draftCatalog.length, 24)
-  assert.equal(new Set(draftCatalog.map(a => a.id)).size, 24)
+test('catálogo con 45 tiers únicos; ningún premio real, incluso si cumple todos los umbrales', () => {
+  assert.equal(draftCatalog.length, 45)
+  assert.equal(new Set(draftCatalog.map(a => a.id)).size, 45)
   const history = Array.from({ length: 250 }, (_, i) => summarize(eloFixture(i, 2, 'WHITE', 4)))
   const result = replay(history)
   assert.equal(result.approved, false)
   assert.equal(result.rows[0].grantedExtraXp, 0)
-  assert.ok(achievement(result.rows, 'team_goals_1000').evidence)
-  assert.ok(achievement(result.rows, 'wins_250').evidence)
+  assert.ok(achievement(result.rows, 'team_goals:tier_5').evidence)
+  assert.ok(achievement(result.rows, 'wins:tier_5').evidence)
   assert.equal(result.rows[1].metrics.team_goals, 0)
 })
 
 test('umbrales exactos, primera evidencia y retry/recarga no duplican XP propuesto', () => {
-  const matches = Array.from({ length: 10 }, (_, i) => summarize(eloFixture(i)))
-  const before = replay(matches.slice(0, 9))
-  assert.equal(achievement(before.rows, 'played_10').evidence, null)
+  const matches = Array.from({ length: 5 }, (_, i) => summarize(eloFixture(i)))
+  const before = replay(matches.slice(0, 4))
+  assert.equal(achievement(before.rows, 'played:tier_2').evidence, null)
   const result = replay(matches.reverse())
-  assert.equal(achievement(result.rows, 'played_10').evidence?.matchId, matches[0].id)
+  assert.equal(achievement(result.rows, 'played:tier_2').evidence?.matchId, matches[0].id)
   assert.deepEqual(replay([...matches, ...structuredClone(matches)]), result)
   assert.deepEqual(replay(matches), result)
-  assert.equal(new Set(result.rows[0].achievements.map(a => a.identity)).size, 24)
+  assert.equal(new Set(result.rows[0].achievements.map(a => a.identity)).size, 45)
 })
 
 test('pendiente final válido, práctica y datos no completos quedan fuera por procedencia', () => {
@@ -51,14 +51,14 @@ test('pendiente final válido, práctica y datos no completos quedan fuera por p
 test('prórroga y tanda distintas; un 0–0 por tanda no es victoria a cero ni goles individuales', () => {
   const docs = xpFixtures()
   const result = reviewHonours(xpPlayers, [{ source: 'confirmed', complete: true, matches: docs.map(summarize) }], rules)
-  assert.ok(achievement(result.rows, 'extra_win_1', 1).evidence)
-  assert.ok(achievement(result.rows, 'penalty_win_1', 1).evidence)
+  assert.ok(achievement(result.rows, 'extra_win:tier_1', 1).evidence)
+  assert.ok(achievement(result.rows, 'penalty_win:tier_1', 1).evidence)
   const penalty = docs.find(d => d.match.went_to_penalties)!
   const only = reviewHonours(xpPlayers, [{ source: 'confirmed', complete: true, matches: [summarize(penalty)] }], rules)
   const winning = penalty.participants.find(p => p.team === penalty.match.winner_team)!
   const row = only.rows.find(row => row.player.id === winning.player_id)!
-  assert.equal(row.achievements.find(a => a.id === 'clean_win_1')!.evidence, null)
-  assert.equal(row.achievements.find(a => a.id === 'extra_win_1')!.evidence, null)
+  assert.equal(row.achievements.find(a => a.id === 'clean_win:tier_1')!.evidence, null)
+  assert.equal(row.achievements.find(a => a.id === 'extra_win:tier_1')!.evidence, null)
   assert.equal(row.metrics.team_goals, 0)
   assert.equal(row.records.find(r => r.id === 'biggest_margin')!.value, 0)
 })
@@ -69,7 +69,7 @@ test('empate corta racha y penaltis cuentan como victoria', () => {
   assert.equal(replay([matches[0], draw, matches[2]]).rows[0].metrics.streak, 1)
   const penalty = structuredClone(matches[1]); penalty.white_score = penalty.blue_score = 0
   penalty.went_to_extra_time = penalty.went_to_penalties = true; penalty.penalty_white_score = 3; penalty.penalty_blue_score = 0
-  assert.ok(achievement(replay([matches[0], penalty, matches[2]]).rows, 'streak_3').evidence)
+  assert.ok(achievement(replay([matches[0], penalty, matches[2]]).rows, 'streak:tier_2').evidence)
 })
 
 test('2v2 y 1v2 casual comparten goles de equipo y premios completos; 1v2 ranked se rechaza', () => {
@@ -112,10 +112,10 @@ test('edición/eliminación de fixtures recalcula; volver a cumplir no crea otro
   const matches = [0, 1, 2].map(i => summarize(eloFixture(i)))
   const full = replay(matches)
   const deleted = replay(matches.slice(0, 2))
-  assert.equal(achievement(deleted.rows, 'streak_3').evidence, null)
-  assert.equal(full.rows[0].proposedExtraXp - deleted.rows[0].proposedExtraXp, 25)
+  assert.equal(achievement(deleted.rows, 'streak:tier_2').evidence, null)
+  assert.equal(full.rows[0].proposedExtraXp - deleted.rows[0].proposedExtraXp, 0)
   const edited = structuredClone(matches); edited[1].white_score = 0; edited[1].blue_score = 1; edited[1].winner_team = 'BLUE'
-  assert.equal(achievement(replay(edited).rows, 'streak_3').evidence, null)
+  assert.equal(achievement(replay(edited).rows, 'streak:tier_2').evidence, null)
   assert.deepEqual(replay([...matches.slice(0, 2), matches[2], matches[2]]), full)
 })
 
@@ -134,9 +134,9 @@ test('porcentaje requiere 20; igualdad exacta y ELO inicial sin partidos no crea
 test('orden de microsegundos/UUID decide la primera evidencia, sin inferir duración', () => {
   const a = summarize(eloFixture(0)), b = summarize(eloFixture(1))
   a.finished_at = '2026-10-02T00:00:00.000002Z'; b.finished_at = '2026-10-02T00:00:00.000001Z'
-  assert.equal(achievement(replay([a, b]).rows, 'played_1').evidence?.matchId, b.id)
+  assert.equal(achievement(replay([a, b]).rows, 'played:tier_1').evidence?.matchId, b.id)
   b.finished_at = a.finished_at
-  assert.equal(achievement(replay([b, a]).rows, 'played_1').evidence?.matchId, a.id)
+  assert.equal(achievement(replay([b, a]).rows, 'played:tier_1').evidence?.matchId, a.id)
   assert.ok(replay([a]).rows[0].records.every(r => !/time|fast|comeback/.test(r.id)))
 })
 
@@ -158,6 +158,6 @@ test('todos los partidos que igualan el récord siguen como evidencia; mejorar n
   const after = replay([...matches, summarize(eloFixture(2, 2, 'WHITE', 6))])
   assert.equal(record(after.rows, 'biggest_margin').value, 6)
   assert.equal(after.rows[0].grantedExtraXp, 0)
-  assert.equal(after.rows[0].proposedExtraXp - before.rows[0].proposedExtraXp, 25) // only streak_3
+  assert.equal(after.rows[0].proposedExtraXp - before.rows[0].proposedExtraXp, 0) // badge tiers never grant XP
   assert.equal(eloFixtures().length, 17)
 })

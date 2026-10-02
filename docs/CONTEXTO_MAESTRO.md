@@ -623,17 +623,21 @@ Mostrar también últimos 5 resultados clasificatorios.
 
 ## 34. LOGROS
 
-**Preparación de 05, v0.5.0, 2026-10-02:** catálogo V1 propuesto de 24 logros,
-umbrales/IDs estables y premios únicos 25/50/100 XP en
-[CATALOGO_BLOQUE_05.md](CATALOGO_BLOQUE_05.md). Aprobación solicitada, sin respuesta
-expresa registrada; no concesión ni integración activa. Referencia y maqueta solo
-tests, excluidas del build normal. Incluye históricos y propone XP derivado del
-historial vigente, que desaparece si una futura corrección deja de cumplir el
-logro; volver a cumplir contribuye una vez por cuenta/jugador/ID, sin acumular
-cobros. Primera evidencia cronológica por microsegundos/UUID; versión no crea otra
-identidad de premio. Goles de equipo, no personales; 1v2 casual premio completo,
-sin ELO. No XP/nivel como criterio circular ni secretos inventados. El objetivo
-aproximado siguiente sigue futuro; esta propuesta requiere aprobación propia.
+**Decisión vigente 05, v0.5.1, 2026-10-02:** el propietario pide logros que
+suben con estrellas/tiers, una tarjeta por familia; goles en 1/5/50 y otros
+escalones/familias accesibles a criterio de implementación. Sustituye las 24
+tarjetas independientes propuestas en v0.5.0. Nueve familias activas, cinco
+niveles/45 estrellas: partidos, victorias, goles de equipo, racha, partidos y
+victorias Clasificatorios, victoria a cero, prórroga sin tanda y penaltis.
+Umbrales exactos en [CATALOGO_BLOQUE_05.md](CATALOGO_BLOQUE_05.md).
+Perfil reutiliza historial privado completo confirmado, independiente de filtros;
+identidad cuenta/jugador/familia/ordinal de tier, primera evidencia por
+microsegundos/UUID, sin contadores/escrituras. Retry/recarga no duplican estrellas;
+corregir hechos recalcula y puede retirarlas. Prueba/cola/incompletos excluidos,
+sin conexión/error no se confirman cifras. Goles de equipo, nunca individuales.
+**0 XP extraordinario activo**; propuesta V2 25/25/50/75/100 por tier pendiente de
+aprobación, sin tocar XP/ELO aprobados. No catálogo circular por XP/nivel.
+Gana torneos previsto para 06 (1/3/5/10/25 propuesto), sin hechos ni UI activa.
 
 Objetivo futuro: aproximadamente 50 logros + aproximadamente 10 secretos opcionales.
 
@@ -1234,13 +1238,13 @@ Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
 
-Entrega vigente v0.5.0: 03 aprobado/activo y 04 descriptivo integrado. 05 preparado
-con catálogo/ejemplos, pruebas TS/SQL de solo lectura y maqueta aislada; aprobación
-de catálogo/XP extraordinario pendiente, sin premios ni UI real de honores. No
-cerrado; continuación efectiva aprobar e integrar 05. 06 condicionado a ese
-cierre, no iniciado. Detalles §34–35 y ESTADO_ACTUAL; los pendientes históricos
-de 03/04 de abajo quedan sustituidos por v0.4.1.
-
+Entrega vigente v0.5.1: 03 aprobado/activo, 04 descriptivo integrado y logros
+05 por niveles disponibles en el perfil desde historial confirmado. Nueve familias,
+45 estrellas, 0 XP extra. Recompensas V2 y récords/Hall pendientes de aprobación;
+05 no cerrado, Preview autenticada del operador no observada por el agente.
+Continuación efectiva: revisar esas propuestas y completar únicamente 05.
+06 condicionado al cierre de 05, no iniciado. Detalles §34–35 y ESTADO_ACTUAL;
+los pendientes históricos de 03/04 quedan sustituidos por v0.4.1.
 
 **Registro anterior a la aprobación e integración de v0.4.1; sus pendientes competitivos quedan sustituidos por la entrega vigente.**
 
