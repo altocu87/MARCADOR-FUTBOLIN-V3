@@ -24,6 +24,8 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 
 ## Seguimiento
 
+**Revisión humana posterior, 2026-10-02:** punto 1 confirmado por captura de Preview v0.4.0 autenticada: perfil Alex2 con XP 225/nivel 1/30 restantes y ELO pendiente de aprobación. No repetir cuentas/partidos; no equivale a activar ELO ni cerrar 03/04. Próximo paso del checklist: comprobar permisos del conector tras reabrir Codex; después decisiones competitivas de 03. Fuente/evidencia en ESTADO_ACTUAL y verificaciones 02/03.
+
 **Ampliación transversal autorizada, 2026-10-02:** versión visible e historial de novedades de 0.0.0 a **0.4.0**, en AJUSTES → VERSIONES. La numeración registra entregas parciales y conserva los avisos de ELO desactivado/04 pendiente; no cambia el estado de los bloques ni inicia 05. Mantener versión/historial en próximas entregas según AGENTS. Evidencia en [VERIFICACION_VERSIONES.md](VERIFICACION_VERSIONES.md).
 
 | Bloque | Entrega | Estado al preparar el plan | Condición para comenzar |

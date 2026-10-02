@@ -28,6 +28,8 @@ En el entorno cloud, usar Node 24 y `npm ci --cache /tmp/codex-npm-cache`, despu
 
 ## Vista previa online
 
+Comprobación humana del 2026-10-02: captura de la Preview v0.4.0 con sesión activa y perfil Alex2, 225 XP/nivel 1, 30 XP para nivel 2 y ELO pendiente de aprobación. La interfaz autenticada queda observada para ese perfil; el acceso directo del conector Vercel sigue pendiente por separado. No se activa ELO ni se solicitan nuevas cuentas/partidos. Evidencia vigente en ESTADO_ACTUAL.
+
 [Abrir la versión responsive de desarrollo](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app).
 
 Se puede abrir desde el móvil sin tener el PC encendido. Es una vista previa protegida: si Vercel pide acceso, iniciar sesión con la cuenta propietaria autorizada. No es la cuenta del marcador. Mantener MODO PRUEBA ON para probar partidos sin guardar datos.

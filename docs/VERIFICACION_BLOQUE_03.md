@@ -4,6 +4,8 @@ Implementados ELO Clasificatorio, clasificación privada, categorías configurab
 
 ## Decisiones pendientes, con ejemplos concretos
 
+**Evidencia humana posterior, 2026-10-02:** el propietario aporta captura de Preview v0.4.0 con sesión activa y perfil Alex2. Se observa «ELO PENDIENTE DE APROBACIÓN · Inicio 1200. Ajustes y categorías desactivados» junto al XP confirmado (225/nivel 1). Acreditado el aviso de bloqueo competitivo en UI autenticada real para ese perfil; no un ELO activo ni inspección web directa del agente. No aprueba los parámetros siguientes ni cierra 03; el acceso del conector y SMTP permanecen separados.
+
 Estas propuestas solo se utilizan en fixtures y dentro de transacciones SQL terminadas en ROLLBACK. La configuración persistida tiene `enabled=false` y todos los parámetros competitivos pendientes a NULL. No existen valores de respaldo que los activen desde el navegador.
 
 | Decisión solicitada (§25–29) | Propuesta revisable | Ejemplo |

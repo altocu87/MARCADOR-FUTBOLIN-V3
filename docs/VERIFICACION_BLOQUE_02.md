@@ -4,6 +4,8 @@ Implementación y activación aprobadas. Verificados cálculo, UI independiente 
 
 ## Decisiones expresamente aprobadas
 
+**Evidencia humana posterior, 2026-10-02:** captura del propietario en Preview v0.4.0, cuenta/sesión activas y perfil Alex2: 225 XP confirmados, nivel 1, 30 XP para nivel 2/umbral total 255, dos partidos confirmados. Observación de XP en la interfaz autenticada real acreditada para ese perfil. No sesión web controlada por el agente ni comprobación de todos los perfiles/casos por esta imagen; el 403 del conector permanece separado. Se conserva el historial anterior de limitaciones de la entrega, sin repetir cuentas/partidos ni alterar reglas/SQL.
+
 El propietario respondió en esta conversación aprobando tabla, curva acumulada y todos los históricos válidos. Valores por **cada jugador**; en 2v2 no se divide entre compañeros y no se atribuyen goles individuales.
 
 | Concepto | XP |
