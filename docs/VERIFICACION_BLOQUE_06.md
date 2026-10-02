@@ -25,7 +25,13 @@ Verificación proporcional: enlaces locales, cercados Markdown, contexto 1–84,
 vigente. No tests/build/UI/SQL ni Preview autenticada ejecutados por esta revisión.
 Los ejemplos previos de perdedores no prueban la mezcla de ganadores/ambos ni 3v3;
 los nuevos ejemplos son ilustrativos, sin módulo implementado o fixtures de pool.
-Publicación de esta revisión se registra tras push; v0.5.3 intacta, main sin promoción.
+**Publicación de las aclaraciones comprobada:** `e9a822a2b1b2e8d95a876b5220e1859beebe4818`,
+push fast-forward `3ed672c`→`e9a822a` en `codex/reliability-offline-v1`;
+SHA remoto coincidente, árbol limpio y main intacta en `900e470a719bc99bee4df853f0e11301a5b6562e`.
+Verificación PASS de siete Markdown, enlaces/cercados/contexto 1–84 y diff limpio.
+Sin funciones/UI/SQL/Preview de pool o temporadas comprobados; versión 0.5.3.
+Esta evidencia se publica después en una anotación documental.
+
 
 ## Verificación proporcional de esta revisión
 

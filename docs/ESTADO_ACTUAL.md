@@ -56,6 +56,13 @@ La V1 y su comprobación
 un deployment de la revisión documental ni UI de pool en Preview; la evidencia
 funcional de 05 y su observación autenticada pendiente siguen independientes.
 
+**Publicación de las aclaraciones comprobada:** `e9a822a2b1b2e8d95a876b5220e1859beebe4818`,
+push fast-forward `3ed672c`→`e9a822a` en `codex/reliability-offline-v1`;
+SHA remoto coincidente, árbol limpio y main intacta en `900e470a719bc99bee4df853f0e11301a5b6562e`.
+Verificación PASS de siete Markdown, enlaces/cercados/contexto 1–84 y diff limpio.
+Sin funciones/UI/SQL/Preview de pool o temporadas comprobados; versión 0.5.3.
+Esta evidencia se publica después en una anotación documental.
+
 **Siguiente acción efectiva:** concretar opciones de mezcla/cola con ejemplos,
 reglas de formatos nuevos y alcance de temporadas, antes de implementar, mediante
 [PROMPT_SIGUIENTE_BLOQUE.md](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07 ni servicios
