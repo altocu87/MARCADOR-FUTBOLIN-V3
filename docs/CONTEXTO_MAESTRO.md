@@ -764,6 +764,8 @@ Corrección del 2026-10-02 por captura real de Safari: el propietario ve «Offli
 
 Evidencia humana posterior, 2026-10-02: capturas de Safari muestran el nuevo 0–3 guardado una vez, histórico anterior conservado y cero pendientes con sincronización completada. Supabase real consultado en solo lectura confirma ambos resultados finalizados/no de prueba y sus participantes/eventos. El propietario confirma posteriormente que vio el resultado en pendientes y pulsó reintentar: prueba 8 completada con reintento manual, guardado único y cola vacía. No se declara observada la sincronización automática. Estas capturas no prueban OFFLINE DISPONIBLE ni reapertura offline; no repetir partidos/cuentas por rutina. Seguimiento operativo en ESTADO_ACTUAL.
 
+Cierre posterior del checklist físico, 2026-10-02: el propietario confirma todas las pruebas OK, incluida 11 PWA/reapertura sin red. Se acepta como evidencia humana, sin nueva captura/consola o inspección remota directa; queda superado el pendiente funcional de Safari de las anotaciones anteriores.
+
 Un selector local versionado conserva solo el ID de la última cuenta para acceder sin red a sus jugadores/copia/cola locales; no autoriza acceso remoto. La sesión SDK y RLS siguen siendo necesarias para sincronizar. Cerrar sesión olvida el selector, no destruye resultados pendientes. No se garantiza recuperación si se borran los datos del navegador; no hay primera carga offline ni transferencia automática PC/móvil. Evidencia y límites en `VERIFICACION_PWA.md`.
 
 Al terminar: persistir/sincronizar.
@@ -1176,6 +1178,10 @@ Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
 
+Cierre funcional del bloque 01, 2026-10-02: el propietario confirma «Todas las pruebas OK» después del checklist restante 7/10/11. Se aceptan recuperación/reanudación, alias actual/baja/reactivación y PWA/reapertura sin red en el dispositivo como confirmación humana; no como inspección directa del agente ni nueva captura. Esta confirmación sustituye los pendientes funcionales anteriores; no repetir cuentas, partidos ni pruebas por rutina. Personalización de trece correos hosted/remitente SMTP sigue pendiente de acceso de edición y configuración autorizada: no queda acreditada por el checklist, no se contratan servicios y no bloquea planificar 02. Main no se promueve; XP/ELO todavía no implementados.
+
+Siguiente entrega preparada: 02 XP/niveles, únicamente al utilizar su prompt en nueva conversación. Parámetros de §30–31 continúan siendo propuestas: aprobar recompensas, semántica/redondeo/límite de curva e históricos antes de conceder XP real. Diseño reconstruible desde historial vigente para futura gestión administrativa, sin implementarla ni habilitar privilegios ahora. Seguimiento/prompt íntegro en BLOQUES_DESARROLLO; anotaciones anteriores de pendientes funcionales quedan superadas por este cierre.
+
 Ejecución del bloque 01, 2026-10-01: reglas vigentes GOALS/TIME V2 y BOTH V4 consolidadas después de sincronizar las correcciones posteriores del propietario. RPC y datos reales comprobados con ROLLBACK, sin nueva cuenta ni migraciones. Corregidos conflictos de pendientes y coherencia de recuperación, sin reinterpretar históricos. Preview autenticada vigente/PWA física aún pendientes por falta de alcance Vercel y sesión web; evidencia en VERIFICACION_BLOQUE_01.md y seguimiento en ESTADO_ACTUAL. El siguiente propuesto es 02, condicionado a ese cierre y parámetros de XP aprobados; no se inicia por leerlo.
 
 Seguimiento humano, 2026-10-02: recuperación de contraseña confirmada; oferta de recuperar partido observada; prueba 2 delegada expresamente al agente y simulada de nuevo (TIME/AMBAS, final directo). Cancelar/descartar incompletos autorizado e implementado dentro de 01, sin borrar resultados/pendientes. Prueba 8: capturas móviles y SELECT en Supabase confirman nuevo 0–3 único, histórico anterior conservado y cero pendientes/sincronización completada; el propietario confirma además el pendiente previo y el reintento manual. Prueba 8 completada. Reanudación completa, PWA física/reapertura sin red y aplicación de correos/remitente siguen pendientes. No repetir 2–5 ni el guardado de 8 por rutina. ESTADO_ACTUAL mantiene evidencia y publicación de esta continuación.
@@ -1243,7 +1249,7 @@ No hace falta todavía editor avanzado de fotografía.
 
 Jugadores activos: seleccionables. Inactivos: conservar en historial.
 
-Seguimiento humano del 2026-10-02: prueba 9 ON confirmada correcta; cambio de alias/nombre de 10 conserva los datos. Desactivación/reactivación desde el dispositivo todavía sin confirmar. No pedir repetir registro ni editar/generar partidos para volver a comprobar el cambio de nombre.
+Seguimiento humano del 2026-10-02: prueba 9 ON confirmada correcta; cambio de alias/nombre de 10 conserva los datos. Confirmación final «Todas las pruebas OK» completa también baja/reactivación y alias actual en el dispositivo; no repetir por rutina. No pedir repetir registro ni editar/generar partidos para volver a comprobar el cambio de nombre.
 
 ## 72. SELECCIÓN DE JUGADORES
 

@@ -1,6 +1,6 @@
 # Bloque 01 — Consolidación y evidencia, 2026-10-01
 
-Estado: programación y pruebas independientes completas; pendiente recorrido autenticado de la Preview vigente y PWA en dispositivo físico. El login y la prueba comunicados por el operador se aceptan como conseguidos. No crear otra cuenta ni compartir contraseña.
+Estado: **bloque 01 cerrado funcionalmente el 2026-10-02**. El propietario confirma todas las pruebas OK, incluidas las últimas 7/10/11. Evidencia humana de Preview/dispositivo más pruebas independientes y SQL real; no inspección directa del agente. No repetir cuentas ni checklist. Trece plantillas hosted/remitente SMTP siguen como pendiente externo separado, sin impedir planificar 02.
 
 ## Base y alcance
 
@@ -73,11 +73,11 @@ Verificación de esta continuación: npm test, siete grupos correctos (estadíst
 | 4 · AMBAS final en primera | Simulación automatizada correcta; no pedir repetirla manualmente por rutina |
 | 5 · Prórroga/penaltis | Simulación automatizada correcta para TIME/AMBAS; no pedir repetirla manualmente por rutina |
 | 6 · Guardado/historial/perfiles | Confirmada OK por el propietario; no repetir |
-| 7 · Recuperación tras recarga | 2026-10-02: propietario confirma que aparece recuperar partido. Falta confirmar reanudación completa; descarte solicitado y añadido con confirmación |
+| 7 · Recuperación tras recarga | Completada por confirmación final del propietario «Todas las pruebas OK», 2026-10-02; incluye reanudación del checklist restante. No repetir |
 | 8 · Pendiente offline/reconexión | 2026-10-02: capturas y Supabase real confirman resultado nuevo 0–3 único, histórico anterior conservado y cero pendientes/sincronización completada. El propietario confirma el pendiente previo y el reintento manual: completada, sin repetir |
 | 9 · Prueba ON sin incremento | 2026-10-02: propietario confirma OK y aporta final ON/sin guardado; SELECT real mantiene dos resultados y cero de prueba. No repetir |
-| 10 · Alias/baja lógica | Propietario confirma cambio de alias/nombre con datos conservados. Solicita nombre actual en historial: corregido en lista global/filtrada, detalle y últimos resultados. Falta observar la entrega publicada y confirmar desactivar/reactivar desde UI real; no borrar jugadores |
-| 11 · PWA física | Falta instalación y reapertura offline en el teléfono real |
+| 10 · Alias/baja lógica | Alias actual, datos conservados y baja/reactivación completados por confirmación final del propietario, 2026-10-02. Arreglo publicado en 30cda74/Vercel success; no borrar jugadores ni repetir |
+| 11 · PWA física | Checklist físico/reapertura sin red completado por confirmación final del propietario, 2026-10-02. Evidencia humana; no inspección remota del agente |
 
 Seguimiento posterior del propietario: **6 OK**. En **7**, recargó y volvió a la página principal sin partido por recuperar. Se registra la incidencia; no se afirma todavía pérdida de una copia existente ni causa confirmada. La recuperación está prevista únicamente para partidos iniciados con PRUEBA OFF, sin finalizar, en el mismo navegador/origen/cuenta. Cambiar a OFF después de iniciar no cambia ese partido. Con PRUEBA ON no se escribe copia y volver al inicio tras recarga es el comportamiento aprobado. No borrar almacenamiento ni crear otra cuenta para diagnosticar.
 
@@ -115,9 +115,11 @@ Trece HTML y manifest de asuntos en supabase/templates; generador tooling/auth-e
 
 Las pruebas de código/UI usan SDK/transporte aislados y repositorios en memoria: no cambian cuenta/contraseña/correo reales ni envían mensajes. La evidencia final de tests y publicación está en ESTADO_ACTUAL. Google/Drive no activados; bloque 02 sigue condicionado.
 
-## Preview y pasos humanos que aún faltan
+## Registro de Preview y checklist de referencia
 
 El conector Vercel deniega el equipo `altocuvlc-9686s-projects` con 403 de autorización. La lectura protegida de `/connection.json` también es denegada. No hay sesión Auth del operador en este navegador cloud; no se extraen tokens ni se retira protección. No se ha comprobado el despliegue remoto del commit final. GitHub informó primero pending y después **success** para el check Vercel de `e164b5b`, con enlace al despliegue FiFcv5wQvD77zoo3a26yvHqsrjcA. Es evidencia del check remoto de la entrega funcional; el conector Vercel sigue denegado y no se ha inspeccionado READY ni el recorrido web autenticado. El push a la rama conectada puede generar Preview automáticamente.
+
+**Seguimiento final, 2026-10-02:** «Todas las pruebas OK». No quedan pasos funcionales de este checklist por realizar; la secuencia siguiente conserva el registro anterior y sirve como referencia, sin solicitar repetición. Plantillas/remitente mantienen el pendiente externo explícito, separado de las pruebas.
 
 En la [Preview estable de esta rama](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app), usando la cuenta existente y una sola pestaña:
 
@@ -152,3 +154,9 @@ Publicación de la continuación: a37dd761f4f2e4ba627d94200c40ba11e69e784d compr
 ## Incidencia de preparación offline en Safari — 2026-10-02
 
 El propietario aporta captura con el mensaje de error offline visible, conexión/sesión activas y PRUEBA OFF. No continuar indicando que debe esperar o buscar otra posición: la preparación ha fallado. Precarga con cookies omitidas reproducida en servidor HTTP protegido; corregida a same-origin con rechazo de redirects, privacidad/allowlist conservadas. Detalles y pruebas en VERIFICACION_PWA.md. Tras publicar, recargar la misma Preview con conexión y comprobar el estado en AJUSTES → GENERAL; no borrar datos/cuentas/pendientes. Si está disponible, retomar 8/11 en ese Safari. Mientras no lo esté, se puede comprobar resultado pendiente y sincronización manteniendo la app abierta, pero no dar por aprobada la recarga/reapertura sin red. Comprobación del iPhone/Preview remota aún pendiente; tests locales no la sustituyen.
+
+## Cierre funcional — 2026-10-02
+
+Cierre funcional del bloque 01, 2026-10-02: el propietario confirma «Todas las pruebas OK» después del checklist restante 7/10/11. Se aceptan recuperación/reanudación, alias actual/baja/reactivación y PWA/reapertura sin red en el dispositivo como confirmación humana; no como inspección directa del agente ni nueva captura. Esta confirmación sustituye los pendientes funcionales anteriores; no repetir cuentas, partidos ni pruebas por rutina. Personalización de trece correos hosted/remitente SMTP sigue pendiente de acceso de edición y configuración autorizada: no queda acreditada por el checklist, no se contratan servicios y no bloquea planificar 02. Main no se promueve; XP/ELO todavía no implementados.
+
+Siguiente 02 preparado en BLOQUES_DESARROLLO; parámetros XP/niveles/históricos sin aprobar. No nuevas pruebas/SQL/builds para el cierre documental; últimas verificaciones de código permanecen 42/42 estadísticas/análisis y 33/33 Chromium.
