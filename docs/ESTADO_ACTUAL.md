@@ -85,6 +85,13 @@ PASS enlaces/cercados/contexto 1–84 y diff de siete Markdown. Sin aplicación,
 SQL/datos/migraciones o UI/Preview nuevos; versión 0.5.3. Evidencia documental
 anotada después de verificar push; siguiente implementación aún no iniciada.
 
+**Publicación del generador avanzado como propuesta comprobada:**
+`329211ea499f26b692b9986389d8d382bc3e2b3a`, push fast-forward `ed6f3c7`→`329211e`
+en `codex/reliability-offline-v1`; SHA remoto coincidente, árbol limpio y main
+intacta `900e470a719bc99bee4df853f0e11301a5b6562e`. PASS siete Markdown,
+enlaces/cercados/contexto 1–84 y diff. Sin código, SQL, datos o UI/Preview del
+creador implementados/inspeccionados; versión 0.5.3. Anotación documental posterior.
+
 **Siguiente acción efectiva:** aclarar mixto y concretar creador avanzado con
 acuerdos previos preservados; entregar prompt condicionado de 06, mediante
 [PROMPT_SIGUIENTE_BLOQUE.md](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07 ni servicios

@@ -18,7 +18,13 @@ por cinco pasos/snapshot de reglas; significado mixto pendiente. Aprobaciones de
 pool/temporadas/3v3 preservadas. Verificación proporcional de enlaces, cercados,
 contexto 1–84 y diff; no UI, build, test funcional, SQL, migración/datos o Preview
 autenticada. No afirmación de generador o almacenamiento implementado; v0.5.3.
-Publicación en revisión se registra después de verificar push; main intacta.
+**Publicación del generador avanzado como propuesta comprobada:**
+`329211ea499f26b692b9986389d8d382bc3e2b3a`, push fast-forward `ed6f3c7`→`329211e`
+en `codex/reliability-offline-v1`; SHA remoto coincidente, árbol limpio y main
+intacta `900e470a719bc99bee4df853f0e11301a5b6562e`. PASS siete Markdown,
+enlaces/cercados/contexto 1–84 y diff. Sin código, SQL, datos o UI/Preview del
+creador implementados/inspeccionados; versión 0.5.3. Anotación documental posterior.
+
 
 ## Aprobación posterior 3v3
 
