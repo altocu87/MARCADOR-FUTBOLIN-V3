@@ -125,4 +125,3 @@ begin
     category_thresholds=array[0,1000,1200,1400,1600,1800], hysteresis=25,
     margin_multipliers=array[1,1,1,1,1,1]::numeric[] where singleton;
 end $approval$;
-

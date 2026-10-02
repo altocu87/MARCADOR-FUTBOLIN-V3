@@ -21,6 +21,8 @@ Migración aplicada **20261002140820_casual_1v2_and_approved_elo.sql**: reemplaz
 ## Registro histórico de la preparación anterior (sustituido por la entrega de arriba)
 
 
+**Acceso Vercel posterior resuelto:** tras renovar OAuth, equipo/proyecto visibles, Preview HTTP 200 y despliegue READY c2e217a/revisión. El bloqueo MCP/403 documentado como límite de esta entrega queda superado. No equivale a tener la sesión Supabase del operador; captura humana anterior acredita XP/ELO pendiente de Alex2. Dependencia competitiva de 03 y decisiones de 04 siguen abiertas, sin integración ni activación. Evidencia/estado vigentes en ESTADO_ACTUAL.
+
 **04 espera el cierre competitivo de 03.** No se declara entrega funcional ni se activa análisis/predicción en la aplicación. La petición vigente permite avanzar diseño/pruebas independientes sin aprobar propuestas. Publicación y continuidad operativas en [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md).
 
 ## Dependencia comprobada primero

@@ -18,6 +18,8 @@ Antes de modificar código, leer `AGENTS.md`, `docs/CONTEXTO_MAESTRO.md` y `docs
 
 Persistencia V1 está en revisión en `codex/reliability-offline-v1`: **bloque 01 cerrado funcionalmente el 2026-10-02**, con todas las pruebas confirmadas por el propietario, incluida recuperación/PWA física, más pruebas independientes y SQL real. No repetir cuenta, checklist ni migraciones ya aplicadas. Evidencia en [VERIFICACION_BLOQUE_01.md](docs/VERIFICACION_BLOQUE_01.md). Bloque 02 implementado y activado con parámetros expresamente aprobados; pruebas independientes y SQL real completas, observación autenticada XP en Preview sin acceso del agente. Ver [VERIFICACION_BLOQUE_02.md](docs/VERIFICACION_BLOQUE_02.md). Bloque 03 aprobado, activo y verificado: ELO/ranking privado/categorías/máximo; ver [VERIFICACION_BLOQUE_03.md](docs/VERIFICACION_BLOQUE_03.md). 04 integrado como análisis descriptivo por aprobación expresa, sin pronósticos. Personalización de correos hosted/remitente SMTP queda como pendiente externo separado; no se promueve main.
 
+Conector Vercel recuperado por renovación OAuth, sin compartir la sesión Supabase del operador. Evidencia histórica en ESTADO_ACTUAL.
+
 Por autorización posterior del propietario, se añade el primer bloque de fase C: estadísticas básicas, perfiles y análisis de resultados con filtros, desarrollado con pruebas independientes y validación humana de guardado/perfiles/alias/baja lógica en el cierre de 01. El bloque 02 posterior añade XP/niveles configurables y progresión de perfil; el 03 activa ELO y clasificación privada con reglas aprobadas.
 
 ## Continuar en Codex Cloud
@@ -32,7 +34,9 @@ En el entorno cloud, usar Node 24 y `npm ci --cache /tmp/codex-npm-cache`, despu
 
 ## Vista previa online
 
-Comprobación humana del 2026-10-02: captura de la Preview v0.4.0 con sesión activa y perfil Alex2, 225 XP/nivel 1, 30 XP para nivel 2 y ELO pendiente de aprobación. La interfaz autenticada queda observada para ese perfil; el acceso directo del conector Vercel sigue pendiente por separado. No se activa ELO ni se solicitan nuevas cuentas/partidos. Evidencia vigente en ESTADO_ACTUAL.
+Conector Vercel comprobado el 2026-10-02 tras renovación OAuth completa: acceso al equipo/proyecto, Preview protegida HTTP 200 y despliegue READY de la rama de revisión. Resuelto el anterior 403 de alcance, sin cambiar protección ni producción. No comparte la sesión del marcador del propietario; XP/bloqueo ELO del perfil Alex2 cuentan con la captura humana descrita abajo. Estado operativo y detalle CLI en ESTADO_ACTUAL y VERIFICACION_VERCEL_DATOS. ELO sigue pendiente de aprobar/activar y 04 preparado parcialmente.
+
+Comprobación humana del 2026-10-02: captura de la Preview v0.4.0 con sesión activa y perfil Alex2, 225 XP/nivel 1, 30 XP para nivel 2 y ELO pendiente de aprobación. La interfaz autenticada queda observada para ese perfil; el acceso del conector Vercel queda recuperado por la renovación posterior indicada arriba, sin obtener la sesión del marcador. No se activa ELO ni se solicitan nuevas cuentas/partidos. Evidencia vigente en ESTADO_ACTUAL.
 
 [Abrir la versión responsive de desarrollo](https://marcador-futbolin-v3-git-codex-8b421a-altocuvlc-9686s-projects.vercel.app).
 

@@ -1,5 +1,17 @@
 # Conexión de datos y registro en Preview — 2026-10-01
 
+## Resolución del acceso del conector — 2026-10-02
+
+Después de revocar la autorización de ChatGPT en la cuenta Vercel y «Volver a conectar» en Codex, el propietario completa una autorización OAuth nueva. Lecturas reales del agente correctas: equipo `team_WPifrklt5VQpy2RiHjVMYKXx` (`altocuvlc-9686s-projects`), proyecto `prj_eTpsa0VUnHhzEfRADuN2LlHbCoJB` (`marcador-futbolin-v3`) y Preview protegida HTTP **200 OK**. Despliegue `dpl_CXkFkbRAvShxEx3mckezkduAKL59` **READY**, SHA `c2e217a956ab0742ad2ce945bef160d81079a221`, ref `codex/reliability-offline-v1`; metadatos Vercel y revisión GitHub coincidentes al comprobar. Main permanece 900e470. No cambios de protección, entorno, costes o proyecto.
+
+Resuelto el 403 de alcance que se registra como limitación histórica en otras entregas. Esto permite inspeccionar Vercel/HTML de Preview; no comparte la sesión Supabase del operador ni acredita un recorrido completo del agente dentro del marcador. Captura humana anterior sí confirma Preview v0.4.0/sesión activa, perfil Alex2 con 225 XP/nivel 1/30 hasta umbral 255 y ELO pendiente de aprobación. No repetir cuentas/partidos o pruebas de 01 por recuperar este acceso. ELO sigue desactivado y con decisiones pendientes; no cierre 03/04 ni inicio 05. SMTP/correos independientes.
+
+El propietario autorizó antes de revisar la selección por proyecto; la pantalla mostraba acceso a todos los proyectos actuales/futuros. No se afirma que la autorización sea exclusiva del marcador. La tarea solo consulta ese proyecto y no modifica otros. La causa interna del 403 no se atribuye con certeza a la lista Apps vacía: la renovación completa es la acción tras la que se verifica la resolución.
+
+CLI del propietario: sin sesión al inicio; login con cuenta existente al consultar equipos permitió ver el mismo equipo Hobby. **No recomendar `vercel oauth-apps …` para CLI 62.1.0**: la ayuda real no incluye ese subcomando, pese a aparecer en documentación indexada. Los intentos `list-requests` terminaron «Can't deploy more than one path», interpretados como argumentos del comando predeterminado; no se acredita despliegue por esos intentos. `vercel api list` sí existe, pero el catálogo pegado no contiene rutas para gestionar autorizaciones OAuth de Apps; no sirve para concluir que falten permisos ni justificar mutaciones de endpoints inventados. La solución comprobada usa el flujo OAuth real del conector, sin crear Apps, solicitar tokens por chat ni instalar/desplegar nada.
+
+Las secciones siguientes conservan las comprobaciones históricas de conexión/registro; el estado operativo vigente y publicación están en ESTADO_ACTUAL.
+
 Actualización del bloque 01: operador ya registrado, login y prueba 6 confirmados. Usar ENTRAR con su cuenta existente. Por petición expresa, CREAR CUENTA queda en un formulario independiente abierto por IR AL REGISTRO DE CUENTA NUEVA, sin solicitud al abrirlo. No repetir registro; los pasos de primera puesta en marcha siguientes son históricos. Evidencia vigente en [VERIFICACION_BLOQUE_01.md](VERIFICACION_BLOQUE_01.md).
 
 ## Alcance

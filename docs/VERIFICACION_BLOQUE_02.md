@@ -1,5 +1,7 @@
 # Bloque 02 — XP y niveles, 2026-10-02
 
+**Acceso Vercel posterior resuelto:** renovación OAuth completa; conector ve equipo/proyecto, Preview HTTP 200 y despliegue READY c2e217a/revisión, 2026-10-02. Sustituye el 403 histórico de esta entrega. No obtiene la sesión Supabase del operador; el panel XP de Alex2 ya está acreditado por captura humana posterior (225/nivel 1/30 hasta 255). No repetir cuentas/partidos ni reglas/migraciones. Estado/publicación en ESTADO_ACTUAL y detalle en VERIFICACION_VERCEL_DATOS.
+
 Implementación y activación aprobadas. Verificados cálculo, UI independiente y SQL/RPC/RLS reales. El recorrido XP en la Preview autenticada sigue sin observación directa del agente: conector Vercel deniega alcance (403), proxy HTTP deniega el destino y no hay sesión web del operador. No reabre las pruebas humanas cerradas de 01 ni pide cuentas/partidos nuevos. Estado operativo y publicación: [ESTADO_ACTUAL.md](ESTADO_ACTUAL.md).
 
 ## Decisiones expresamente aprobadas
