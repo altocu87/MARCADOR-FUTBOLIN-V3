@@ -577,6 +577,8 @@ Los parámetros deben permanecer configurables. No dispersar constantes mágicas
 
 ## 32. FORMA
 
+**Preparación parcial de 04, 2026-10-02:** últimos cinco Clasificatorios por ID, más reciente primero, sin completar ausencias; resultado guardado/validado, tanda decide G/P sin sumar goles. Referencia y maqueta solo en tests reutilizan análisis existente, conservan bajas e identidad y reconstrucción desde historial. Forma competitiva separada/rotulada respecto a filtros H2H; los últimos resultados generales del perfil no cambian. Integración activa espera cierre competitivo de 03. No modifica XP/ELO. Evidencia en [VERIFICACION_BLOQUE_04.md](VERIFICACION_BLOQUE_04.md).
+
 Forma reciente: últimos 5 partidos clasificatorios.
 
 Ejemplo: G G G P G.
@@ -584,6 +586,10 @@ Ejemplo: G G G P G.
 No modifica directamente el ELO. Se utiliza para información/analítica.
 
 ## 33. PREDICCIÓN PREPARTIDO
+
+**Preparación parcial de 04, 2026-10-02:** dependencia real comprobada: 03 sigue desactivado, parámetros NULL sin aprobación. No se activa previsión. Presentadas solo decisiones propias pendientes: índice comparativo 60/25/15 frente a evidencia descriptiva/probabilidades calibradas; mínimo propuesto cinco H2H y cinco previos por jugador; 2v2 por parejas exactas y media de forma individual frente a otras opciones. Sin respuesta expresa registrada, todas permanecen propuestas. Ejemplo simulado 0,50 ELO/0,60 H2H/0,80 forma → índice 0,57, **no 57% de ganar**. Empate cuenta medio punto para esa propuesta, sin deducir P(victoria) de expectativa ELO. Cantidad de muestra no equivale a calibración/confianza estadística. Sin muestra suficiente: conteos/forma disponible y ningún porcentaje. Los cero Clasificatorios reales actuales no permiten estimar probabilidades.
+
+No hay fallback ni pesos de producción: prototipo solo tests con probability/confidence NULL. Futura previsión requiere lectura coherente del historial/forma de todos los participantes/ELO bajo RLS, sin cola/prueba, escrituras por gol o cambios de motor. Diseño de snapshot y validación temporal/calibración pendientes; no nuevas RPC/tablas en esta preparación. VERIFICACION_BLOQUE_04 registra ejemplos/alternativas y pruebas; 05 entregado condicionado, sin iniciarlo.
 
 En partidos clasificatorios se quiere mostrar en el futuro una previsión ESTADÍSTICA. NO una certeza.
 
@@ -1195,6 +1201,8 @@ Orden de prioridades durante un partido:
 Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
+
+**Continuidad vigente de 04, 2026-10-02:** ejecutada comprobación de dependencia y preparación independiente; 03 sigue pendiente de aprobación/activación ELO, sin inferirla de este prompt. H2H/forma y vista revisable únicamente en tests, sin integración activa/predicción porcentual. Diez grupos/12 contratos/Chromium 42/42/TypeScript/builds/visual y SQL real de solo lectura correctos. Tres decisiones propias de 04 presentadas sin aprobación registrada. XP 02 permanece activo, 01 cerrado; Preview XP/ELO autenticada sin acceso, SMTP separado. Siguiente acción real: cerrar 03 y después decisiones/integración 04; 05 tiene prompt condicionado, no iniciado. Sustituye el «04 no iniciado» histórico por «preparado parcialmente, espera dependencia», sin declarar cierre funcional. Publicación/evidencia en ESTADO_ACTUAL y VERIFICACION_BLOQUE_04.
 
 **Actualización vigente del bloque 03, 2026-10-02:** ELO/ranking privado/categorías/máximo implementados y verificados mediante SQL real con ROLLBACK, 14 tests ELO/repositorio, nueve grupos generales, Chromium 41/41/builds/revisión visual. Dos migraciones aplicadas, configuración ELO desactivada y parámetros pendientes NULL: aprobar únicamente K/experiencia, redondeo, categorías/histéresis, multiplicador e históricos antes de activar; ejemplos en VERIFICACION_BLOQUE_03. XP/niveles de 02 siguen aprobados/activos e intactos; 01 cerrado por el propietario. Preview autenticada XP/ELO sin acceso del agente, límite distinto de SQL/RLS y UI independiente. No solicitar nuevos partidos/cuentas. SMTP separado, no main ni administración. Siguiente 04 entregado con dependencia de cerrar 03 y aprobar modelo/muestra de §32–33; no iniciado. Esta entrada sustituye el «03 no iniciado» y otros pendientes históricos de las anotaciones anteriores; estado/publicación vivos en ESTADO_ACTUAL.
 

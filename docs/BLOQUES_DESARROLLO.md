@@ -29,8 +29,8 @@ Preparado por petición del propietario: conservar el punto alcanzado y comenzar
 | 01 | Consolidación y comprobación real | Cerrado funcionalmente el 2026-10-02: todas las pruebas OK según el propietario, incluidas 7/10/11; código/SQL/pruebas independientes correctos. Correos hosted/SMTP pendientes externos separados | Sin repetir pruebas ni promover main |
 | 02 | XP y niveles | Implementado/activado el 2026-10-02 con decisiones expresas; npm test/Chromium 37/37 y SQL/RPC/RLS reales correctos. Preview XP autenticada sin observación directa por acceso | 01 cerrado; parámetros aprobados, todos los históricos. No repetir 01; falta observar únicamente panel XP sobre historial existente |
 | 03 | ELO, ranking y categorías | Implementado/verificado el 2026-10-02: SQL/RLS reales con ROLLBACK, ELO/repositorio 14/14, Chromium 41/41/builds/visual. ELO desactivado; parámetros pendientes NULL. VERIFICACION_BLOQUE_03 | Obtener aprobación expresa de K/experiencia, redondeo, categorías/histéresis, margen e históricos antes de activar; Preview XP/ELO autenticada sin acceso, sin repetir 01 |
-| 04 | Análisis competitivo y predicción | Prompt entregado, no iniciado | Cierre competitivo 03 y aprobación de modelo/pesos/muestra propios; verificar dependencia antes de empezar |
-| 05 | Logros, récords y Hall of Fame | Propuesto | Progresión estable; catálogo/recompensas aprobados |
+| 04 | Análisis competitivo y predicción | Preparación parcial 2026-10-02: diseño/tests/maqueta aislados, 12/12 contratos, Chromium 42/42, SQL real de solo lectura PASS; sin integración activa | Espera cierre competitivo de 03 (ELO desactivado confirmado) y aprobación propia modelo/pesos/muestra/2v2. VERIFICACION_BLOQUE_04 |
+| 05 | Logros, récords y Hall of Fame | Prompt entregado condicionado; no iniciado | Dependencias previas cerradas y progresión estable; catálogo/recompensas aprobados |
 | 06 | Torneos | Propuesto | Formato/reglas definidos; persistencia/progresión estables |
 | 07 | Sonido y pulido del uso diario | Propuesto | Flujos que se van a pulir estables |
 | 08 | Backup y restauración | Propuesto | Modelos de datos de los bloques anteriores estables |
@@ -113,6 +113,8 @@ Implementa ELO solo Clasificatorio, ranking privado, categorías y máximo hist�
 
 ## Bloque 04 — Análisis competitivo, enfrentamientos y predicción
 
+**Preparación parcial del 2026-10-02:** primero comprobada dependencia de 03 en revisión vigente/Supabase real: ELO desactivado y parámetros pendientes NULL, sin aprobación posterior. 04 **espera ese cierre**. Avanzados diseño, referencia H2H/forma y maqueta solamente en tests; no UI activa ni predicción/porcentajes. Tres preguntas propias de §32–33 (modelo/pesos, muestra y tratamiento 2v2), con ejemplos concretos, sin respuesta expresa registrada. Diez grupos npm test, contratos 04 12/12, Chromium 42/42, TypeScript/builds/visual correctos; SQL de dependencia/RLS READ ONLY y ROLLBACK PASS, sin nuevas cuentas/partidos/migraciones. XP de 02 aprobado/activo intacto y 01 cerrado; Preview XP/ELO autenticada 403, SMTP externo separado. Detalles en [VERIFICACION_BLOQUE_04.md](VERIFICACION_BLOQUE_04.md), publicación/continuidad en ESTADO_ACTUAL. Cerrar 03 y decisiones/integración 04 sigue siendo la siguiente acción efectiva; entregar 05 no los salta ni inicia 05.
+
 **Agente:** enfrentamientos directos, últimos cinco clasificatorios y previsión con muestra/confianza; reutilizar las estadísticas y filtros ya implementados. **Propietario:** aprobar modelo/pesos/umbral de muestra que todavía sean propuestas (apartados 32–33).
 
 **Cierre:** cifras por perspectiva/equipo consistentes; sin historial no inventar probabilidades; distinguir previsión de resultado seguro. No prometer calibración estadística que no se haya medido.
@@ -127,12 +129,18 @@ Con 03 cerrado y reglas competitivas aprobadas, desarrolla enfrentamientos direc
 
 ## Bloque 05 — Logros, récords y Hall of Fame
 
+**Prompt preparado durante la entrega parcial de 04:** no inicia 05 ni acredita cierre de 03/04. Las dependencias anteriores deben comprobarse otra vez; con 03 desactivado y 04 sin integración, registrar espera, conservar progresión y limitarse a preparación independiente que esté autorizada. No aplicar catálogo ni XP extraordinario por recibir este prompt.
+
 **Agente:** catálogo aprobado, detección desde hechos disponibles, premios únicos y vistas privadas. **Propietario:** aprobar catálogo, umbrales y XP extraordinario; el objetivo aproximado de 50 logros/10 secretos no define automáticamente sus reglas.
 
 **Cierre:** logro único no se cobra dos veces; actualizar récord no da XP ilimitado; goles siguen perteneciendo al equipo; correcciones/penaltis/prueba/pendientes tratados sin falsear hechos.
 
 ```text
-Continúa altocu87/MARCADOR-FUTBOLIN-V3 y ejecuta exclusivamente el bloque 05 de docs/BLOQUES_DESARROLLO.md. Lee AGENTS.md y contexto/estado vigentes. Implementa logros, récords y Hall of Fame desde un catálogo aprobado conforme a los apartados 34–35; si falta, prepara catálogo/umbrales/recompensas concretos para decisión antes de activarlos. Usa hechos reales del historial, no atribuyas goles a jugadores ni inventes récords incompatibles con datos antiguos. Concede cada premio una sola vez, sin XP ilimitado por actualizar récords ni por reintentar guardados. Conserva privacidad, reglas y datos. Verifica cálculos, persistencia y UI; actualiza contexto/seguimiento, publica la rama de revisión y entrega el siguiente prompt.
+Continúa altocu87/MARCADOR-FUTBOLIN-V3 y ejecuta exclusivamente el bloque 05 de docs/BLOQUES_DESARROLLO.md: logros, récords y Hall of Fame. Lee AGENTS.md, contexto/estado vigentes y VERIFICACION_BLOQUE_04.md; sincroniza de forma segura codex/reliability-offline-v1 sin promover main.
+
+Comprueba primero las dependencias: en la entrega parcial de 04, 03 seguía desactivado/sin aprobación y 04 solo tenía diseño/pruebas/maqueta aislados. No supongas cierres ni activación por este prompt; si siguen pendientes, registra que 05 espera y conserva ELO desactivado. XP de 02 está aprobado/activo: preserva tabla, curva, históricos, vista privada e idempotencia. No rehagas 01 ni solicites cuentas/partidos nuevos. Preview XP/ELO autenticada sin acceso y SMTP/correos son límites separados.
+
+Con dependencias cerradas y progresión estable, implementa desde un catálogo aprobado de §34–35; si falta, prepara catálogo/umbrales/recompensas y ejemplos concretos para decisión, avanzando pruebas independientes sin activar premios. Reconstruye desde historial vigente por identidad estable; logro único no cobra dos veces y actualizar récord no concede XP ilimitado. Trata 1v1/2v2, bajas, empates, penaltis, correcciones futuras y exclusión de prueba/pendientes. No atribuyas goles a jugadores ni inventes hechos ausentes de históricos. Conserva RLS, motor/repositorios, datos y ausencia de consultas por gol. No implementes administración, torneos, Google/Drive ni pagos. Verifica Supabase/Preview reales con acceso disponible, documenta límites, completa pruebas/revisión visual, actualiza contexto/estado/seguimiento y publica estable en la misma revisión. Entrega el bloque 06 con su prompt; no lo inicies.
 ```
 
 ## Bloque 06 — Torneos

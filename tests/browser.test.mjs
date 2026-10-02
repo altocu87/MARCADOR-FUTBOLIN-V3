@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process'
 import { createServer } from 'node:http'
 import { resolve, extname, sep } from 'node:path'
 import { existsSync } from 'node:fs'
+import { mkdir } from 'node:fs/promises'
 import { readFile } from 'node:fs/promises'
 import { chromium } from 'playwright'
 
@@ -87,6 +88,38 @@ async function noOverflow(page) {
 async function matchStorage(page) {
   return page.evaluate(() => Object.keys(localStorage).filter(key => key.includes(':active-match:') || key.includes(':pending:')).map(key => [key, localStorage.getItem(key)]))
 }
+
+test('04 revisión aislada: H2H/forma, baja, muestra vacía y previsión bloqueada en ambas vistas', async () => withPage(async page => {
+  const requests = []
+  page.on('request', request => { if (request.url().includes('.supabase.co')) requests.push(request.url()) })
+  await page.goto(fixture + '?block04=review')
+  await visible(page, 'Enfrentamientos y forma')
+  assert.match(await page.getByTestId('h2h-count').innerText(), /11 partidos/)
+  await page.getByRole('button', { name: '2v2 · parejas exactas', exact: true }).click()
+  assert.match(await page.getByTestId('h2h-count').innerText(), /4 partidos/)
+  assert.match(await page.getByRole('region', { name: 'Forma clasificatoria' }).innerText(), /Baja · 4\/5/)
+  await mkdir('/tmp/futbolin-block04-visual', { recursive: true })
+  for (const [width, height] of [[320, 568], [390, 844], [844, 390], [768, 1024], [1440, 900], [800, 480]]) {
+    await page.setViewportSize({ width, height })
+    await noOverflow(page)
+    await page.getByRole('button', { name: 'VISTA 800×480', exact: true }).waitFor()
+    await page.screenshot({ path: `/tmp/futbolin-block04-visual/review-${width}x${height}.png` })
+  }
+  await page.getByRole('button', { name: 'VISTA 800×480', exact: true }).click()
+  await noOverflow(page)
+  const rect = await page.locator('.physical-canvas').boundingBox()
+  assert.equal(rect.width, 800); assert.equal(rect.height, 480)
+  await page.screenshot({ path: '/tmp/futbolin-block04-visual/review-physical.png' })
+  await page.getByRole('button', { name: 'SIN HISTORIAL', exact: true }).click()
+  assert.match(await page.getByTestId('h2h-count').innerText(), /0 partidos/)
+  const forecast = page.getByRole('region', { name: 'Previsión pendiente' })
+  assert.match(await forecast.innerText(), /cierre competitivo de 03/)
+  assert.doesNotMatch(await forecast.innerText(), /\d+\s*%|BAJA|MEDIA|ALTA/)
+  await forecast.scrollIntoViewIfNeeded()
+  await page.screenshot({ path: '/tmp/futbolin-block04-visual/review-empty.png' })
+  assert.deepEqual(await matchStorage(page), [])
+  assert.deepEqual(requests, [])
+}))
 
 test('build sin sesión: navegación responsive y preferencia física persistente', async () => withPage(async page => {
   await page.goto(base)

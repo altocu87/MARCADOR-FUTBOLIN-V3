@@ -6,6 +6,8 @@
 
 ## Punto de continuidad para conversaciones nuevas
 
+**Bloque 04 preparado parcialmente, pendiente del cierre competitivo de 03, 2026-10-02.** Dependencia comprobada en código/documentos y Supabase real: ELO continúa desactivado y parámetros pendientes NULL; este prompt no los aprueba ni activa. Avanzados únicamente diseño, referencia H2H/forma y maqueta aislada en tests; ningún cambio de UI activa/motor/repositorios/XP/esquema. Tres decisiones propias de §32–33 (modelo/pesos, muestra y 2v2) presentadas con ejemplos, todavía sin respuesta expresa registrada. Diez grupos npm test, contratos 04 12/12, Chromium 42/42, TypeScript/builds y revisión visual ambas vistas correctos; SQL real de solo lectura/RLS PASS. Evidencia/diseño en [VERIFICACION_BLOQUE_04.md](VERIFICACION_BLOQUE_04.md). Datos existentes intactos: dos jugadores/dos Rápidos/cuatro participantes/doce eventos, cero Clasificatorios/prueba; ambos 225 XP/nivel 1. Preview XP/ELO autenticada sin acceso por 403; SMTP externo separado. Siguiente acción efectiva: cerrar 03 y decisiones de 04 antes de integrarlo; prompt de 05 entregado condicionado, sin iniciarlo ni declarar 04 completo. Estado de publicación en la entrada de cambios de esta entrega.
+
 **Bloque 03 implementado y verificado, pendiente de aprobación/activación, 2026-10-02.** ELO solo Clasificatorio, ranking privado y panel de perfil por UUID, categorías y máximo reconstruidos cronológicamente desde historial vigente. Dos migraciones aplicadas: configuración `elo_rules_v1` **desactivada**, inicio aprobado 1200, K/redondeo/categorías/histéresis/multiplicadores pendientes a NULL; RPCs de lectura STABLE SECURITY INVOKER/RLS, sin escrituras cliente a columnas protegidas. Propuestas y ejemplos solicitados al propietario en [VERIFICACION_BLOQUE_03.md](VERIFICACION_BLOQUE_03.md); «Sigue» no aprueba esos valores. Nueve grupos npm test (ELO/repositorio 14/14), Chromium 41/41, TypeScript/builds, revisión visual móvil/800×480 y SQL real con ROLLBACK correctos. Futuras altas/ediciones/eliminaciones y reintentos reconstruyen sin duplicar ajustes; administración no implementada. Datos reales conservados: dos jugadores/dos partidos Rápido/cuatro participantes/doce eventos, cero Clasificatorios/prueba/fixtures; XP 225/nivel 1 para ambos, reglas/curva/vista de 02 intactas. Preview autenticada XP/ELO sin acceso del agente: límite independiente de SQL/UI verificados. Siguiente acción: decidir solo parámetros pendientes de 03, probarlos y activar con aprobación expresa. Prompt 04 entregado con esa dependencia, sin iniciar predicción. SMTP externo separado; sin promoción main.
 
 La anotación siguiente conserva la entrega anterior de 02: su «siguiente 03» queda sustituido por el estado de arriba.
@@ -44,7 +46,8 @@ Aclaración previa a las pruebas, 2026-10-02: sesión persistente automática ya
 | B. Persistencia Supabase V1 | Validación funcional cerrada el 2026-10-02: SQL/pruebas independientes y todas las pruebas del operador OK, incluida recuperación/PWA física. En revisión, sin promoción main; correos hosted/SMTP pendientes separados |
 | C. Estadísticas, perfil y análisis de resultados | Cálculos/lecturas verificados; guardado/perfiles, alias actual y baja/reactivación confirmados por el propietario en el cierre de 01. XP/niveles aprobados e implementados en 02; SQL real y UI independiente verificados, Preview XP autenticada sin observación directa |
 | D. ELO, ranking privado y categorías | Bloque 03 implementado; SQL/RLS/UI independiente verificados. Parámetros pendientes, ELO desactivado; Preview autenticada sin acceso |
-| E–J. Otros análisis competitivos, logros, torneos, audiovisual avanzado, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
+| D. H2H, forma competitiva y previsión (04) | Diseño/tests/maqueta aislados; espera cierre de 03 y decisiones propias. Sin integración activa ni porcentajes |
+| E–J. Logros, torneos, audiovisual avanzado, ESP32, OTA | Futuros; fuera del bloque autorizado actual |
 
 ## Código local implementado en la fase B
 
@@ -177,6 +180,20 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Bloque 04: dependencia abierta, diseño y pruebas aislados
+
+Base remota fc9277c, checkout inicial work/900e470 limpio. Recuperación inicial por conector con blobs SHA verificados en fotografía aislada; después fetch Git real/completo con permisos de red y rama efectiva codex/reliability-offline-v1 en el checkout original. Main 900e470 ancestro/intacta; trabajo previo preservado. Sin promoción/fusión ni publicación del commit sintético de la fotografía. El siguiente párrafo registra la publicación una vez comprobada.
+
+Dependencia 03 abierta: SELECT real conserva ELO enabled=false y parámetros pendientes NULL; no se interpreta este prompt como aprobación. XP aprobado/activo y 225/nivel 1 para ambos, dos Rápidos/ningún Clasificatorio. Sin nuevos partidos/cuentas ni repetición del checklist humano 01. SMTP/correos separados. Únicamente diseñados contratos H2H/últimos cinco y propuestas comparativas, muestra/2v2; tres preguntas de 04 presentadas sin respuesta expresa registrada, sin solicitar aprobación de 03 en esta tarea.
+
+Añadidos tests/block04Prototype.ts, block04.test.ts y block04Review.tsx; fixture aislada ?block04=review, contrato de previsión siempre bloqueado, sin porcentajes/confianza calculada. Reutilizan estadísticas/filtros/identidades y fixtures del motor, sin imports nuevos en src ni UI activa, consultas por gol, caché privada, contadores o administración. Pares exactos 2v2 solo propuesta de test. package.json añade test:block04 al conjunto; browser.test.mjs añade revisión responsive/física. Dependencias/lockfile y todo src conservados.
+
+Pruebas: baseline nueve grupos/build, entrega diez grupos (04 12/12; estadísticas 42/42, XP 8/8, ELO 14/14), Chromium 42/42 sin fallos/omitidos, build normal/fixture y typecheck explícito de tests correctos. Revisión visual 320/390, horizontal, tablet/escritorio y 800×480 exacto; scroll interno/controles 48 px, estado vacío y bloqueo; React/hooks/texto escapado/keys revisados. Tras pulir solo la maqueta se repite caso focal de navegador/TypeScript. Capturas /tmp fuera de Git. EPERM inicial por sockets resuelto con permiso de red; instalación incompleta inicial reparada con npm ci del checkout real, sin cambios de versiones.
+
+Nuevo supabase/tests/block04_readonly.sql ejecutado remotamente: PASS con REPEATABLE READ READ ONLY/ROLLBACK, dependencia, XP vigente, RLS/invoker/grants/snapshot y aislamiento de otra identidad; sin escrituras/migraciones/fixtures SQL. Documentación actual RLS consultada; changelog 403 sin bypass. Vercel Preview protegida 403 en read_protection_bypass; get_project falla validación del conector. No recorrido web autenticado XP/ELO observado ni atribución de fixture a datos reales. Límites SQL/Preview/SMTP separados en VERIFICACION_BLOQUE_04.
+
+Contexto §32–33/69, README y seguimiento actualizados; prompt de 05 condicionado a dependencias y catálogo aprobado, no iniciado. 04 no se declara cerrado. Publicación estable solo en la misma revisión, sin main/activación ELO, logros, torneos, Google/Drive, administración o pagos. Cierre pendiente efectivo: decisiones/activación 03 y decisiones/integración 04.
 
 ### 2026-10-02 — Bloque 03: ELO/ranking privados reconstruibles, activación pendiente
 
