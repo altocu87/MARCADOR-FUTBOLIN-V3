@@ -1,51 +1,46 @@
-# Siguiente conversación — concretar pool 06 V2, sin activar todavía
+# Siguiente conversación — implementar exclusivamente 06 aprobado
 
-La orientación V2 sustituye eliminación V1. Continúa 06; no iniciar 07.
+Este prompt autoriza implementación cuando el propietario lo invoque; esta
+entrega solo documenta acuerdos. No iniciar 06 funcional ni 07 automáticamente.
 
 ```text
-Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1,
-exclusivamente la propuesta revisable 06 V2. Lee AGENTS, contexto, estado,
-seguimiento, PROPUESTA_BLOQUE_06, VERIFICACION_BLOQUE_06 y catálogo/verificación
-05. Sincroniza sin sobrescribir trabajo local ni promover main.
-El propietario juega normalmente con cuatro a seis personas, preferentemente
-parejas. Quiere pool/ronda de pista sencilla: perdedores salen, entran quienes
-esperan, y cambio de compañero para cinco; 1v1 también contemplado. Esta
-orientación sustituye eliminación directa V1; no volver a pedir cuadro/liguilla.
-Ya está aclarado: 3v3 son tres personas simultáneas por lado. Al crear se elige
-mezclar ganadores, perdedores o ambos. No pedir otra vez esas respuestas ni fijar
-ganadores juntos como regla universal. Concreta algoritmo/cola/saliente y casos
-sin reservas (seis jugando 3v3), conservando elección al recuperar. 4v4 fue
-mencionado como formato adicional; prioridad por delimitar. XP/ELO de formatos
-nuevos aún sin reglas aprobadas, no extrapolar ni activar fórmulas existentes.
-La conformidad posterior «estoy de acuerdo con lo que has propuesto tú» acepta
-el diseño expuesto: selector y ejemplos, sesión abierta sin título/premio extra,
-temporadas configurables (recomendación tres meses, 3/0, ELO continuo), historial,
-reglas fijas por temporada y cada Clasificatorio cuenta una vez. No reaprobarlo.
-Solo queda nueva ampliación de puntuación 3v3, ahora presentada en la propuesta:
-XP completo/tiers por participante, media de tres ELO previos por equipo y K
-propio vigente, puntos 3/0. Ejemplo seis 1200/K40 → +20/−20 cada jugador;
-base XP 200/75 antes de tiers. No atribuir aprobación de regla que aún no estaba
-expuesta. Solicita solo esa aprobación; revisar algoritmo de mezcla propuesto
-sin inventar consentimiento literal anterior del algoritmo. 4v4 sin añadir por defecto.
-Esta entrega sigue documental; autorización de implementación debe ser explícita
-respecto a pool/temporadas. No crear Gana torneos ni premio adicional.
-Pregunta solo lo imprescindible, por pasos, sin pedir aprobaciones 02–05.
-No actives pool/torneos/premios ni programes formatos ambiguos sin aprobación
-y autorización de implementación. Una vez autorizada esa implementación,
-reutiliza motor y persistencia: participantes reales por ronda, UUID estable,
-cola/cambio único y confirmación atómica bajo RLS, offline provisional y copias
-conservadas ante conflicto. No guardar como libre para ligar después, no inventar
-resultados, no premios por espera, paso de turno, prueba, pendiente o incompleto.
-Preserva XP base/curva, ELO aprobado, 04 descriptivo y 05 activo: nueve familias/
-45 tiers, identidad cuenta/jugador/familia/tier, XP V2 históricos/recálculo,
-ocho récords/Hall privados, empates compartidos y 0 XP por récord.
-1v1/2v2 en todos los modos; 1v2 solo Rápido/Caos, XP completo y sin ELO.
-Goles por equipo, sin tiempos inferidos. Formatos mayores requieren reglas
-expresas adicionales antes de ampliar motor/servidor/XP/ELO. Sin consultas por gol.
-Verifica proporcionalmente según alcance/acceso; distingue ejemplos, fixtures,
-SQL y Preview autenticada. No repitas cuentas/partidos cerrados. Sin pagos,
-Google/Drive, SMTP, administración ni promoción main. Actualiza contexto,
-estado/seguimiento y verificación; versión/novedades al entregar funciones,
-no por esta propuesta documental. Publica estable en revisión y entrega el
-siguiente prompt condicionado, sin iniciarlo.
+Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1 e implementa
+exclusivamente 06. Lee AGENTS, contexto, estado, seguimiento, PROPUESTA_BLOQUE_06,
+VERIFICACION_BLOQUE_06 y catálogo/verificación 05. Sincroniza sin sobrescribir
+trabajo local ni promover main. Parte de v0.5.3, con propuesta aprobada pero sin
+pool/temporadas implementadas; no repetir aprobaciones 02–05 ni de 06 ya recibidas.
+Diseño acordado: pool sencilla para grupos pequeños, 1v1/2v2 y 3v3 real (tres
+personas por lado). Al crear, elegir parejas/equipos fijos o mezclar ganadores,
+perdedores o ambos; seguir ejemplos y concretar algoritmo de cola/saliente
+propuesto, incluyendo casos sin reservas, pocos pasos y cambios entre partidos.
+Sesión abierta hasta terminar, sin campeón/trofeo/XP extra; Gana torneos aparcado.
+Temporadas configurables en Ajustes: tres meses por defecto, seis o fechas
+concretas; ELO continuo, puntos individuales reiniciados por temporada, 3 por
+victoria/0 derrota, puestos compartidos si empatan puntos. Historial de temporadas,
+reglas fijas al iniciar y ajustes posteriores para la siguiente. No reiniciar ELO.
+Clasificatorios de pool/torneo cuentan una vez como cualquier Clasificatorio;
+Rápido/Caos sin ELO ni puntos de temporada, XP habitual. Sin bonus por final/título.
+Aprobación explícita 3v3 recibida: XP completo/tiers por jugador; ELO solo en
+Clasificatorio con media de los tres ELO previos por lado, K propio vigente,
+ajuste sin dividir, redondeo/categorías/histéresis vigentes. Puntos 3/0 por jugador.
+No inventar históricos 3v3. 4v4 fue mencionado pero no ampliar elegibilidad ni
+entrega por extrapolación; resolver su alcance aparte si el propietario lo pide.
+Reutiliza motor y persistencia: cada ronda/UUID un resultado y cambio único,
+copia/cola por cuenta y proyecto, recuperación pausada sin tiempo de cierre,
+turnos offline provisionales y confirmación atómica bajo RLS. No guardar primero
+como libre para vincular después, ni borrar/confundir paquetes ante conflictos.
+Pausa/cierre/cancelación preservan partidos y XP/ELO legítimos; no victorias por
+abandono o espera. No consultas por gol ni cachear Auth/API en service worker.
+Preserva XP base/curva, ELO previo, 04 descriptivo y 05 activo: nueve familias/45
+tiers, identidad cuenta/jugador/familia/tier, XP V2 históricos/recálculo y ocho
+récords/Hall privados con empates compartidos y 0 XP por récord. 1v1/2v2 en todos
+los modos; 1v2 solo Rápido/Caos con XP completo/sin ELO. Goles por equipo, sin
+inventar goleadores o tiempos. Ampliar solo validaciones necesarias para 3v3.
+Inspecciona esquema/migraciones antes de tocar SQL del proyecto autorizado.
+Verifica código/UI/SQL según acceso, idempotencia/offline/mezcla/temporadas/XP/ELO,
+identidad/privacidad y referencia 800×480. Distingue fixtures de Preview autenticada;
+no repetir cuentas/partidos del checklist cerrado. Sin pagos, Google/Drive, SMTP,
+administración o promoción main. Actualiza contexto/estado/seguimiento,
+versión/novedades al entregar funciones, publica estable en revisión y entrega
+prompt 07 condicionado al cierre real de 06, sin iniciarlo.
 ```

@@ -195,7 +195,8 @@ Con dependencias cerradas y progresión estable, implementa desde un catálogo a
 cuatro a seis personas, preferencia por parejas, cola y rotación. Orientación del
 propietario reemplaza eliminación directa V1. Aclarado 3v3 real (tres personas
 por lado) y selector ganadores/perdedores/ambos al crear. Concretar algoritmo,
-reservas y regla nueva XP/ELO 3v3. Diseño/cierre y temporadas tres meses/3–0/
+reservas al implementar; XP completo/ELO 3v3 aprobados expresamente.
+Diseño/cierre y temporadas tres meses/3–0/
 ELO continuo aceptados por conformidad posterior, sin implementación. No volver a preguntar decisiones resueltas. Sin activar pool/premios.
 [VERIFICACION_BLOQUE_06](VERIFICACION_BLOQUE_06.md) separa documentos de pruebas
 funcionales. El prompt y criterios originales de campeonato debajo son históricos:

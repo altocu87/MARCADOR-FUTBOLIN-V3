@@ -1,6 +1,6 @@
 # Propuesta 06 V2 — pool sencilla para grupos pequeños
 
-Fecha: **2026-10-02**. Estado: **diseño aceptado; puntuación 3v3 nueva pendiente; sin activación**.
+Fecha: **2026-10-02**. Estado: **diseño y puntuación 3v3 aprobados; sin activación**.
 Aplicación **v0.5.3**; TORNEO conserva su pantalla provisional. Sin código,
 esquema, migraciones, cuentas, partidos ni premios nuevos.
 
@@ -15,9 +15,10 @@ pool/torneo, contarían una vez; casual sin ELO/puntos de temporada. Conservar
 historial de temporadas y fijar reglas antes de iniciar, cambios para la siguiente;
 posiciones compartidas si empatan puntos. No volver a pedir estas decisiones.
 
-El requisito 3v3 ya está claro. La conformidad no aprueba una fórmula de 3v3 que
-hasta ahora no se había presentado, ni activa automáticamente implementación,
-servicios o premios. La petición vigente sigue siendo propuesta revisable 06.
+El requisito 3v3 ya está claro. **Aprobación posterior explícita:** «Apruebo XP
+completo y ELO 3v3 como propones», respondiendo a la propuesta completa con
+puntos 3/0. Suple la única ampliación de puntuación antes pendiente; no activa
+automáticamente implementación, servicios o premios. La petición vigente sigue siendo propuesta revisable 06.
 4v4 fue mencionado, pero su prioridad y elegibilidad no se añaden por defecto.
 
 Algoritmo propuesto para cerrar mezcla/cola sin más formularios: cola inicial
@@ -30,15 +31,15 @@ entrada desde cola se explican como no disponibles. No cambiarlo durante partido
 Esto concreta técnicamente el diseño; el algoritmo no estaba en el último resumen
 aceptado y sigue como propuesta revisable, sin presentarlo como aprobación literal.
 
-## Única ampliación de puntuación presentada para aprobación: 3v3
+## Ampliación de puntuación 3v3 aprobada expresamente
 
-**Propuesta nueva, pendiente:** admitir 3v3 en Rápido/Caos/Clasificatorio con
+**Regla nueva aprobada, aún sin implementación:** admitir 3v3 en Rápido/Caos/Clasificatorio con
 participación real de tres por lado; cada jugador recibe XP completo del partido
 y tiers existentes que cumpla, por la misma identidad y desde historial confirmado.
 No dividir XP entre tres ni crear familias/estrellas adicionales. En Clasificatorio
 cada ganador recibe 3 puntos de temporada, perdedor 0; nadie recibe nada por esperar.
 
-ELO 3v3 propuesto: media aritmética de los **tres ELO previos** de cada lado para
+ELO 3v3 aprobado: media aritmética de los **tres ELO previos** de cada lado para
 calcular expectativa; cada participante aplica su propio K vigente (primeras diez
 K40, después K20), ajuste entero al más próximo con mitades alejadas de cero.
 Mismo inicio 1200, categorías/histéresis y multiplicador de goles 1. El ajuste no
@@ -49,11 +50,12 @@ Ejemplo propuesto: seis jugadores 1200, todos K40; partido Clasificatorio 3v3
 confirmado. Cada ganador **+20 ELO**, cada perdedor **−20 ELO**. XP base por jugador
 sin prórroga/tanda: ganador **200**, perdedor **75**, más tiers 05 pertinentes una
 sola vez. Puntos de temporada **3/0** por participante. Son cálculos ilustrativos,
-no ejecución de motor/SQL 3v3, concesión real ni aprobación ya recibida.
+no ejecución de motor/SQL 3v3 ni concesión real.
 
-Esta ampliación exige autorización expresa porque 03 solo tiene 1v1/2v2 aprobado;
-no hay cambio de parámetros previos, RLS, motor, partidas antiguas, XP base/curva o
-04 descriptivo. Proponer una regla concreta no habilita seis participantes en SQL.
+La autorización expresa ya está recibida para esta ampliación. Preservar reglas
+y datos previos 1v1/2v2/1v2, RLS, motor, partidas antiguas, XP base/curva y 04.
+La aprobación no habilita seis participantes en SQL hasta implementar y verificar;
+no construir partidos 3v3 ficticios a partir de históricos de otros formatos.
 
 ## Orientación expresada por el propietario
 
@@ -77,9 +79,9 @@ perdedores o ambos**. No fijar que siempre se quedan juntos los ganadores.
 La elección del selector está decidida; algoritmo de mezcla, reservas/saliente y
 casos sin reserva siguen por concretar con ejemplos, sin reabrir esa elección.
 
-3v3 y eventualmente 4v4 amplían motor/participantes/validación servidor y no tienen
-reglas XP/ELO aprobadas todavía. La solicitud de formato no activa esos partidos
-ni autoriza extrapolar automáticamente media ELO, K o premios por jugador.
+3v3 amplía participantes/validación servidor, con XP/ELO aprobado en la sección
+anterior. No activarlo hasta implementar/verificar. 4v4 sigue como petición adicional,
+sin prioridad/elegibilidad cerrada; no extrapolar automáticamente su puntuación.
 
 05 sigue aprobado/activo: nueve familias/45 tiers, identidad cuenta/jugador/
 familia/tier, XP V2 históricos/recálculo y ocho récords/Hall privados con empates
@@ -95,7 +97,8 @@ participantes. Pausar o terminar entre partidos.
 Base propuesta: **2v2 para cuatro a seis personas**, **1v1 con cola individual**,
 y **3v3 con seis jugadores simultáneos**, solicitado expresamente. 4v4 adicional
 mencionado requiere ocho. Los límites 1v1/2v2 de la V2 inicial no deben usarse
-para excluir el nuevo requisito; su implementación/puntuación siguen pendientes. Orden inicial elegido por operador y guardado, sin resorteos al recargar.
+para excluir el nuevo requisito; implementación pendiente y puntuación 3v3 ya aprobada. Orden inicial elegido
+por operador y guardado, sin resorteos al recargar.
 Jugadores activos de la cuenta, UUID estable; no requieren cuentas personales.
 Lista de personas fija durante sesión; compañeros cambian solo entre partidos
 según variante. Altas/salidas de sesión a mitad quedan fuera de esta propuesta:
@@ -144,7 +147,7 @@ cambio: propuesta inicial parejas fijas; mezclar los cuatro requiere otra regla.
 Cola individual: ganador sigue, perdedor al final y entra primero que esperaba.
 Con dos se repite. No mezclar tamaños de partido dentro de una sesión.
 
-## Selector de mezcla solicitado y ejemplos pendientes de acordar
+## Selector y ejemplos aceptados; algoritmo concreto revisable
 
 El grupo a mezclar se elige antes de iniciar y se guarda con la sesión/copia;
 se aplica **entre partidos**, usando el resultado anterior. La rotación no cambia
@@ -185,7 +188,7 @@ No crear/configurar temporadas, puntos, reinicio ELO o premios en esta revisión
 Delimitar su alcance antes de ampliar la implementación exclusiva de 06. La
 propuesta es que cada Clasificatorio de pool/torneo cuente una vez como partido,
 sin bonus ELO por ser final/campeón, y modalidad casual conserve XP sin ELO ni
-puntos clasificatorios. Para 3v3/4v4 falta política expresa de puntuación propia.
+puntos clasificatorios. Para 3v3 usar la ampliación aprobada arriba; 4v4 sigue sin política cerrada.
 Conformidad con 3/0, tres meses y ELO continuo registrada arriba; sin premios adicionales.
 
 ## Partido, modos y puntuación
@@ -198,12 +201,13 @@ sin goleadores individuales ni tiempos inventados. Posiciones/colores de cada
 partido se eligen antes de iniciarlo y se conservan al recuperar.
 
 Diseño aceptado: elegir Rápido/Caos/Clasificatorio y fijarlo durante sesión.
-Puntuación vigente conservada; solo ampliación 3v3 pendiente de aprobación:
+Puntuación vigente conservada y ampliación 3v3 aprobada, aún sin implementar:
 
 | Hecho | XP/logros existentes | ELO existente |
 | --- | --- | --- |
 | Rápido/Caos confirmado, formato aprobado | XP completo por jugador; tiers 05 una vez | No |
 | Clasificatorio confirmado, 1v1/2v2 | XP/bonus aprobados; tiers 05 una vez | Sí, mismas reglas 03; sin multiplicador de pool |
+| 3v3 tras futura implementación/verificación | XP completo/tiers aprobado | Solo Clasificatorio, media de tres y K propio según ampliación aprobada |
 | Esperar, entrar, salir o cambiar compañero | No partido/victoria: 0 XP | No |
 | Prueba, pendiente o incompleto | Sin concesión confirmada | No |
 
@@ -268,7 +272,7 @@ pedir elegir eliminación/liguilla o reaprobar 02–05.
 
 Conformidad posterior con diseño expuesto y temporadas tres meses/3–0/ELO
 continuo registrada arriba. No pedir repetir decisiones aprobadas. Revisar el
-algoritmo concreto de mezcla; solicitar solo la nueva ampliación XP/ELO de 3v3.
+algoritmo concreto de mezcla; la ampliación XP/ELO 3v3 ya está aprobada.
 Sin implementación/activación por esta entrega documental, ni iniciar 07.
 
 ## Verificación futura tras acordar e implementar

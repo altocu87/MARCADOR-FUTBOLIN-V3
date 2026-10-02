@@ -22,13 +22,14 @@ Clasificatorios de pool/torneo cuentan una vez, sin bonus por campeón. Mantener
 historial y reglas fijas por temporada; puestos compartidos por empate de puntos.
 No volver a pedir estas decisiones, aprobaciones 02–05 ni las aclaraciones resueltas.
 
-**Pendiente nuevo:** propuesta explícita de XP completo/tiers y ELO para 3v3 mediante
-medias de tres ELO previos y K propio vigente. Esa regla no estaba presentada
-cuando respondió; no atribuirle aprobación ni activar SQL/motor de seis jugadores.
-Ejemplo seis 1200/K40 → +20 cada ganador/−20 cada perdedor, base XP 200/75 antes de
-tiers y puntos 3/0. Ilustrativo, no prueba funcional o concesión real. Algoritmo
-concreto de saliente/cola/mezcla propuesto en documento para revisión; 4v4 mencionado,
-prioridad/eligibilidad sin cerrar. No crear décima familia Gana torneos ni noveno Hall.
+**Ampliación 3v3 aprobada expresamente:** «Apruebo XP completo y ELO 3v3 como
+propones», en respuesta a la regla concreta con puntos 3/0. XP completo/tiers
+por participante, ELO solo Clasificatorio desde medias de tres ELO previos, K
+propio vigente y ajuste sin dividir entre tres. Ejemplo seis 1200/K40 → +20 cada
+ganador/−20 cada perdedor; base XP 200/75 antes de tiers y puntos 3/0. No repetir
+esta aprobación. Es una regla aprobada, **no código/migración/función activa**.
+Algoritmo de mezcla concreto revisable en propuesta; 4v4 mencionado, prioridad/
+elegibilidad sin cerrar. No crear décima familia Gana torneos ni noveno Hall.
 
 Alcance continúa **exclusivamente propuesta revisable 06**, no autorización general
 de implementación/activación de pool/temporadas/servicios/premios. Formatos vigentes,
@@ -61,8 +62,8 @@ Verificación PASS de siete Markdown, enlaces/cercados/contexto 1–84 y diff li
 Sin funciones/UI/SQL/Preview de pool o temporadas comprobados; versión 0.5.3.
 Esta evidencia se publica después en una anotación documental.
 
-**Siguiente acción efectiva:** revisar regla nueva 3v3 y algoritmo concreto de
-mezcla; no reabrir acuerdos anteriores. Continuar propuesta, antes de implementar, mediante
+**Siguiente acción efectiva:** entregar prompt de implementación 06 con acuerdos
+ya registrados y algoritmo concreto de mezcla revisable, mediante
 [PROMPT_SIGUIENTE_BLOQUE.md](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07 ni servicios
 excluidos; no repetir checklist 01. Lo siguiente conserva el historial de 05.
 
@@ -410,8 +411,8 @@ Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida
 ## Bloqueo y siguiente acción exacta
 
 **Vigente: propuesta 06 V2 de pool pequeña, sustituye eliminación V1.** Aclarar
-regla nueva XP/ELO 3v3 y revisar algoritmo concreto de mezcla. Conformidad
-con diseño/temporadas ya registrada; no repetir aprobaciones.
+algoritmo concreto de mezcla al implementar. Diseño/temporadas y XP/ELO 3v3
+ya aprobados; no repetir aprobaciones ni activar por esta entrega documental.
 Sin activación de torneos/premios. 05 conserva sus aprobaciones y límite de observación
 autenticada, que no bloquea esta preparación autorizada. No reabrir 01 ni iniciar 07.
 
@@ -451,6 +452,15 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Ampliación 3v3 aprobada expresamente
+
+Respuesta exacta «Apruebo XP completo y ELO 3v3 como propones» a pregunta con
+regla y ejemplo concretos (media tres ELO, K propio, sin dividir, puntos 3/0).
+Sustituye pendiente 3v3 de la anotación inmediatamente anterior. Contexto,
+propuesta, seguimiento, README, prompt y verificación coherentes; no pedir otra
+vez. Sin código, SQL, datos o cambios de versión. Próximo prompt implementa
+solo 06 cuando se invoque; no iniciado, no 4v4 por extrapolación ni premios nuevos.
 
 ### 2026-10-02 — Conformidad con diseño y propuesta de puntuación 3v3
 

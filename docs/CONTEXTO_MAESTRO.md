@@ -705,7 +705,7 @@ pedir escoger cuadro/liguilla como si no hubiera expresado esta preferencia.
 [PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) contiene ejemplos de seis con tres
 parejas y cinco con una reserva. Concepto de cola/rotación, modos y cierre
 abierto sin campeón/premio adicional aceptados por conformidad posterior;
-algoritmo concreto y puntuación 3v3 propuestos para revisión, sin activación.
+algoritmo concreto revisable y puntuación 3v3 aprobada expresamente, sin activación.
 Gana torneos queda aparcado; ganar/terminar una pool no crea un título por defecto.
 No otra aprobación de XP V2/Hall: 05 sigue activo e intacto, v0.5.3.
 
@@ -713,7 +713,8 @@ No otra aprobación de XP V2/Hall: 05 sigue activo e intacto, v0.5.3.
 lado, seis en total. **Elección de creación:** mezclar ganadores, perdedores o ambos.
 No volver a pedir esas aclaraciones ni restringir a ganadores fijos. Algoritmo de
 mezcla/cola y casos sin reserva, así como elegibilidad XP/ELO de formatos nuevos,
-siguen por concretar; no extrapolar fórmulas aprobadas ni activar 3v3. 4v4 mencionado
+eran pendientes: algoritmo concreto revisable; regla XP/ELO 3v3 ya aprobada
+expresamente abajo, sin activar por esta documentación. 4v4 mencionado
 anteriormente supone ocho jugadores, con prioridad de entrega por delimitar.
 
 **Petición de temporadas registrada:** duración configurable en Ajustes, ELO y
@@ -726,9 +727,10 @@ ni implementar temporadas/puntos/premios por esta revisión documental de 06;
 delimitar implementación antes de ampliar fase. «Estoy de acuerdo con lo que
 has propuesto tú» registra conformidad con diseño presentado y recomendaciones;
 no volver a pedirlas. La fórmula 3v3 recién propuesta (XP completo, media ELO de
-tres participantes previos, K propio vigente, puntos 3/0) **no estaba presentada
-al aceptar**, por lo que queda pendiente aprobación expresa. No activa 4v4 ni
-recompensas nuevas, tampoco autoriza implementar por esta preparación documental.
+tres participantes previos, K propio vigente, puntos 3/0) fue presentada después
+y **aprobada expresamente**: «Apruebo XP completo y ELO 3v3 como propones».
+No repetirla. No activa 4v4 ni recompensas nuevas; implementación sigue para
+el siguiente prompt, sin ejecutarla por esta preparación documental.
 Recuperación, confirmación/rotación atómica y cancelación son diseño futuro; sin
 código/migración/UI de pool o premios. Seguimiento y evidencia en ESTADO_ACTUAL y
 VERIFICACION_BLOQUE_06; siguiente conversación sigue en 06, sin iniciar 07.

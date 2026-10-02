@@ -5,11 +5,19 @@
 Conformidad posterior con diseño expuesto y recomendaciones de temporadas
 registrada: selector/ejemplos, cierre abierto sin título/premio adicional, ELO
 continuo, tres meses iniciales y puntos 3/0. No repetir esas aprobaciones.
-Nueva propuesta XP/ELO 3v3 pendiente, porque no estaba expuesta al aceptar.
+Ampliación XP/ELO 3v3 ya aprobada expresamente tras presentar regla y ejemplo;
+respuesta «Apruebo XP completo y ELO 3v3 como propones». Sin implementación.
 Algoritmo concreto de mezcla revisable; entrega solo documental, v0.5.3 intacta.
 [PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) es la referencia vigente.
 
-## Revisión de conformidad y regla nueva, 2026-10-02
+## Aprobación posterior 3v3
+
+Respuesta expresa recibida tras la propuesta; no concesión real ni prueba UI/SQL.
+Actualizados mismos siete Markdown para distinguir regla aprobada de función
+activa. Verificación proporcional de enlaces/cercados/contexto 1–84/diff; no
+migraciones, datos, tests funcionales o deployment/Preview nuevos. V0.5.3 intacta.
+
+## Revisión de conformidad y regla nueva, 2026-10-02 — antecedente
 
 Base `4813c37cc6e2a62cc5b82787bf16feddc9a30730`, árbol limpio, fetch explícito
 main/revisión 0/0. Siete Markdown actualizados, sin aplicación/tests/SQL/datos.
