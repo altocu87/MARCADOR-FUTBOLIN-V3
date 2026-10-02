@@ -130,7 +130,7 @@ En la [Preview estable de esta rama](https://marcador-futbolin-v3-git-codex-8b42
 
 ### Prueba 8 en el móvil — pendiente offline y reconexión
 
-1. Con Internet, abrir la misma Preview/navegador con la cuenta existente. AJUSTES → MODO PRUEBA OFF **antes** de iniciar. Anotar contador de pendientes/historial; para probar la recarga sin red, esperar también **OFFLINE DISPONIBLE**. Si no aparece, se puede comprobar terminar/sincronizar manteniendo la app abierta, pero la reapertura offline sigue pendiente.
+1. Con Internet, abrir la misma Preview/navegador e iniciar sesión con la cuenta existente si aún no está abierta (la sesión se recuerda automáticamente en ese origen). No cerrar sesión antes de pasar a offline. AJUSTES → MODO PRUEBA OFF **antes** de iniciar. Anotar contador de pendientes/historial; para probar la recarga sin red, esperar también **OFFLINE DISPONIBLE**. Si no aparece, se puede comprobar terminar/sincronizar manteniendo la app abierta, pero la reapertura offline sigue pendiente.
 2. Recuperar el partido ya ofrecido, si se desea terminar y guardar, o iniciar uno OFF que se quiera conservar. Dar un gol, sin llegar todavía al objetivo.
 3. Apagar **Wi‑Fi y datos móviles**; se puede usar modo avión, asegurando Wi‑Fi apagado. Volver al marcador y esperar **SIN CONEXIÓN**. No cerrar sesión, cambiar de navegador/dirección ni borrar almacenamiento.
 4. Terminar el partido. El resumen debe indicar **PENDIENTE EN ESTE DISPOSITIVO**. AJUSTES → VER PENDIENTES: aparece ese resultado/jugadores/eventos, y el contador aumenta en uno respecto al inicial.
