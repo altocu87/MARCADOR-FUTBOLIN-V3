@@ -1,6 +1,6 @@
 # Propuesta 06 V2 — pool sencilla para grupos pequeños
 
-Fecha: **2026-10-02**. Estado: **diseño y puntuación 3v3 aprobados; sin activación**.
+Fecha: **2026-10-02**. Estado: **pool/temporadas/3v3 aprobados; creador avanzado solicitado; sin activación**.
 Aplicación **v0.5.3**; TORNEO conserva su pantalla provisional. Sin código,
 esquema, migraciones, cuentas, partidos ni premios nuevos.
 
@@ -30,6 +30,94 @@ de iniciar. Sin reservas, mantener equipos o mezclar ambos; opciones que requier
 entrada desde cola se explican como no disponibles. No cambiarlo durante partido.
 Esto concreta técnicamente el diseño; el algoritmo no estaba en el último resumen
 aceptado y sigue como propuesta revisable, sin presentarlo como aprobación literal.
+
+## Generador avanzado y tipos reutilizables — nueva petición
+
+El propietario solicita **además de los predefinidos** un generador avanzado en
+TORNEOS o AJUSTES para crear un tipo a medida con todas las opciones disponibles,
+guardarlo y elegirlo después. Formulario intuitivo/ameno, individual/parejas/mixto.
+Esto añade un requisito de 06; no sustituye pools rápidas ni las reglas aprobadas.
+No exigir aprobación del creador otra vez; implementación todavía no iniciada.
+
+### Acceso y uso propuestos
+
+**TORNEOS → NUEVO → Predefinidos / Mis tipos / Crear tipo.**
+**AJUSTES → TIPOS DE TORNEO** para gestionar los propios. Ambos accesos usan las
+mismas definiciones, sin dos configuradores independientes. Se puede empezar desde
+cero o duplicar un predefinido/propio. Nombre elegido por operador, descripción
+opcional; ejemplo «Viernes · cinco personas · rotan perdedores · a 5 goles».
+
+Guardar un **tipo** guarda sus reglas, no inicia un torneo ni concede premios.
+Elegirlo después crea una **sesión/torneo nuevo**, con participantes y resultados
+propios. Se seleccionan personas al iniciar; no exigir que la misma gente juegue
+cada vez ni usar alias como identidad. El tipo queda privado para la cuenta.
+
+### Formulario por cinco pasos, propuesta revisable
+
+| Paso | Opciones o información |
+| --- | --- |
+| 1 · Base | Nombre; partir de predefinido o propio; estructura de torneo y explicación breve |
+| 2 · Personas y equipos | Individual, parejas o grupos de tres; cantidad prevista, equipos fijos o compañeros variables; mixto según significado pendiente |
+| 3 · Dinámica | Pool/cola, quién sigue/espera, mezclar ganadores/perdedores/ambos; orden inicial/rotación y condiciones con/sin reservas compatibles |
+| 4 · Partidos y cierre | Rápido/Caos/Clasificatorio; GOALS/TIME/AMBAS y límites vigentes; cierre abierto aprobado. Duración/rondas/campeón de otros formatos solo al concretar sus reglas |
+| 5 · Resumen y guardar | Resumen legible, ejemplo del siguiente turno, avisos de incompatibilidad junto al campo, guardar tipo o guardar y usar |
+
+Mostrar únicamente controles pertinentes: escoger GOALS muestra objetivo; TIME
+muestra partes/tiempo vigentes; la rotación muestra su grupo/cola; equipos fijos
+no despliegan campos de mezcla. Volver entre pasos conserva borrador. Textos
+cortos, ejemplos y vista de equipos/espera; no un formulario enorme de una página.
+Referencia física 800×480 y adaptable, controles táctiles y teclado accesibles.
+Resumen ejemplo: «2v2 · cinco personas · cambia un perdedor · Rápido · primero a
+5 goles · terminar cuando quieras · XP habitual, sin ELO». Ejemplo 3v3: «seis
+personas · Clasificatorio · mezclar ambos · XP completo · ELO aprobado · 3/0».
+Son ejemplos documentales; no screenshots/fixtures ni UI implementada.
+
+### Qué significa «todas las opciones disponibles»
+
+Combinar opciones soportadas y compatibles, sin desbloquear reglas de motor,
+XP/ELO o premios mediante valores arbitrarios. Validación en UI y servidor, no
+solo ocultar campos. ELO/puntos derivados del modo/formato aprobado; XP, K, curva,
+RLS y 05 no se convierten en campos libres. Mostrar efecto en resumen. Parámetros
+de temporada van a Ajustes y quedan fijos por temporada; plantilla no los sobreescribe.
+
+| Estructura | Situación de reglas en esta propuesta |
+| --- | --- |
+| Pool con equipos fijos | Diseño aceptado, sin implementar; tipos guardables al entregar 06 |
+| Pool con mezcla configurable | Selector aceptado; algoritmo concreto revisable, mismo creador |
+| Liguilla / eliminación directa | Posibles estructuras del generador a diseñar si se incluyen: calendario, puntos/desempates, byes, cierre/campeón. La V1 antigua no se reactiva como aprobación |
+| Mixto | Solicitud registrada; aclarar combinación de partidos individuales/parejas frente a mezcla de jugadores sueltos/parejas iniciales |
+| 4v4 / tamaños desiguales nuevos | Petición 4v4 previa registrada, sin puntuación/prioridad cerrada. No extrapolar 3v3 ni crear otros formatos por formulario |
+
+No prometer un generador de cualquier regla imaginable. Tampoco presentar una
+plantilla como eliminación/liguilla si solo ejecuta una pool. Campos/estructuras
+nuevos requieren una definición concreta antes de ejecutarlos; predefinidos y
+personalizados usan las mismas reglas validadas y el mismo motor, no caminos aparte.
+1v2 vigente continúa solo Rápido/Caos, sin ELO; incluirlo en una dinámica de torneo
+requiere diseñarla, no mezclarlo en plantilla por defecto. Prueba no persiste torneo.
+No títulos/estrellas/XP extra de plantilla o campeonato, ni noveno Hall por guardarla.
+
+### Guardado y cambios, diseño técnico futuro
+
+- Tipo propio con UUID, cuenta propietaria y versión de definición/configuración;
+  no identificador por nombre. Nombres iguales o cambios de nombre no cambian dueño.
+- Editar/duplicar/archivar tipos propios. Archivo evita uso en sesiones nuevas,
+  conserva referencias históricas; no UI de administración o borrado de resultados.
+- Cada torneo/sesión conserva **copia de reglas y versión** al iniciar. Editar
+  un tipo crea otra revisión para usos nuevos: no altera cola, partidos o premios
+  de sesiones en curso/finalizadas ni reconstrucción XP/ELO de sus participantes.
+- Guardar/reintentar/usar tiene identidad estable; no duplicar tipo o sesión por
+  timeout/doble toque. Propios bajo RLS de cuenta; predefinidos sin datos personales.
+- Borrador local y copia privada por cuenta/proyecto, sin caché Auth/API; creación/
+  confirmación online según diseño de 06. Offline recupera sesión ya cargada con
+  las reglas copiadas; no prometer plantilla remota verificada sin sesión/conexión.
+
+### Verificación adicional futura
+
+Crear desde cero/duplicar, guardar/reabrir/elegir, editar nueva revisión y archivar;
+misma definición al iniciar, sesiones previas intactas. Validar opciones incompatibles,
+formato/mode/participantes, aislamiento de cuentas y UUID ante reintentos. Recuperar
+misma versión offline, teclado/táctil y 800×480. Ejemplos/fixtures no son Preview
+Supabase autenticada; no repetir checklist cerrado o fabricar torneos históricos.
 
 ## Ampliación de puntuación 3v3 aprobada expresamente
 

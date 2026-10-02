@@ -10,6 +10,16 @@ respuesta «Apruebo XP completo y ELO 3v3 como propones». Sin implementación.
 Algoritmo concreto de mezcla revisable; entrega solo documental, v0.5.3 intacta.
 [PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) es la referencia vigente.
 
+## Creador avanzado: revisión documental, 2026-10-02
+
+Base `ed6f3c71ac4320be8c7ec1ab61c4f36c98bae912`, árbol limpio, fetch explícito
+main/revisión 0/0. Siete Markdown, nueva petición de tipos reutilizables y diseño
+por cinco pasos/snapshot de reglas; significado mixto pendiente. Aprobaciones de
+pool/temporadas/3v3 preservadas. Verificación proporcional de enlaces, cercados,
+contexto 1–84 y diff; no UI, build, test funcional, SQL, migración/datos o Preview
+autenticada. No afirmación de generador o almacenamiento implementado; v0.5.3.
+Publicación en revisión se registra después de verificar push; main intacta.
+
 ## Aprobación posterior 3v3
 
 Respuesta expresa recibida tras la propuesta; no concesión real ni prueba UI/SQL.

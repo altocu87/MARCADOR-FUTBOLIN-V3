@@ -198,6 +198,9 @@ por lado) y selector ganadores/perdedores/ambos al crear. Concretar algoritmo,
 reservas al implementar; XP completo/ELO 3v3 aprobados expresamente.
 Diseño/cierre y temporadas tres meses/3–0/
 ELO continuo aceptados por conformidad posterior, sin implementación. No volver a preguntar decisiones resueltas. Sin activar pool/premios.
+Nueva petición: creador avanzado de tipos guardables/reutilizables además de
+predefinidos, TORNEOS/AJUSTES, formulario por pasos; mixto por aclarar y estructuras
+nuevas por definir antes de activarlas. Mantener aprobaciones previas.
 [VERIFICACION_BLOQUE_06](VERIFICACION_BLOQUE_06.md) separa documentos de pruebas
 funcionales. El prompt y criterios originales de campeonato debajo son históricos:
 adaptar cierre a la sesión acordada, sin inventar campeón. Usar

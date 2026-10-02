@@ -735,6 +735,18 @@ Recuperación, confirmación/rotación atómica y cancelación son diseño futur
 código/migración/UI de pool o premios. Seguimiento y evidencia en ESTADO_ACTUAL y
 VERIFICACION_BLOQUE_06; siguiente conversación sigue en 06, sin iniciar 07.
 
+**Nueva petición expresa:** generador avanzado de tipos personalizados, además
+de predefinidos, accesible en TORNEOS o AJUSTES. Crear reglas a medida con todas
+las opciones soportadas, guardar tipo y reutilizarlo; individual/parejas/mixto,
+formulario intuitivo/ameno. Propuesta de cinco pasos, controles condicionales,
+resumen y ejemplo; plantilla privada versionada, sesión con copia de reglas,
+participantes elegidos al iniciar, edición/duplicado/archivo sin cambiar históricos.
+No transformar XP/ELO/K/tiers/premios en parámetros libres. No iniciar código/SQL.
+«Mixto» requiere aclarar partidos de distintos formatos frente a admisión de
+personas sueltas/parejas. Liguilla/eliminación como estructuras posibles necesitan
+reglas concretas si se incluyen; V1 antigua no se convierte en aprobación.
+Mantener pool rápida y reglas ya aprobadas, no imponer formulario avanzado a diario.
+
 No inventar reglas complejas todavía. La arquitectura sí debe permitir añadir torneos posteriormente.
 
 ## 37. ARQUITECTURA DEL SOFTWARE

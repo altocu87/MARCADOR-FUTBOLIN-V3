@@ -20,7 +20,8 @@ compañero. Sustituye eliminación directa V1. Ejemplos y detalles pendientes en
 [Propuesta 06](docs/PROPUESTA_BLOQUE_06.md): 3v3 aclarado como tres personas por
 lado; mezcla de ganadores/perdedores/ambos elegible al crear. Diseño/cierre y
 temporadas tres meses/3–0/ELO continuo aceptados; algoritmo/reservas revisables.
-Regla XP/ELO 3v3 aprobada expresamente, aún sin implementar; sin activación o premios adicionales. No código,
+Generador avanzado de tipos guardables solicitado, con formulario por pasos;
+«mixto» por aclarar. Regla XP/ELO 3v3 aprobada expresamente, aún sin implementar; sin activación o premios adicionales. No código,
 migraciones ni funciones de pool; versión **0.5.3** intacta. Evidencia en
 [Verificación 06](docs/VERIFICACION_BLOQUE_06.md). Continuar 06, sin iniciar 07.
 

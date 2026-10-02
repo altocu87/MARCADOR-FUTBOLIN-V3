@@ -31,11 +31,26 @@ esta aprobación. Es una regla aprobada, **no código/migración/función activa
 Algoritmo de mezcla concreto revisable en propuesta; 4v4 mencionado, prioridad/
 elegibilidad sin cerrar. No crear décima familia Gana torneos ni noveno Hall.
 
+**Nueva petición: generador avanzado de tipos de torneo reutilizables**, además de
+predefinidos, accesible desde TORNEOS/AJUSTES. Crear a medida y guardar para elegir
+luego; individual/parejas/mixto y opciones pertinentes en formulario ameno por pasos.
+Propuesta de cinco pasos y ejemplos en PROPUESTA_BLOQUE_06. Plantilla privada de
+reglas, participantes elegidos al iniciar, revisión/snapshot por sesión, edición/
+duplicado/archivo sin alterar partidos en curso o históricos. Todas las opciones
+soportadas compatibles; no editar libremente XP/ELO/K/tiers o premios.
+
+**Aclaración nueva solicitada:** «mixto» combina partidos individuales/parejas en
+un torneo, o admite personas sueltas/parejas ya formadas para crear equipos.
+No decidirlo por interpretación ni volver a pedir otras aprobaciones. Estructuras
+liguilla/eliminación del generador requieren reglas concretas si se incluyen;
+no reactivar como aprobada la V1 antigua, ni fingir que una pool ejecuta otro formato.
+Guardado de tipos es requisito solicitado, no UI/SQL implementados.
+
 Alcance continúa **exclusivamente propuesta revisable 06**, no autorización general
 de implementación/activación de pool/temporadas/servicios/premios. Formatos vigentes,
 XP/ELO/RLS/idempotencia/motor/04 y reconstrucción 05 permanecen intactos.
 
-Sincronización de esta revisión: base `4813c37cc6e2a62cc5b82787bf16feddc9a30730`,
+Sincronización de esta revisión: base `ed6f3c71ac4320be8c7ec1ab61c4f36c98bae912`,
 árbol limpio, fetch explícito main/revisión y divergencia 0/0. Main permanece
 `900e470a719bc99bee4df853f0e11301a5b6562e`. Sin sobrescritura/reset/stash.
 Aplicación **v0.5.3** intacta; TORNEO provisional. Solo Markdown, sin código,
@@ -70,8 +85,8 @@ PASS enlaces/cercados/contexto 1–84 y diff de siete Markdown. Sin aplicación,
 SQL/datos/migraciones o UI/Preview nuevos; versión 0.5.3. Evidencia documental
 anotada después de verificar push; siguiente implementación aún no iniciada.
 
-**Siguiente acción efectiva:** entregar prompt de implementación 06 con acuerdos
-ya registrados y algoritmo concreto de mezcla revisable, mediante
+**Siguiente acción efectiva:** aclarar mixto y concretar creador avanzado con
+acuerdos previos preservados; entregar prompt condicionado de 06, mediante
 [PROMPT_SIGUIENTE_BLOQUE.md](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07 ni servicios
 excluidos; no repetir checklist 01. Lo siguiente conserva el historial de 05.
 
@@ -460,6 +475,18 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Creador avanzado de tipos de torneo solicitado
+
+Ampliación de propuesta 06: además de predefinidos, crear tipo personalizado con
+opciones disponibles, guardarlo y reutilizarlo desde TORNEOS/AJUSTES. Propuesto
+formulario progresivo de cinco pasos, resumen/ejemplos y reglas compatibles.
+Tipo privado versionado y snapshot por sesión; edición/duplicado/archivo sin
+alterar históricos. Aclaración «mixto» pendiente, no interpretar ni inventar reglas
+liga/eliminación, premios o elegibilidad. Contexto/estado/seguimiento/README,
+propuesta/verificación/prompt actualizados, siete Markdown. Versión 0.5.3;
+sin código, SQL, datos o UI; enlaces/integridad/diff proporcionales. Publicar
+revisión, sin iniciar implementación/07 ni promover main.
 
 ### 2026-10-02 — Ampliación 3v3 aprobada expresamente
 

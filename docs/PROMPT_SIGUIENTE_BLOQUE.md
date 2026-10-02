@@ -1,7 +1,8 @@
-# Siguiente conversación — implementar exclusivamente 06 aprobado
+# Siguiente conversación — creador avanzado y ejecución condicionada de 06
 
-Este prompt autoriza implementación cuando el propietario lo invoque; esta
-entrega solo documenta acuerdos. No iniciar 06 funcional ni 07 automáticamente.
+Primero aclarar mixto y concretar opciones nuevas del generador; implementar lo
+aprobado cuando se invoque este prompt y las reglas estén definidas. Esta entrega
+solo documenta acuerdos y la ampliación solicitada. No iniciar 06 funcional ni 07 automáticamente.
 
 ```text
 Continúa altocu87/MARCADOR-FUTBOLIN-V3 en codex/reliability-offline-v1 e implementa
@@ -14,6 +15,19 @@ personas por lado). Al crear, elegir parejas/equipos fijos o mezclar ganadores,
 perdedores o ambos; seguir ejemplos y concretar algoritmo de cola/saliente
 propuesto, incluyendo casos sin reservas, pocos pasos y cambios entre partidos.
 Sesión abierta hasta terminar, sin campeón/trofeo/XP extra; Gana torneos aparcado.
+
+Incluye el creador avanzado solicitado además de predefinidos: TORNEOS → NUEVO →
+Predefinidos/Mis tipos/Crear tipo y AJUSTES → TIPOS. Formulario ameno por pasos,
+opciones condicionales y resumen/ejemplo, crear/duplicar/guardar/elegir/editar/
+archivar tipos privados. Plantilla de reglas reutilizable, jugadores elegidos al
+iniciar; versión/snapshot por sesión, cambios nunca alteran sesiones previas.
+Aclara solo «mixto»: distintos formatos de partido en una sesión, o personas
+sueltas/parejas iniciales. No repetir aprobaciones previas. Combina opciones
+soportadas y compatibles, con validación UI/SQL y UUID/idempotencia/RLS de cuenta.
+No convertir XP/ELO/K/tiers/premios en campos libres. Liguilla/eliminación si se
+incluyen requieren reglas concretas nuevas; no reactivar V1 como aprobación ni
+prometer cualquier regla imaginable. Resolver ese diseño antes de activar formatos.
+
 Temporadas configurables en Ajustes: tres meses por defecto, seis o fechas
 concretas; ELO continuo, puntos individuales reiniciados por temporada, 3 por
 victoria/0 derrota, puestos compartidos si empatan puntos. Historial de temporadas,
@@ -38,7 +52,8 @@ los modos; 1v2 solo Rápido/Caos con XP completo/sin ELO. Goles por equipo, sin
 inventar goleadores o tiempos. Ampliar solo validaciones necesarias para 3v3.
 Inspecciona esquema/migraciones antes de tocar SQL del proyecto autorizado.
 Verifica código/UI/SQL según acceso, idempotencia/offline/mezcla/temporadas/XP/ELO,
-identidad/privacidad y referencia 800×480. Distingue fixtures de Preview autenticada;
+identidad/privacidad, guardar/reutilizar/editar tipos sin alterar sesiones anteriores
+y referencia 800×480. Distingue fixtures de Preview autenticada;
 no repetir cuentas/partidos del checklist cerrado. Sin pagos, Google/Drive, SMTP,
 administración o promoción main. Actualiza contexto/estado/seguimiento,
 versión/novedades al entregar funciones, publica estable en revisión y entrega
