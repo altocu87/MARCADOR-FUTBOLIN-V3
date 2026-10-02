@@ -193,8 +193,10 @@ Con dependencias cerradas y progresión estable, implementa desde un catálogo a
 
 **Estado vigente:** [propuesta 06 V2](PROPUESTA_BLOQUE_06.md), pool sencilla para
 cuatro a seis personas, preferencia por parejas, cola y rotación. Orientación del
-propietario reemplaza eliminación directa V1. Pendiente aclarar 3v3/4v4 y rotación
-de cinco, luego acordar modo/cierre. No activación de pool o premios.
+propietario reemplaza eliminación directa V1. Aclarado 3v3 real (tres personas
+por lado) y selector ganadores/perdedores/ambos al crear. Concretar algoritmo,
+reservas, modo/cierre y XP/ELO nuevo; temporadas/puntos solicitados, alcance
+pendiente. No volver a preguntar decisiones resueltas. Sin activar pool/premios.
 [VERIFICACION_BLOQUE_06](VERIFICACION_BLOQUE_06.md) separa documentos de pruebas
 funcionales. El prompt y criterios originales de campeonato debajo son históricos:
 adaptar cierre a la sesión acordada, sin inventar campeón. Usar

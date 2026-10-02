@@ -8,7 +8,7 @@
 
 **Continuación vigente: revisión exclusivamente documental de 06, 2026-10-02.**
 El propietario concreta uso habitual: cuatro a seis personas, preferencia por
-parejas, pool/ronda de pista con ganadores que siguen y perdedores que rotan;
+parejas, pool/ronda de pista con cola y mezcla configurable entre partidos;
 variante de cinco personas con cambio de compañero. Busca pocos pasos, sin
 campeonato elaborado. Esta orientación reemplaza la recomendación V1 de
 eliminación directa/2–16 equipos. No volver a pedir eliminación o liguilla.
@@ -20,12 +20,21 @@ normales por partidos confirmados y ELO solo si Clasificatorio. **Los detalles
 son propuestas pendientes**, no funciones ni aprobación implícita de premios.
 «Gana torneos» queda aparcado: cerrar una pool no es ganar un campeonato.
 
-**Aclaraciones inmediatas solicitadas:** si 3v3/4v4 significa parejas en cola o
-jugadores simultáneos por equipo; si ganadores siguen juntos en rotación de
-cinco o también se mezclan. No se rechaza la petición de formatos mayores,
-pero tampoco se amplían motor, servidor o XP/ELO por una mención ambigua.
-Después cerrar solo cola/rotación, modo/elegibilidad y cierre de sesión necesarios.
-No pedir otra vez aprobaciones de 02–05. Sin respuesta expresa no activar 06.
+**Respuestas expresas registradas:** 3v3 son tres personas simultáneas por lado,
+seis por partido. Al crear se elige mezclar **ganadores, perdedores o ambos**.
+No volver a pedir esas aclaraciones ni fijar siempre ganadores juntos. Los ejemplos
+anteriores de cinco ilustran ahora solo la opción perdedores. El formato 4v4 fue
+mencionado antes, con ocho participantes; prioridad de entrega por delimitar.
+Falta concretar algoritmo/cola y ausencia de reservas (en 3v3 con seis todos
+juegan), y elegibilidad XP/ELO de formatos nuevos. Estas decisiones de diseño
+no activan 06 ni amplían automáticamente las fórmulas/formatos ya aprobados.
+
+**Petición adicional registrada:** temporadas de Clasificatorio configurables en
+Ajustes, ELO y ranking por puntos; duración tres/seis meses y puntos 3/1 son
+ideas del propietario, no reglas cerradas. Recomendaciones del agente (ELO
+continuo, puntos por periodo, 3/0, tres meses) siguen sin aprobación. No implementar
+temporadas ni puntos por esta revisión; delimitar alcance antes de ampliar 06.
+No reaprobar 02–05 ni interpretar confianza en criterio como aprobación de premios.
 
 Sincronización de esta revisión: base `491838aa60b2963f5c14af1af0d47ebba7cdfe23`,
 árbol limpio, fetch explícito main/revisión y divergencia 0/0. Main permanece
@@ -47,8 +56,8 @@ La V1 y su comprobación
 un deployment de la revisión documental ni UI de pool en Preview; la evidencia
 funcional de 05 y su observación autenticada pendiente siguen independientes.
 
-**Siguiente acción efectiva:** aclarar estas dos preguntas, revisar reglas de
-pool con ejemplos y registrar respuesta antes de implementar, mediante
+**Siguiente acción efectiva:** concretar opciones de mezcla/cola con ejemplos,
+reglas de formatos nuevos y alcance de temporadas, antes de implementar, mediante
 [PROMPT_SIGUIENTE_BLOQUE.md](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07 ni servicios
 excluidos; no repetir checklist 01. Lo siguiente conserva el historial de 05.
 
@@ -396,7 +405,8 @@ Observación histórica inicial tras tests SQL: cero cuentas/filas. **Sustituida
 ## Bloqueo y siguiente acción exacta
 
 **Vigente: propuesta 06 V2 de pool pequeña, sustituye eliminación V1.** Aclarar
-3v3/4v4 y rotación de cinco; acordar reglas necesarias antes de implementar.
+algoritmo de mezcla, formatos nuevos y alcance de temporadas; las dos
+aclaraciones de 3v3 y selector de mezcla ya están resueltas.
 Sin activación de torneos/premios. 05 conserva sus aprobaciones y límite de observación
 autenticada, que no bloquea esta preparación autorizada. No reabrir 01 ni iniciar 07.
 
@@ -436,6 +446,19 @@ Pruebas finales tras feedback del 2026-10-02: siete grupos de npm test (estadís
 - Vercel tiene una vista previa automática y conexión pública para la rama de revisión; sin promoción a producción ni retirada de protección. XP de 02 aprobado/activo; ELO de 03 implementado/desactivado hasta aprobación. Predicción/forma competitiva, logros, torneos, OTA y ESP32 futuros. Hardware/fotos/especificaciones del contexto son requisitos aportados por el usuario, no una integración física probada.
 
 ## Registro de cambios
+
+### 2026-10-02 — Respuestas 06: 3v3 real y mezcla configurable
+
+El propietario aclara tres personas simultáneas por lado y selector al crear
+para mezclar ganadores/perdedores/ambos. Sustituye ambigüedades de V2; no volver
+a pedirlas. Actualizados propuesta/contexto/estado/seguimiento/README/prompt y
+verificación; ejemplos anteriores de cinco son solo mezcla de perdedores.
+Propuestas de mezcla con reservas y 3v3 sin reservas; algoritmo y XP/ELO nuevo
+pendientes, sin ampliar motor/SQL. Petición previa de temporadas configurables,
+ELO y puntos registrada separando sugerencias 3/1 del propietario y 3/0/tres
+meses del agente de reglas aprobadas. Solo documentación, aplicación v0.5.3;
+verificación de enlaces/integridad/diff, sin pruebas UI/SQL ni datos remotos.
+Publicar en revisión sin main; continuar propuesta 06 sin activación.
 
 ### 2026-10-02 — Reorientación 06 V2: pool para cuatro a seis personas
 

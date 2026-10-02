@@ -708,10 +708,20 @@ abierto sin campeón/premio adicional siguen **propuestas por acordar**, no acti
 Gana torneos queda aparcado; ganar/terminar una pool no crea un título por defecto.
 No otra aprobación de XP V2/Hall: 05 sigue activo e intacto, v0.5.3.
 
-3v3/4v4 mencionado por propietario: **pendiente aclarar parejas en cola frente a
-jugadores simultáneos por equipo**; segunda lectura amplía formatos/motor/SQL/XP/ELO
-aprobados. También aclarar si en cinco permanece junta ganadora o se mezcla.
-No descartar petición ni implementar formatos mayores por interpretación.
+**Aclaración posterior del propietario:** 3v3 son tres personas simultáneas por
+lado, seis en total. **Elección de creación:** mezclar ganadores, perdedores o ambos.
+No volver a pedir esas aclaraciones ni restringir a ganadores fijos. Algoritmo de
+mezcla/cola y casos sin reserva, así como elegibilidad XP/ELO de formatos nuevos,
+siguen por concretar; no extrapolar fórmulas aprobadas ni activar 3v3. 4v4 mencionado
+anteriormente supone ocho jugadores, con prioridad de entrega por delimitar.
+
+**Petición de temporadas registrada:** duración configurable en Ajustes, ELO y
+ranking por puntos; tres/seis meses y victoria 3/derrota 1 fueron ejemplos por
+estudiar. Recomendación del agente de ELO continuo, puntos reiniciados por periodo,
+3/0 y tres meses **no aprobada**. Torneos clasificatorios propuestos contarían una
+vez por partido, sin bonus por campeón; casual sin ELO. No reiniciar ELO existente
+ni implementar temporadas/puntos/premios por esta revisión documental de 06;
+delimitar alcance y reglas antes de ampliar fase.
 Recuperación, confirmación/rotación atómica y cancelación son diseño futuro; sin
 código/migración/UI de pool o premios. Seguimiento y evidencia en ESTADO_ACTUAL y
 VERIFICACION_BLOQUE_06; siguiente conversación sigue en 06, sin iniciar 07.

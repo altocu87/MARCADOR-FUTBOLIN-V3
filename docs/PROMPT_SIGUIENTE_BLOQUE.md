@@ -11,9 +11,16 @@ El propietario juega normalmente con cuatro a seis personas, preferentemente
 parejas. Quiere pool/ronda de pista sencilla: perdedores salen, entran quienes
 esperan, y cambio de compañero para cinco; 1v1 también contemplado. Esta
 orientación sustituye eliminación directa V1; no volver a pedir cuadro/liguilla.
-Comprueba respuestas posteriores: 3v3/4v4 significa parejas que se turnan o
-jugadores simultáneos por equipo; en cinco sigue ganadora junta o se mezcla.
-No descartar petición de formatos mayores ni implementarlos por interpretación.
+Ya está aclarado: 3v3 son tres personas simultáneas por lado. Al crear se elige
+mezclar ganadores, perdedores o ambos. No pedir otra vez esas respuestas ni fijar
+ganadores juntos como regla universal. Concreta algoritmo/cola/saliente y casos
+sin reservas (seis jugando 3v3), conservando elección al recuperar. 4v4 fue
+mencionado como formato adicional; prioridad por delimitar. XP/ELO de formatos
+nuevos aún sin reglas aprobadas, no extrapolar ni activar fórmulas existentes.
+El propietario pide temporadas configurables en Ajustes, ELO y ranking de puntos;
+3/1 y tres/seis meses son ejemplos por estudiar. ELO continuo, 3/0 y tres meses
+son propuestas del agente, no aprobaciones. Registra/delimita esa petición sin
+ampliar la implementación exclusiva de 06 ni activar temporadas/puntos/premios.
 Presenta ejemplos sencillos con seis/tres parejas y cinco/una reserva; concreta
 cola/saliente, modo/elegibilidad, pausa/recuperación/cierre. Sesión abierta sin
 campeón/premio extra es recomendación pendiente, no aprobación. No convertir

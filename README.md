@@ -17,8 +17,10 @@ ELO activo con parámetros aprobados: K40 primeras diez/K20 después, redondeo e
 **Preparación 06 V2, solo documentación:** el propietario orienta a pool sencilla
 para cuatro a seis personas, preferentemente parejas, con cola y cambio de
 compañero. Sustituye eliminación directa V1. Ejemplos y detalles pendientes en
-[Propuesta 06](docs/PROPUESTA_BLOQUE_06.md): aclarar 3v3/4v4 y rotación de cinco;
-después acordar modo/cierre, sin campeonato o premios implícitos. No código,
+[Propuesta 06](docs/PROPUESTA_BLOQUE_06.md): 3v3 aclarado como tres personas por
+lado; mezcla de ganadores/perdedores/ambos elegible al crear. Algoritmo/reservas,
+XP/ELO nuevo y modo/cierre pendientes; petición de temporadas/puntos registrada,
+sin reglas ni premios implícitos. No código,
 migraciones ni funciones de pool; versión **0.5.3** intacta. Evidencia en
 [Verificación 06](docs/VERIFICACION_BLOQUE_06.md). Continuar 06, sin iniciar 07.
 

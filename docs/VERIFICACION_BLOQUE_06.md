@@ -4,14 +4,28 @@
 
 El propietario orienta 06 a pool para cuatro/seis personas, parejas preferentes,
 cola y rotación. Reemplaza recomendación de eliminación directa V1. Detalles
-por acordar; 3v3/4v4 y cambio de pareja pendientes de aclaración. No activación
-ni aprobación implícita de premios, modos o nuevas reglas de XP/ELO.
+por acordar; 3v3 ya aclarado como seis jugadores simultáneos y selector al crear
+para mezclar ganadores/perdedores/ambos ya decidido. Algoritmo, reservas y XP/ELO
+nuevo pendientes. Sin activación ni aprobación implícita de premios/modos.
+Petición de temporadas registrada; propuestas 3/1, 3/0 y duraciones no aprobadas.
 [PROPUESTA_BLOQUE_06.md](PROPUESTA_BLOQUE_06.md) V2 es la referencia vigente.
 
 Entorno cloud `/workspace/MARCADOR-FUTBOLIN-V3`, misma rama de revisión.
 Base `491838aa60b2963f5c14af1af0d47ebba7cdfe23`, árbol limpio antes de editar,
 fetch explícito main/revisión, divergencia 0/0. Main `900e470a719bc99bee4df853f0e11301a5b6562e`.
 Sin sobrescribir trabajo local, reset/stash o promoción.
+
+## Revisión posterior de aclaraciones, 2026-10-02
+
+Base `3ed672c2061861d002961804fa35fc64c12a5580`, árbol limpio, fetch explícito
+main/revisión, divergencia 0/0. Respuestas del propietario registradas en siete
+Markdown; no código, SQL, datos, partidos/cuentas, versión o servicio cambiados.
+Verificación proporcional: enlaces locales, cercados Markdown, contexto 1–84,
+`git diff --check` y revisión de que no persistan preguntas resueltas en el alcance
+vigente. No tests/build/UI/SQL ni Preview autenticada ejecutados por esta revisión.
+Los ejemplos previos de perdedores no prueban la mezcla de ganadores/ambos ni 3v3;
+los nuevos ejemplos son ilustrativos, sin módulo implementado o fixtures de pool.
+Publicación de esta revisión se registra tras push; v0.5.3 intacta, main sin promoción.
 
 ## Verificación proporcional de esta revisión
 
@@ -42,7 +56,8 @@ sin cambio funcional ni deployment/Preview de pool inspeccionados.
 Esta anotación de evidencia se publica después, sin cambiar versión.
  No se inspecciona deployment
 automático de esta entrega documental; no afirmar UI de pool disponible en Preview.
-Aclarar significado 3v3/4v4 y rotación de cinco, después acordar solo reglas
+Usar respuestas ya registradas; concretar mezcla/reservas, formatos y alcance
+de temporadas. Después acordar solo reglas
 necesarias, mediante [prompt vigente](PROMPT_SIGUIENTE_BLOQUE.md). Sin iniciar 07.
 
 ---
