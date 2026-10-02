@@ -1,3 +1,5 @@
+import type { ProgressionRepository } from '../persistence/ProgressionRepository'
+import type { PlayerProgression } from '../../progression/xp'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database, Json } from './database.types'
 import type { PlayerRepository } from '../persistence/PlayerRepository'
@@ -16,9 +18,13 @@ function playerFields(draft: PlayerDraft) {
 export class SupabasePlayerRepository implements PlayerRepository {
   constructor(private readonly client: SupabaseClient<Database>) {}
   async getPlayers(): Promise<Player[]> {
-    const { data, error } = await this.client.from('players').select('*').order('name')
+    const { data, error } = await this.client.from('player_progression_v1').select('*').order('name')
     if (error) throw error
-    return data.map(row => ({ id: row.id, name: row.name, nickname: row.nickname, photoUrl: row.photo_url, active: row.active, level: row.level }))
+    return data.map(row => {
+      const progression = mapProgression(row)
+      if (!row.name || typeof row.active !== 'boolean') throw new Error('Ficha de jugador incompatible.')
+      return { id: progression.playerId, name: row.name, nickname: row.nickname, photoUrl: row.photo_url, active: row.active, level: progression.level }
+    })
   }
   async createPlayer(draft: PlayerDraft) {
     const { error } = await this.client.from('players').insert(playerFields(draft))
@@ -73,5 +79,34 @@ export class SupabaseMatchRepository implements MatchRepository {
     const document = { match: data, participants: data.participants, events: data.events } as unknown as MatchDocument
     document.events.sort((a, b) => a.sequence - b.sequence)
     return document
+  }
+}
+
+/** Projection values are nullable in generated view types: validate before display.
+ * Never silently round a Postgres bigint beyond JavaScript's exact integer range.
+ */
+export function mapProgression(row: {
+  id: string | null; xp: number | null; level: number | null; current_threshold: number | null
+  next_threshold: number | null; max_level: number | null; confirmed_matches: number | null
+  rules_version: number | null; enabled: boolean | null
+}): PlayerProgression {
+  const valid = (n: number | null): n is number => n !== null && Number.isSafeInteger(n) && n >= 0
+  if (!row.id || !valid(row.xp) || !valid(row.level) || !valid(row.current_threshold)
+    || !valid(row.max_level) || !valid(row.confirmed_matches) || !valid(row.rules_version) || row.rules_version < 1
+    || typeof row.enabled !== 'boolean' || row.level > row.max_level || row.current_threshold > row.xp
+    || (row.level === row.max_level ? row.next_threshold !== null : !valid(row.next_threshold) || row.next_threshold <= row.xp)) throw new Error('Progresión XP incompatible. No se muestran cifras parciales.')
+  return { playerId: row.id, xp: row.xp, level: row.level, currentThreshold: row.current_threshold,
+    nextThreshold: row.next_threshold, maxLevel: row.max_level, confirmedMatches: row.confirmed_matches,
+    rulesVersion: row.rules_version, enabled: row.enabled }
+}
+export class SupabaseProgressionRepository implements ProgressionRepository {
+  constructor(private readonly client: SupabaseClient<Database>) {}
+  async getPlayerProgression(playerId: string, signal?: AbortSignal): Promise<PlayerProgression> {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(playerId)) throw new Error('Identidad de jugador no válida.')
+    let query = this.client.from('player_progression_v1').select('*').eq('id', playerId)
+    if (signal) query = query.abortSignal(signal)
+    const { data, error } = await query.single()
+    if (error) throw error
+    return mapProgression(data)
   }
 }

@@ -219,3 +219,11 @@ button:focus-visible,input:focus-visible { outline: 2px solid #86ebff; outline-o
 .cancel-match-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
 .cancel-match-actions button { width: 100%; min-height: 48px; }
 .cancel-match-error { color: #ffb9be; }
+
+.xp-panel { padding: 14px; margin: 0 0 14px; border: 1px solid #278faa; border-radius: 14px; background: linear-gradient(120deg, #082532, #10213f); }
+.xp-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.xp-heading strong { font-size: 22px; color: #7bf7ee; }
+.xp-heading span { color: #d4efff; font-weight: 700; font-size: 13px; }
+.xp-panel progress { display: block; width: 100%; height: 14px; margin: 12px 0; accent-color: #50e6d2; }
+.xp-panel p { margin: 8px 0 0; font-size: 13px; line-height: 1.5; }
+.physical-canvas .xp-panel { padding: 10px 12px; margin-bottom: 8px; }

@@ -530,6 +530,10 @@ Ejemplo: ORO entra a 1200, pero no baja hasta <1175.
 
 ## 30. XP
 
+**Decisión posterior aprobada expresamente el 2026-10-02, bloque 02:** completar +50; victoria +100, empate +60 o derrota +25; victoria Clasificatoria +50; victoria por prórroga o penaltis +25 una sola vez. Por cada jugador completo, también en 2v2, sin dividir entre compañeros. Incluye todos los resultados válidos históricos, sin reinterpretar sus reglas. No activa premios de torneos/récords/logros. Tabla y ejemplos completos en [VERIFICACION_BLOQUE_02.md](VERIFICACION_BLOQUE_02.md). La propuesta original siguiente queda reemplazada para estas recompensas de partidos; las propuestas extraordinarias siguen futuras y sin aprobación.
+
+Implementación: configuración de servidor `xp_rules_v1` y vista normal `player_progression_v1` con SECURITY INVOKER/RLS; XP reconstruido desde el historial confirmado vigente por ID estable. No hay sumas de contadores/ledger ni actualizaciones de columnas protegidas desde cliente. El commit del agregado hace visible su contribución; pendientes sin sincronizar y prueba no cuentan. Alta/edición/eliminación futura reconstruirá los totales, pudiendo reducir XP/nivel; no hay gestión administrativa ni ampliación de permisos ahora. `players.xp/level` físicos siguen reservados; usar la vista para la progresión efectiva. Estado remoto/pruebas/Preview diferenciados en ESTADO_ACTUAL.
+
 XP y ELO son conceptos DIFERENTES.
 
 XP: experiencia acumulativa. ELO: rendimiento competitivo.
@@ -550,6 +554,10 @@ Propuesta XP V1:
 Rápido y Caos dan XP. Solo Clasificatorio modifica ELO. Torneos se definirá posteriormente.
 
 ## 31. NIVELES
+
+**Decisión aprobada expresamente el 2026-10-02:** inicio 0/0, niveles 0–100, `T(N)=ceil(100×N^1.35)` como **umbral acumulado total**, T(0)=0. Coste de transición = T(N+1)−T(N), no sumar T(N) como coste de cada nivel. Umbrales enteros exactos almacenados centralmente en servidor; 1=100, 2=255, 3=441, 10=2239 y 100=50119. Al nivel 100 siguen acumulándose XP. Esta aprobación concreta el significado/redondeo/límite de la propuesta original de abajo. Parámetros ajustables solo con cambio revisado de configuración servidor, sin editor ni permisos de cliente.
+
+Perfil implementado: nivel/XP confirmado/barra accesible/restante/umbral/límite. Progresión total independiente del filtro de análisis; prueba y cola no anticipan premios. Sin red/error no se muestran ceros como confirmación real. Actualizar, reconectar y confirmar sincronización invalidan lecturas. No incorpora ELO/categorías.
 
 Inicio: Nivel 0, 0 XP. Objetivo: 0–100.
 
@@ -1177,6 +1185,8 @@ Orden de prioridades durante un partido:
 Nunca sacrificar 1–5 por funciones online.
 
 ## 69. PRÓXIMA FASE ACTUAL
+
+**Actualización del bloque 02, 2026-10-02:** autorizado e implementado XP/niveles con las decisiones expresas de §30–31. Migraciones de configuración/vista y activación aplicadas al proyecto existente; pruebas independientes, UI/React y SQL/RPC/RLS reales completadas. Concesión derivada del historial confirmado, sin modificar datos antiguos/columnas físicas/motor. La inspección autenticada de XP en Preview no está disponible por alcance Vercel/proxy y ausencia de sesión del operador: no sustituirla por fixtures ni reabrir el checklist cerrado de 01. Siguiente propuesto: 03 ELO/ranking/categorías, sin iniciarlo por esta entrega; requiere parámetros competitivos aprobados. Estado/pruebas/publicación vigentes en ESTADO_ACTUAL y BLOQUES_DESARROLLO. Las anotaciones previas de «XP no implementado» son históricas y quedan sustituidas por esta actualización; SMTP/correos sigue independiente.
 
 Cierre funcional del bloque 01, 2026-10-02: el propietario confirma «Todas las pruebas OK» después del checklist restante 7/10/11. Se aceptan recuperación/reanudación, alias actual/baja/reactivación y PWA/reapertura sin red en el dispositivo como confirmación humana; no como inspección directa del agente ni nueva captura. Esta confirmación sustituye los pendientes funcionales anteriores; no repetir cuentas, partidos ni pruebas por rutina. Personalización de trece correos hosted/remitente SMTP sigue pendiente de acceso de edición y configuración autorizada: no queda acreditada por el checklist, no se contratan servicios y no bloquea planificar 02. Main no se promueve; XP/ELO todavía no implementados.
 

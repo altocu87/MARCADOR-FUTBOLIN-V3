@@ -1,3 +1,4 @@
+import { approvedXpRules, rebuildProgression } from '../src/progression/xp'
 /** Development-only fixture. No authentication or data requests to Supabase.
  * Open /tests/ui-fixture.html under Vite. Not an input to the production build.
  */
@@ -19,7 +20,8 @@ const matches = new Map<string, MatchDocument>()
 Object.defineProperty(window, 'fixtureSavedDocuments', { get: () => structuredClone([...matches.values()]) })
 // Reproducible network failures without changing browser settings or Supabase.
 // ?save=offline rejects; ?save=hang never acknowledges; default succeeds.
-const saveMode = new URLSearchParams(window.location.search).get('save')
+let saveMode = new URLSearchParams(window.location.search).get('save')
+Object.defineProperty(window, 'fixtureSaveMode', { set: (value: string) => { saveMode = value } })
 const realNetwork = new URLSearchParams(window.location.search).get('network') === 'real'
 const statisticsMode = new URLSearchParams(window.location.search).get('statistics')
 const guest = new URLSearchParams(window.location.search).get('auth') === 'guest'
@@ -87,6 +89,13 @@ const services: ApplicationServices = {
     async deleteUnusedPlayer(id) {
       if ([...matches.values()].some(m => m.participants.some(p => p.player_id === id))) throw new Error('Tiene historial. Desactívalo.')
       players = players.filter(p => p.id !== id)
+    },
+  },
+  progression: {
+    async getPlayerProgression(id, signal) {
+      await requireNetwork(); signal?.throwIfAborted()
+      if (new URLSearchParams(location.search).get('xp') === 'error') throw new Error('Error XP simulado')
+      return rebuildProgression([...matches.values()].map(d => ({ ...d.match, participants: d.participants })), id, approvedXpRules)
     },
   },
   matches: {

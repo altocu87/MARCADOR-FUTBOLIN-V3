@@ -90,6 +90,13 @@ export function App({ services }: { services: ApplicationServices | null }) {
   const matchOpen = run.current !== null
   const pending = usePendingQueue(coordinator, online && !data.localIdentity, matchOpen && state.status !== 'MATCH_END' || saving)
   const pendingCount = pending.documents.length
+  const refreshedSaveId = useRef<string | null>(null)
+  useEffect(() => {
+    if (pending.lastSavedId && pending.lastSavedId !== refreshedSaveId.current) {
+      refreshedSaveId.current = pending.lastSavedId
+      void data.refresh()
+    }
+  }, [pending.lastSavedId, data.refresh])
   useEffect(() => {
     if (state.status === 'MATCH_END' && pending.lastSavedId === run.current?.id && run.current.checkpointReleased) setSaveMessage('PARTIDO GUARDADO EN SUPABASE')
   }, [pending.lastSavedId, state.status])
@@ -260,7 +267,7 @@ export function App({ services }: { services: ApplicationServices | null }) {
         onProfile={id => openStatistics(id)} displaySettings={<DisplaySettings mode={displayMode} onChange={value => { setDisplayMode(value); try { localStorage.setItem(DISPLAY_MODE_KEY, value) } catch { setNotice('Vista aplicada; no se pudo recordar localmente.') } }} />} />}
       {screen === 'pending' && <PendingMatchesScreen documents={pending.documents} online={online && !data.localIdentity} busy={pending.busy} message={pending.message} onRetry={pending.retry} onBack={() => setScreen('settings')} />}
       {screen === 'history' && <HistoryScreen players={data.players} key={userId ?? 'guest'} repository={services?.matches ?? null} userId={userId} online={online && !data.localIdentity} onStatistics={() => openStatistics()} />}
-      {screen === 'statistics' && <StatisticsScreen key={userId ?? 'guest'} repository={services?.matches ?? null} players={data.players} playersLoading={data.loading} dataMessage={data.message} userId={userId} online={online && !data.localIdentity} initialPlayerId={profilePlayerId} onBack={() => setScreen('history')} />}
+      {screen === 'statistics' && <StatisticsScreen dataRevision={pending.lastSavedId} progressionRepository={services?.progression ?? null} key={userId ?? 'guest'} repository={services?.matches ?? null} players={data.players} playersLoading={data.loading} dataMessage={data.message} userId={userId} online={online && !data.localIdentity} initialPlayerId={profilePlayerId} onBack={() => setScreen('history')} />}
       {screen === 'placeholder' && <div className="placeholder-screen"><span>PRÓXIMAMENTE</span><p>Torneos se implementará en otra fase.</p></div>}
       </>}
     </section>

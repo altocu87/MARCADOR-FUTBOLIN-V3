@@ -250,12 +250,78 @@ export type Database = {
         }
         Relationships: []
       }
+      xp_rules_v1: {
+        Row: {
+          complete: number
+          draw: number
+          eligible_from: string | null
+          enabled: boolean
+          extra_time_win: number
+          loss: number
+          penalties_win: number
+          ranked_win: number
+          singleton: boolean
+          thresholds: number[]
+          version: number
+          win: number
+        }
+        Insert: {
+          complete: number
+          draw: number
+          eligible_from?: string | null
+          enabled?: boolean
+          extra_time_win: number
+          loss: number
+          penalties_win: number
+          ranked_win: number
+          singleton?: boolean
+          thresholds: number[]
+          version: number
+          win: number
+        }
+        Update: {
+          complete?: number
+          draw?: number
+          eligible_from?: string | null
+          enabled?: boolean
+          extra_time_win?: number
+          loss?: number
+          penalties_win?: number
+          ranked_win?: number
+          singleton?: boolean
+          thresholds?: number[]
+          version?: number
+          win?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      player_progression_v1: {
+        Row: {
+          active: boolean | null
+          confirmed_matches: number | null
+          current_threshold: number | null
+          enabled: boolean | null
+          id: string | null
+          level: number | null
+          max_level: number | null
+          name: string | null
+          next_threshold: number | null
+          nickname: string | null
+          photo_url: string | null
+          rules_version: number | null
+          xp: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       save_match_v1: { Args: { document: Json }; Returns: string }
+      valid_xp_thresholds_v1: {
+        Args: { values_array: number[] }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

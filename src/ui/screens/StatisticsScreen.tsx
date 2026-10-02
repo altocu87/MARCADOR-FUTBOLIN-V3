@@ -1,3 +1,5 @@
+import type { ProgressionRepository } from '../../services/persistence/ProgressionRepository'
+import { ProgressionPanel } from '../components/ProgressionPanel'
 import { useEffect, useMemo, useState } from 'react'
 import type { MatchRepository } from '../../services/persistence/MatchRepository'
 import type { Player } from '../../services/persistence/models'
@@ -7,7 +9,9 @@ import { errorMessage } from '../../app/useData'
 import { HistoryScreen } from './HistoryScreen'
 import { AnalysisDetails } from '../components/AnalysisDetails'
 
-export function StatisticsScreen({ repository, players, userId, online, initialPlayerId, onBack, playersLoading, dataMessage }: {
+export function StatisticsScreen({ repository, players, userId, online, initialPlayerId, onBack, playersLoading, dataMessage, dataRevision = null, progressionRepository = null }: {
+  dataRevision?: string | null
+  progressionRepository?: ProgressionRepository | null
   repository: MatchRepository | null; players: Player[]; userId: string | null; online: boolean
   initialPlayerId: string | null; onBack: () => void
   playersLoading: boolean; dataMessage: string
@@ -15,7 +19,7 @@ export function StatisticsScreen({ repository, players, userId, online, initialP
   const [selectedId, setSelectedId] = useState(initialPlayerId)
   const [search, setSearch] = useState('')
   const player = players.find(p => p.id === selectedId)
-  if (userId && player) return <PlayerProfile key={player.id} player={player} players={players} userId={userId} repository={repository} online={online} onBack={() => setSelectedId(null)} />
+  if (userId && player) return <PlayerProfile dataRevision={dataRevision} progressionRepository={progressionRepository} key={player.id} player={player} players={players} userId={userId} repository={repository} online={online} onBack={() => setSelectedId(null)} />
   const query = search.trim().toLocaleLowerCase('es')
   const filtered = players.filter(p => `${p.name} ${p.nickname ?? ''}`.toLocaleLowerCase('es').includes(query))
   return <section className="data-screen statistics-screen">
@@ -28,8 +32,10 @@ export function StatisticsScreen({ repository, players, userId, online, initialP
   </section>
 }
 
-function PlayerProfile({ player, players, userId, repository, online, onBack }: {
+function PlayerProfile({ player, players, userId, repository, online, onBack, progressionRepository, dataRevision }: {
   player: Player; userId: string; repository: MatchRepository | null; online: boolean; onBack: () => void
+  dataRevision: string | null
+  progressionRepository: ProgressionRepository | null
   players: readonly Player[]
 }) {
   const [results, setResults] = useState<PlayerResult[] | null>(null)
@@ -51,7 +57,7 @@ function PlayerProfile({ player, players, userId, repository, online, onBack }: 
     }).catch(error => { if (!controller.signal.aborted) setMessage(errorMessage(error)) })
       .finally(() => { if (!controller.signal.aborted) setBusy(false) })
     return () => controller.abort()
-  }, [repository, player.id, online, version])
+  }, [repository, player.id, online, version, dataRevision])
   const analysis = useMemo(() => results ? analyzePlayerResults(results, player.id, filter) : null, [results, player.id, filter])
   const stats = analysis?.totals
   const filtered = Object.keys(filter).some(key => filter[key as keyof AnalysisFilter] !== emptyAnalysisFilter[key as keyof AnalysisFilter])
@@ -66,6 +72,7 @@ function PlayerProfile({ player, players, userId, repository, online, onBack }: 
     <header className="data-heading"><h1>PERFIL DEL JUGADOR</h1><button type="button" onClick={onBack}>JUGADORES</button></header>
     <div className="scroll-panel profile-content">
       <div className="profile-identity"><div className="profile-avatar" aria-hidden="true">{player.name[0]}{player.photoUrl?.startsWith('https://') && <img src={player.photoUrl} alt="" referrerPolicy="no-referrer" onError={event => { event.currentTarget.hidden = true }} />}</div><div><h2>{player.nickname || player.name}</h2>{player.nickname && <p>{player.name}</p>}<span>{player.active ? 'ACTIVO' : 'INACTIVO · HISTORIAL CONSERVADO'}</span></div></div>
+      <ProgressionPanel repository={progressionRepository} playerId={player.id} online={online} revision={`${version}:${dataRevision ?? ""}`} />
       <details className="analysis-filters" open={filtersOpen} onToggle={event => setFiltersOpen(event.currentTarget.open)}><summary>FILTRAR ANÁLISIS</summary><form onSubmit={event => { event.preventDefault(); try { validateAnalysisFilter(draft); setFilter({ ...draft }); setFilterError('') } catch (error) { setFilterError(errorMessage(error)) } }}>
         <label>Desde<input type="date" value={draft.from} onChange={e => setDraft(value => ({ ...value, from: e.target.value }))} /></label>
         <label>Hasta<input type="date" value={draft.to} onChange={e => setDraft(value => ({ ...value, to: e.target.value }))} /></label>
